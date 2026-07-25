@@ -1,111 +1,84 @@
+@import "tailwindcss";
+
+/* ---------- Fonts (self-hosted, latin + latin-ext for č ć đ š ž) ---------- */
+@font-face { font-family: 'Inter Tight'; font-weight: 400; font-display: swap; src: url('/fonts/inter-tight-400-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Inter Tight'; font-weight: 400; font-display: swap; src: url('/fonts/inter-tight-400-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Inter Tight'; font-weight: 500; font-display: swap; src: url('/fonts/inter-tight-500-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Inter Tight'; font-weight: 500; font-display: swap; src: url('/fonts/inter-tight-500-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Inter Tight'; font-weight: 600; font-display: swap; src: url('/fonts/inter-tight-600-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Inter Tight'; font-weight: 600; font-display: swap; src: url('/fonts/inter-tight-600-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Inter Tight'; font-weight: 700; font-display: swap; src: url('/fonts/inter-tight-700-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Inter Tight'; font-weight: 700; font-display: swap; src: url('/fonts/inter-tight-700-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Great Vibes'; font-weight: 400; font-display: swap; src: url('/fonts/great-vibes-400-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Great Vibes'; font-weight: 400; font-display: swap; src: url('/fonts/great-vibes-400-latin.woff2') format('woff2'); }
+
+/* ---------- Brand tokens (brand-dna.md — the only source of color truth) ---------- */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --ds-bg: #F5F9FD;
+  --ds-tint: #DCEBF8;
+  --ds-baby: #A8CEF0;
+  --ds-mid: #6FA5D8;
+  --ds-ink: #16324F;
+  --ds-accent: #2458A6;
+  --ds-mist: #C7D9EA;
+  --font-sans: 'Inter Tight', system-ui, sans-serif;
+  --font-script: 'Great Vibes', cursive;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+@theme {
+  --color-bg: #F5F9FD;
+  --color-tint: #DCEBF8;
+  --color-baby: #A8CEF0;
+  --color-mid: #6FA5D8;
+  --color-ink: #16324F;
+  --color-accent: #2458A6;
+  --color-mist: #C7D9EA;
+  --font-sans: 'Inter Tight', system-ui, sans-serif;
+  --font-script: 'Great Vibes', cursive;
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
+html { scroll-behavior: auto; }
 body {
   margin: 0;
+  background: var(--ds-bg);
+  color: var(--ds-ink);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+/* ---------- The house glass, tuned light (design-language §4) ---------- */
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.55), 0 8px 30px rgba(22, 50, 79, 0.07);
+  position: relative;
+  overflow: hidden;
+}
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.35) 20%,
+    rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.35) 80%, rgba(255,255,255,0.9) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+/* Signature glow CTA (I5, daylight version) */
+.cta-glow {
+  box-shadow: 0 4px 60px 4px rgba(36, 88, 166, 0.40);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
+.cta-glow:hover { transform: scale(1.05); box-shadow: 0 4px 70px 8px rgba(36, 88, 166, 0.55); }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
+::selection { background: var(--ds-baby); color: var(--ds-ink); }
