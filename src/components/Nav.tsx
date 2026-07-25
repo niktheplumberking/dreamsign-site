@@ -32,11 +32,15 @@ export default function Nav() {
     <>
       <div className="fixed top-0 inset-x-0 z-[60] flex justify-center px-4 pt-4 md:pt-6">
         <nav className="flex items-center rounded-full bg-[#DCEBF8]/40 backdrop-blur-[15px] gap-4 md:gap-8 lg:gap-20 px-4 py-3">
-          <a href="/" className="flex items-center gap-2" aria-label="DreamSign — početna">
-            <img src="/media/brand/cloud-d.webp" alt="" className="h-6 w-auto md:h-7" />
-            <span className="text-base md:text-xl font-medium text-ink leading-none">
-              Dream<span className="font-script text-accent text-[1.25em] align-middle">Sign</span>
-            </span>
+          {/* the lockup: cloud-built D + "ream" + hand-signed "Sign" — one baseline, one word */}
+          <a href="/" className="flex items-baseline leading-none text-[19px] md:text-[24px]" aria-label="DreamSign — početna">
+            <img
+              src="/media/brand/cloud-d.webp" alt="" aria-hidden
+              className="h-[0.86em] w-auto max-w-none"
+              style={{ filter: 'drop-shadow(0 1px 1.5px rgba(22,50,79,0.30))' }}
+            />
+            <span className="font-medium tracking-tight text-ink">ream</span>
+            <span className="font-script font-normal text-[1.45em] ml-[-0.015em] text-accent">Sign</span>
           </a>
           <div className="hidden md:flex items-center gap-6 text-sm">
             {LINKS.map((l, i) => (
@@ -46,9 +50,13 @@ export default function Nav() {
               </a>
             ))}
           </div>
-          <GlossyPill href={WA_LINK} className="hidden sm:inline-block px-6 py-2 text-[15px]">
-            Započnite razgovor
-          </GlossyPill>
+          {/* wrapper, not `hidden` on the pill itself: `hidden` and `inline-block` are the same
+              display utility, so the later one in Tailwind's sheet always won and the CTA never hid */}
+          <span className="hidden sm:block">
+            <GlossyPill href={WA_LINK} className="px-6 py-2 text-[15px] whitespace-nowrap">
+              Započnite razgovor
+            </GlossyPill>
+          </span>
           <button className="md:hidden flex flex-col justify-center gap-[5px] p-1" aria-label={open ? 'Zatvori meni' : 'Otvori meni'} onClick={() => setOpen(!open)}>
             <motion.span animate={open ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }} className="block h-[2px] w-6 bg-ink rounded" />
             <motion.span animate={open ? { opacity: 0 } : { opacity: 1 }} className="block h-[2px] w-6 bg-ink rounded" />
