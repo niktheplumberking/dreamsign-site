@@ -1,20 +1,17 @@
-// GALAXY HOME STRUCTURAL REPLICA — Section 2: Hero (full viewport, 4 parallax layers).
-// Exact offsets/values from the prompt; assets/palette/content are the only swaps.
-// L1 sky (z-0, y 0→8%) · L2 title (z-10, clamp(3rem,14vw,14rem), gradient clip, blend) ·
-// L3 subtexts (z-20, exact positions) · L4 foreground cloud-bank = "building" (z-30, same y).
-import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'motion/react'
-import { useReducedMotionSafe } from '../../lib/hooks'
+// GALAXY HOME STRUCTURE — Hero: 4 parallax layers, driven by the ONE world scroll progress.
+// L1 sky video (poster fallback) · L2 the CLOUD wordmark blended into the sky ·
+// L3 side subtexts · L4 the foreground cloud bank drifting over the wordmark's base.
+import { motion, useTransform } from 'motion/react'
+import { useWorld } from '../World'
 
 export default function Hero() {
-  const ref = useRef<HTMLElement>(null)
-  const reduced = useReducedMotionSafe()
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '8%'])
+  const { p, reduced, vh } = useWorld()
+  const skyY = useTransform(p, [0, vh], ['0%', '8%'])
+  const fgY = useTransform(p, [0, vh], ['0%', '15%']) // the bank runs faster than the sky
 
   return (
-    <section ref={ref} className="relative h-screen w-full overflow-hidden z-10">
-      {/* Layer 1 (z-0) — sky background */}
+    <section data-beat="hero" className="relative h-screen w-full overflow-hidden z-10">
+      {/* Layer 1 (z-0) — the living sky */}
       {reduced ? (
         <img src="/media/hero-sky-poster.jpg" alt="" className="absolute inset-0 h-[120%] w-full object-cover z-0" />
       ) : (
@@ -22,22 +19,31 @@ export default function Hero() {
           src="/media/hero-sky-loop.mp4" poster="/media/hero-sky-poster.jpg"
           autoPlay muted loop playsInline preload="metadata"
           className="absolute inset-0 h-[120%] w-full object-cover z-0"
-          style={{ y: bgY }}
+          style={{ y: skyY }}
         />
       )}
 
-      {/* Layer 2 (z-10) — title text, gradient-clipped, blended into the layers */}
+      {/* Layer 2 (z-10) — the wordmark: cloud-built "Dream" + hand-signed "Sign", one word */}
       <div className="relative z-10 flex justify-center pt-[22vh] md:pt-32 lg:pt-36">
         <div
           aria-hidden
-          className="text-[clamp(3rem,14vw,14rem)] font-semibold leading-none whitespace-nowrap bg-clip-text text-transparent mix-blend-multiply select-none"
-          style={{ backgroundImage: 'linear-gradient(to bottom, #16324F, #6FA5D8)' }}
+          className="flex items-baseline whitespace-nowrap select-none leading-none text-[clamp(3rem,14vw,14rem)]"
         >
-          Dream<span className="font-script font-normal">Sign</span>
+          <img
+            src="/media/brand/cloud-dream.webp" alt=""
+            className="h-[0.74em] w-auto max-w-none"
+            style={{ mixBlendMode: 'hard-light' }}
+          />
+          <span
+            className="font-script font-normal text-[1.12em] ml-[-0.11em] bg-clip-text text-transparent mix-blend-multiply"
+            style={{ backgroundImage: 'linear-gradient(to bottom, #16324F, #6FA5D8)' }}
+          >
+            Sign
+          </span>
         </div>
       </div>
 
-      {/* Layer 3 (z-20) — subtexts at exact positions */}
+      {/* Layer 3 (z-20) — subtexts at their exact positions */}
       <p className="hidden md:block absolute z-20 left-6 top-[200px] md:left-12 md:top-[320px] lg:left-24 text-lg md:text-[22px] md:leading-6 font-medium text-ink/70 mix-blend-multiply">
         Iznad oblaka
       </p>
@@ -45,11 +51,12 @@ export default function Hero() {
         Snovi postaju realnost.
       </p>
 
-      {/* Layer 4 (z-30) — the cloud bank, our "building": full-bleed, same parallax */}
+      {/* Layer 4 (z-30) — the cloud bank, our "building": drifts over the wordmark's base.
+          Top alpha ramp baked into the asset: at narrow crops its frame edge was a hard line. */}
       <motion.img
-        src="/media/hero-cloud-fg-frame.webp" alt=""
+        src="/media/hero-bank-fade.webp" alt=""
         className="absolute inset-0 h-[120%] w-full object-cover object-bottom z-30 pointer-events-none select-none"
-        style={reduced ? undefined : { y: bgY }}
+        style={reduced ? undefined : { y: fgY }}
       />
     </section>
   )
