@@ -23,14 +23,15 @@ export function useWorld(): WorldValue {
   return ctx
 }
 
-/** The hero's bottom edge, sampled from the render — the descent starts on this exact colour. */
-export const SEAM_HEX = '#E8F1FA'
+/** The hero's bottom edge, sampled off the render at 1440 and 390 (both agree) — the
+ *  descent starts on this exact colour. Re-sample if the hero's foreground asset changes. */
+export const SEAM_HEX = '#B0C9E4'
 
 /** The one sky. Every section is transparent; this is what shows through, top to bottom. */
 const SKY = `linear-gradient(to bottom,
-  #EAF3FC 0%,
+  #D7E7F7 0%,
   ${SEAM_HEX} 24%,
-  #DCEBF8 38%,
+  #CDE2F5 38%,
   #E6F1FB 52%,
   #F1F8FD 66%,
   #FAFCFE 80%,
