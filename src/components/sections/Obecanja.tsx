@@ -21,15 +21,27 @@ export default function Obecanja() {
   const { scrollYProgress: strokeProgress } = useScroll({ target: ref, offset: ['start 0.7', 'end 0.25'] })
   const strokeLength = useTransform(strokeProgress, [0, 1], [0, 1])
 
-  const chars = TEXT.split('')
+  const total = TEXT.length
   const accentFrom = TEXT.indexOf('nezadovoljan')
+  // words as unbreakable spans (so lines wrap at spaces), chars animated inside by GLOBAL index
+  const words: { word: string; offset: number }[] = []
+  let off = 0
+  for (const w of TEXT.split(' ')) { words.push({ word: w, offset: off }); off += w.length + 1 }
 
   return (
     <div ref={ref} className="mx-auto max-w-[820px] px-5 sm:px-6 md:px-12 pt-28 sm:pt-36 pb-14 sm:pb-20 text-center">
       <p aria-label={TEXT} className="font-medium tracking-tight leading-snug text-ink text-xl sm:text-2xl md:text-[40px] md:leading-[48px]">
-        {chars.map((ch, i) => (
-          <Char key={i} p={scrollYProgress} start={i / chars.length} ch={ch}
-                accent={accentFrom !== -1 && i >= accentFrom && i < accentFrom + 'nezadovoljan'.length} />
+        {words.map(({ word, offset }, wi) => (
+          <span key={wi} className="inline-block whitespace-nowrap">
+            {word.split('').map((ch, ci) => {
+              const i = offset + ci
+              return (
+                <Char key={ci} p={scrollYProgress} start={i / total} ch={ch}
+                      accent={accentFrom !== -1 && i >= accentFrom && i < accentFrom + 'nezadovoljan'.length} />
+              )
+            })}
+            {wi < words.length - 1 ? ' ' : ''}
+          </span>
         ))}
       </p>
       {/* the pen arcs beneath the promise — scrubbed with the same progress */}

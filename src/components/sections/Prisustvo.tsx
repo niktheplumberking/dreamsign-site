@@ -16,7 +16,7 @@ export default function Prisustvo() {
   const route = useTransform(scrollYProgress, [0.1, 0.9], [0, 1])
 
   return (
-    <div ref={ref} className="mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-28 grid md:grid-cols-[55fr_45fr] gap-10 md:gap-14 items-center">
+    <div ref={ref} className="mx-auto max-w-6xl px-5 sm:px-6 pt-16 md:pt-28 pb-[30vh] grid md:grid-cols-[55fr_45fr] gap-10 md:gap-14 items-center">
       <div>
         <motion.h2 {...fadeUp(0)} className="font-semibold tracking-tight text-ink text-2xl md:text-[40px] md:leading-[46px] [text-wrap:balance]">
           Kad zatreba, sedimo za vašim stolom — u vašoj firmi, <span className="relative inline-block">uživo.

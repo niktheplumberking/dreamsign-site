@@ -65,7 +65,7 @@ export default function Usluge() {
         Od prvog razgovora do lansiranja — sve gradimo mi.
       </motion.h2>
       {/* M4 accordion on md+; stacked cards on mobile */}
-      <div className="mt-10 md:mt-14 flex flex-col md:flex-row gap-4 md:h-[380px] group">
+      <div className="mt-10 md:mt-14 flex flex-col md:flex-row gap-4 md:h-[320px] group">
         {SERVICES.map((s, i) => (
           <motion.article
             key={s.id}
