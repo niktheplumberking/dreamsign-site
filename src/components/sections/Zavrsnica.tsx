@@ -13,7 +13,7 @@ const fadeUp = (i: number) => ({
 
 export default function Zavrsnica() {
   return (
-    <div className="relative bg-white px-5 sm:px-6 pb-24 pt-4 text-center">
+    <div className="relative px-5 sm:px-6 pb-24 pt-4 text-center">
       <motion.p {...fadeUp(0)} aria-hidden className="font-script text-accent leading-tight text-[clamp(2.4rem,5.5vw,3.8rem)]"
                 style={{ textShadow: '0 1px 0 currentColor' }}>
         Potpišite svoj san

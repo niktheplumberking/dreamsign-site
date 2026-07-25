@@ -13,8 +13,8 @@ const STATS = [
 export default function Stats() {
   return (
     <div className="relative px-5 sm:px-6 py-16 md:py-32">
-      {/* the white ground rising to meet the descent — exact overlay */}
-      <div className="absolute -top-[400px] left-0 right-0 bottom-0 bg-gradient-to-b from-transparent via-white/60 to-white pointer-events-none" />
+      {/* the white ground that rises to meet the descent now lives in the world (App.tsx),
+          spanning from here to the ink band — a fade that ends mid-page is a section line. */}
       <div className="relative">
         <motion.h2
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}

@@ -3,7 +3,7 @@ import { WA_LINK } from '../lib/hooks'
 
 export default function Footer() {
   return (
-    <footer className="relative z-[50] bg-ink text-bg">
+    <footer data-beat="footer" className="relative z-30 bg-ink text-bg">
       <div className="mx-auto max-w-6xl px-5 sm:px-6 py-14 grid gap-10 md:grid-cols-3">
         <div>
           <span className="flex items-baseline leading-none">
