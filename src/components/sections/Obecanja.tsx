@@ -32,15 +32,17 @@ export default function Obecanja() {
     <div ref={ref} className="mx-auto max-w-[820px] px-5 sm:px-6 md:px-12 pt-28 sm:pt-36 pb-14 sm:pb-20 text-center">
       <p aria-label={TEXT} className="font-medium tracking-tight leading-snug text-ink text-xl sm:text-2xl md:text-[40px] md:leading-[48px]">
         {words.map(({ word, offset }, wi) => (
-          <span key={wi} className="inline-block whitespace-nowrap">
-            {word.split('').map((ch, ci) => {
-              const i = offset + ci
-              return (
-                <Char key={ci} p={scrollYProgress} start={i / total} ch={ch}
-                      accent={accentFrom !== -1 && i >= accentFrom && i < accentFrom + 'nezadovoljan'.length} />
-              )
-            })}
-            {wi < words.length - 1 ? ' ' : ''}
+          <span key={wi}>
+            <span className="inline-block whitespace-nowrap">
+              {word.split('').map((ch, ci) => {
+                const i = offset + ci
+                return (
+                  <Char key={ci} p={scrollYProgress} start={i / total} ch={ch}
+                        accent={accentFrom !== -1 && i >= accentFrom && i < accentFrom + 'nezadovoljan'.length} />
+                )
+              })}
+            </span>
+            {wi < words.length - 1 ? ' ' : null}
           </span>
         ))}
       </p>
