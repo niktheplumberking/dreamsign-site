@@ -25,3 +25,6 @@ dist-ssr
 
 .vercel
 .env*
+
+# Eyes rig output (screenshots + reports)
+.eyes
