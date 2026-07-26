@@ -28,9 +28,9 @@ const MASK = {
   tower: 'linear-gradient(to bottom, transparent 0%, black 7%, black 52%, transparent 100%)',
   sea: 'linear-gradient(to bottom, transparent 0%, black 46%, black 78%, transparent 100%)',
   rays: 'linear-gradient(to bottom, transparent 0%, black 26%, black 64%, transparent 100%)',
-  plain: 'linear-gradient(to bottom, transparent 0%, black 44%, black 74%, transparent 100%)',
-  paper: 'linear-gradient(to bottom, transparent 0%, black 38%, black 88%, transparent 100%)',
-  contrail: 'radial-gradient(ellipse 72% 58% at 50% 50%, black 26%, transparent 78%)',
+  // the ground plates fade IN at the top only — never out at the bottom, they are the end
+  plain: 'linear-gradient(to bottom, transparent 0%, black 38%, black 100%)',
+  paper: 'linear-gradient(to bottom, transparent 0%, black 42%, black 100%)',
 }
 
 export default function App() {
@@ -116,51 +116,37 @@ export default function App() {
               </Beat>
 
               <Beat name="stats"><Stats /></Beat>
-
-              {/* the finale: the deck goes white, the plain appears beneath it, the world becomes paper */}
-              <Beat name="finale" layers={
-                <>
-                  <div
-                    className="absolute left-0 right-0 -top-[80vh] -bottom-[170px] z-0 pointer-events-none
-                               bg-gradient-to-b from-transparent via-white/45 to-white/80"
-                    aria-hidden
-                  />
-                  <WorldLayer
-                    src="/media/landing-plain.webp"
-                    box="-top-[42vh] -bottom-[8vh]"
-                    imgClass="absolute inset-0 h-[118%] w-full object-cover object-bottom"
-                    y={['0%', '-6%']} mask={MASK.plain}
-                    opacity={{ range: [0.58, 0.74], values: [0, 1] }}
-                  />
-                  <WorldLayer
-                    src="/media/B8-paper-ground.webp"
-                    box="-top-[10vh] bottom-0"
-                    imgClass="absolute inset-0 h-[118%] w-full object-cover object-bottom"
-                    y={['0%', '-4%']} mask={MASK.paper}
-                    opacity={{ range: [0.74, 0.90], values: [0, 0.92] }}
-                  />
-                  <WorldLayer
-                    src="/media/B5-contrail-loop.webp"
-                    box="top-[4%] -bottom-[4vh]"
-                    imgClass="absolute inset-0 h-full w-full object-cover object-center"
-                    y={['0%', '-4%']} blend="multiply" mask={MASK.contrail}
-                    opacity={{ range: [0.76, 0.90], values: [0, 0.45] }}
-                  />
-                </>
-              }>
-                <Zavrsnica />
-              </Beat>
             </div>
 
-            {/* the world settles onto the ink ground — a dissolve, not a cut */}
-            <div
-              className="relative z-0 h-[170px] -mb-px pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, #F2F8FD 24%, #C7D9EA 50%, #6FA5D8 76%, #16324F 100%)' }}
-              aria-hidden
-            />
+            {/* THE GROUND — the signature beat and the footer stand on the same plain:
+                one set of layers spans both, so the page ends inside the world, not beside it. */}
+            <div className="relative">
+              <div
+                className="absolute left-0 right-0 -top-[80vh] bottom-0 z-0 pointer-events-none
+                           bg-gradient-to-b from-transparent via-white/45 to-white/80"
+                aria-hidden
+              />
+              <WorldLayer
+                src="/media/B8-paper-ground.webp"
+                box="-top-[30vh] bottom-0"
+                imgClass="absolute inset-0 h-[112%] w-full object-cover object-bottom"
+                y={['0%', '-4%']} mask={MASK.paper}
+                opacity={{ range: [0.58, 0.70, 1], values: [0, 0.7, 0.7] }}
+              />
+              {/* the plain: once it is up it stays up, at full opacity, through the footer */}
+              <WorldLayer
+                src="/media/landing-plain.webp"
+                box="-top-[42vh] bottom-0"
+                imgClass="absolute inset-0 h-[118%] w-full object-cover object-bottom"
+                y={['0%', '-6%']} mask={MASK.plain}
+                opacity={{ range: [0.52, 0.68, 1], values: [0, 1, 1] }}
+              />
+              <div className="relative z-10">
+                <Beat name="finale"><Zavrsnica /></Beat>
+                <Footer />
+              </div>
+            </div>
           </div>
-
-          <Footer />
         </World>
       </main>
     </>

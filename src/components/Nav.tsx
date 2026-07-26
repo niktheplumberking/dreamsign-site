@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { WA_LINK } from '../lib/hooks'
+import Lockup from './Lockup'
 
 const LINKS = [
   { label: 'Početna', href: '/' },
@@ -28,19 +29,26 @@ export function GlossyPill({ href, className = '', children }: { href: string; c
 
 export default function Nav() {
   const [open, setOpen] = useState(false)
+  const [marked, setMarked] = useState(false) // the DS mark opens into the full name
   return (
     <>
       <div className="fixed top-0 inset-x-0 z-[60] flex justify-center px-4 pt-4 md:pt-6">
-        <nav className="flex items-center rounded-full bg-[#DCEBF8]/40 backdrop-blur-[15px] gap-4 md:gap-8 lg:gap-20 px-4 py-3">
-          {/* the lockup: cloud-built D + "ream" + hand-signed "Sign" — one baseline, one word */}
-          <a href="/" className="flex items-baseline leading-none text-[19px] md:text-[24px]" aria-label="DreamSign — početna">
-            <img
-              src="/media/brand/cloud-d.webp" alt="" aria-hidden
-              className="h-[0.86em] w-auto max-w-none"
-              style={{ filter: 'drop-shadow(0 1px 1.5px rgba(22,50,79,0.30))' }}
-            />
-            <span className="font-medium tracking-tight text-ink">ream</span>
-            <span className="font-script font-normal text-[1.45em] ml-[-0.015em] text-accent">Sign</span>
+        <nav
+          className="flex items-center rounded-full bg-[#DCEBF8]/40 backdrop-blur-[15px]
+                     border border-white/75 gap-4 md:gap-6 lg:gap-12 px-4 py-3"
+          style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.75), 0 6px 24px rgba(22,50,79,0.06)' }}
+        >
+          {/* the DS mark; hover or keyboard focus opens it into the full name */}
+          <a
+            href="/" aria-label="DreamSign — početna"
+            className="flex items-baseline leading-none text-[19px] md:text-[24px] rounded-sm
+                       outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
+            onMouseEnter={() => setMarked(true)}
+            onMouseLeave={() => setMarked(false)}
+            onFocus={() => setMarked(true)}
+            onBlur={() => setMarked(false)}
+          >
+            <Lockup expanded={marked} />
           </a>
           <div className="hidden md:flex items-center gap-6 text-sm">
             {LINKS.map((l, i) => (

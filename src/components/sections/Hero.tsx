@@ -11,28 +11,25 @@ export default function Hero() {
 
   return (
     <section data-beat="hero" className="relative h-screen w-full overflow-hidden z-10">
-      {/* Layer 1 (z-0) — the living sky */}
-      {reduced ? (
-        <img src="/media/hero-sky-poster.jpg" alt="" className="absolute inset-0 h-[120%] w-full object-cover z-0" />
-      ) : (
-        <motion.video
-          src="/media/hero-sky-loop.mp4" poster="/media/hero-sky-poster.jpg"
-          autoPlay muted loop playsInline preload="metadata"
-          className="absolute inset-0 h-[120%] w-full object-cover z-0"
-          style={{ y: skyY }}
-        />
-      )}
+      {/* Layer 1 (z-0) — the sky. A still frame of styleframe 1B, not the loop: the loop's
+          6s cut snapped back visibly. It keeps the parallax drift, so the hero still breathes. */}
+      <motion.img
+        src="/media/hero-sky-still.webp" alt=""
+        className="absolute inset-0 h-[120%] w-full object-cover z-0"
+        style={reduced ? undefined : { y: skyY }}
+      />
 
-      {/* Layer 2 (z-10) — the wordmark: cloud-built "Dream" + hand-signed "Sign", one word */}
-      <div className="relative z-10 flex justify-center pt-[22vh] md:pt-32 lg:pt-36">
+      {/* Layer 2 (z-10) — the wordmark: cloud-built "Dream" + hand-signed "Sign", one word.
+          Sits low enough that the foreground bank (z-30) closes over its base. */}
+      <div className="relative z-10 flex justify-center pt-[27vh] md:pt-[25vh] lg:pt-[25vh]">
         <div
           aria-hidden
-          className="flex items-baseline whitespace-nowrap select-none leading-none text-[clamp(3rem,14vw,14rem)]"
+          className="flex items-baseline whitespace-nowrap select-none leading-none text-[clamp(3.6rem,14vw,14rem)]"
         >
           <img
             src="/media/brand/cloud-dream.webp" alt=""
             className="h-[0.74em] w-auto max-w-none"
-            style={{ mixBlendMode: 'hard-light' }}
+            style={{ mixBlendMode: 'hard-light', filter: 'drop-shadow(0 2px 7px rgba(22,50,79,0.20))' }}
           />
           <span
             className="font-script font-normal text-[1.12em] ml-[-0.11em] bg-clip-text text-transparent mix-blend-multiply"
@@ -44,10 +41,10 @@ export default function Hero() {
       </div>
 
       {/* Layer 3 (z-20) — subtexts at their exact positions */}
-      <p className="hidden md:block absolute z-20 left-6 top-[200px] md:left-12 md:top-[320px] lg:left-24 text-lg md:text-[22px] md:leading-6 font-medium text-ink/70 mix-blend-multiply">
+      <p className="hidden md:block absolute z-20 left-6 top-[200px] md:left-12 md:top-[500px] lg:left-24 text-lg md:text-[22px] md:leading-6 font-medium text-ink/70 mix-blend-multiply">
         Iznad oblaka
       </p>
-      <p className="hidden md:block absolute z-20 right-6 top-[200px] md:right-12 md:top-[320px] lg:right-24 text-lg md:text-[22px] md:leading-6 font-medium text-ink">
+      <p className="hidden md:block absolute z-20 right-6 top-[200px] md:right-12 md:top-[500px] lg:right-24 text-lg md:text-[22px] md:leading-6 font-medium text-ink">
         Snovi postaju realnost.
       </p>
 
@@ -55,7 +52,7 @@ export default function Hero() {
           Top alpha ramp baked into the asset: at narrow crops its frame edge was a hard line. */}
       <motion.img
         src="/media/hero-bank-fade.webp" alt=""
-        className="absolute inset-0 h-[120%] w-full object-cover object-bottom z-30 pointer-events-none select-none"
+        className="absolute left-0 right-0 -top-[8%] h-[126%] w-full object-cover object-bottom z-30 pointer-events-none select-none"
         style={reduced ? undefined : { y: fgY }}
       />
     </section>
