@@ -28,22 +28,40 @@ export default function Hero() {
         style={reduced ? undefined : { y: skyY }}
       />
 
-      {/* Layer 2 (z-10) — what the page is about, in as few words as it can be said.
-          Sits high enough that the foreground bank never climbs over the type. */}
-      <div className="relative z-10 flex flex-col items-center px-5 sm:px-6 pt-[19vh] md:pt-[18vh] text-center">
-        <h1
-          className="max-w-[16ch] text-balance font-semibold tracking-tight text-ink leading-[1.02]
-                     text-[clamp(2.7rem,8.2vw,6.4rem)]"
-          style={GLOW}
-        >
-          Izrada sajtova koji prodaju
+      {/* Layer 2 (z-10) — the Galaxy Home centrepiece geometry (batch 4): one giant
+          gradient-clipped line in the primary face, with the script answering underneath —
+          the same primary/script duet as the logo. Still ONE h1: the search engine reads
+          "Izrada sajtova koji prodaju" whole; the fonts split it for humans. */}
+      <div className="relative z-10 flex flex-col items-center px-5 sm:px-6 pt-[17vh] md:pt-[15vh] text-center">
+        <h1 className="leading-none">
+          {/* gradient-clip paints only the element's own box, and j/y descend past it —
+              the batch-2 hero scar. Padding grows the painted box; margins hand it back. */}
+          <span
+            className="block whitespace-nowrap font-semibold tracking-tight
+                       text-[clamp(2.6rem,9vw,7.5rem)] bg-clip-text text-transparent"
+            style={{
+              backgroundImage: 'linear-gradient(to bottom, #16324F 30%, #2E5F9E 100%)',
+              padding: '0.25em 0.1em',
+              margin: '-0.25em -0.1em',
+            }}
+          >
+            Izrada sajtova
+          </span>
+          <span
+            aria-hidden={false}
+            className="block font-script font-normal text-accent
+                       text-[clamp(1.9rem,5.4vw,4.3rem)] mt-[0.06em]"
+            style={GLOW}
+          >
+            koji prodaju
+          </span>
         </h1>
         <p
-          className="mt-5 sm:mt-6 max-w-[46ch] text-balance font-medium text-ink/85
+          className="mt-6 sm:mt-7 max-w-[46ch] text-balance font-medium text-ink/85
                      text-[clamp(1rem,1.9vw,1.35rem)] leading-relaxed"
           style={GLOW}
         >
-          Moderni sajtovi za firme u Srbiji — sa ugovorom, jasnim rokom i bez skrivenih troškova.
+          Moderni sajtovi za firme širom Balkana — sa ugovorom, jasnim rokom i bez skrivenih troškova.
         </p>
       </div>
 
