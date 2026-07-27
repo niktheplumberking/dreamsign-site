@@ -1,8 +1,17 @@
-// GALAXY HOME STRUCTURE — Hero: 4 parallax layers, driven by the ONE world scroll progress.
-// L1 sky video (poster fallback) · L2 the CLOUD wordmark blended into the sky ·
-// L3 side subtexts · L4 the foreground cloud bank drifting over the wordmark's base.
+// GALAXY HOME STRUCTURE — Hero: parallax layers driven by the ONE world scroll progress.
+// L1 sky · L2 the page's h1 and its one supporting line · L3 the foreground cloud bank.
+//
+// Batch 3: the cloud "DreamSign" wordmark is gone from the hero. It was beautiful and it was
+// also the largest thing on the page saying nothing a search engine can rank — the brand is
+// carried by the nav, the entrance and the footer instead. What sits here now is the h1, and
+// it is deliberately short: the primary term ("izrada sajtova") plus what the visitor gets.
+// The two floating side lines are gone too — they were absolutely positioned, `hidden` below
+// md, and said nothing concrete; their job is done by one centred line nobody can miss.
 import { motion, useTransform } from 'motion/react'
 import { useWorld } from '../World'
+
+/** the copy carries its own legibility over the sky — no panel, no scrim */
+const GLOW = { textShadow: '0 2px 26px rgba(245,249,253,0.95), 0 0 10px rgba(245,249,253,0.85)' }
 
 export default function Hero() {
   const { p, reduced, vh } = useWorld()
@@ -19,49 +28,27 @@ export default function Hero() {
         style={reduced ? undefined : { y: skyY }}
       />
 
-      {/* Layer 2 (z-10) — the wordmark: cloud-built "Dream" + hand-signed "Sign", one word.
-          Sits low enough that the foreground bank (z-30) closes over its base. */}
-      <div className="relative z-10 flex justify-center pt-[27vh] md:pt-[25vh] lg:pt-[25vh]">
-        <div
-          aria-hidden
-          className="flex items-baseline whitespace-nowrap select-none leading-none text-[clamp(3.6rem,14vw,14rem)]"
+      {/* Layer 2 (z-10) — what the page is about, in as few words as it can be said.
+          Sits high enough that the foreground bank never climbs over the type. */}
+      <div className="relative z-10 flex flex-col items-center px-5 sm:px-6 pt-[19vh] md:pt-[18vh] text-center">
+        <h1
+          className="max-w-[16ch] text-balance font-semibold tracking-tight text-ink leading-[1.02]
+                     text-[clamp(2.7rem,8.2vw,6.4rem)]"
+          style={GLOW}
         >
-          <img
-            src="/media/brand/cloud-dream.webp" alt=""
-            className="h-[0.74em] w-auto max-w-none"
-            style={{ mixBlendMode: 'hard-light', filter: 'drop-shadow(0 2px 7px rgba(22,50,79,0.20))' }}
-          />
-          {/* `background-clip: text` paints the gradient only where the element's own box
-              reaches — and Great Vibes throws the S's flag above it and the g's tail below.
-              Those parts were getting no paint at all, which read as the letters being cut.
-              The padding grows the painted box; the equal negative margins keep the layout
-              and the baseline exactly where they were. */}
-          <span
-            className="font-script font-normal text-[1.12em] ml-[-0.11em] bg-clip-text text-transparent mix-blend-multiply"
-            style={{
-              backgroundImage: 'linear-gradient(to bottom, #16324F, #6FA5D8)',
-              lineHeight: 1,
-              paddingTop: '0.5em',
-              paddingBottom: '0.5em',
-              marginTop: '-0.5em',
-              marginBottom: '-0.5em',
-            }}
-          >
-            Sign
-          </span>
-        </div>
+          Izrada sajtova koji prodaju
+        </h1>
+        <p
+          className="mt-5 sm:mt-6 max-w-[46ch] text-balance font-medium text-ink/85
+                     text-[clamp(1rem,1.9vw,1.35rem)] leading-relaxed"
+          style={GLOW}
+        >
+          Moderni sajtovi za firme u Srbiji — sa ugovorom, jasnim rokom i bez skrivenih troškova.
+        </p>
       </div>
 
-      {/* Layer 3 (z-20) — subtexts at their exact positions */}
-      <p className="hidden md:block absolute z-20 left-6 top-[200px] md:left-12 md:top-[500px] lg:left-24 text-lg md:text-[22px] md:leading-6 font-medium text-ink/70 mix-blend-multiply">
-        Iznad oblaka
-      </p>
-      <p className="hidden md:block absolute z-20 right-6 top-[200px] md:right-12 md:top-[500px] lg:right-24 text-lg md:text-[22px] md:leading-6 font-medium text-ink">
-        Snovi postaju realnost.
-      </p>
-
-      {/* Layer 4 (z-30) — the cloud bank, our "building": drifts over the wordmark's base.
-          Top alpha ramp baked into the asset: at narrow crops its frame edge was a hard line. */}
+      {/* Layer 3 (z-30) — the cloud bank, our "building". Top alpha ramp baked into the asset:
+          at narrow crops its frame edge was a hard line. */}
       <motion.img
         src="/media/hero-bank-fade.webp" alt=""
         className="absolute left-0 right-0 -top-[8%] h-[126%] w-full object-cover object-bottom z-30 pointer-events-none select-none"
