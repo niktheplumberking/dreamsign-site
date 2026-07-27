@@ -12,7 +12,20 @@ import { useReducedMotionSafe } from '../lib/hooks'
 
 const ASPECT = 2000 / 678        // cloud-dream.webp
 const D_EDGE = 0.2745            // the D/r gap, as a fraction of the full word
-const IMG_H = 0.88               // em — sized so the D matches the old standalone mark
+
+/**
+ * How tall the cloud word is set, in em. This is the D/S balance knob, and it was measured,
+ * not guessed: the image's ink is 660/678 of its height, and Great Vibes' S inks at 0.920 of
+ * its own font-size, which is set at 1.45em here. That put the D at 0.857em against the S's
+ * 1.334em — the D was **64%** of the S, which is what read as "the D is too small".
+ *
+ *   D ink = IMG_H × 660/678      S ink = 1.45 × 0.920 = 1.334em
+ *
+ * At 1.23em the D inks at 1.197em, i.e. **90% of the S** — near-equal with the S still
+ * deliberately ahead, which is the balance Nick asked for. Change this one number to retune
+ * the whole site: the entrance, the nav and the footer all render this component.
+ */
+const IMG_H = 1.23
 const OPEN_W = IMG_H * ASPECT    // the whole word
 const SHUT_W = OPEN_W * D_EDGE   // the D alone
 
@@ -25,12 +38,23 @@ export default function Lockup({
   expanded,
   className = '',
   ms = 720,
+  reserveWidth = true,
 }: {
   expanded: boolean
   className?: string
   /** how long the push takes. The nav wants a hover-responsive 720ms; the entrance
       opens the same gesture out to ~1.1s because there it is the whole event. */
   ms?: number
+  /**
+   * Whether an invisible ghost reserves the OPEN width.
+   *
+   * The nav needs it: the mark must never change footprint or the links beside it jump.
+   * The entrance must NOT have it — the reserved width is left-aligned, so the closed DS
+   * sat off to the left of an invisible full-name box instead of in the middle of the
+   * screen. With no ghost the mark's width is intrinsic, so a centring parent holds it
+   * centred while it opens and the word unfolds evenly about the middle.
+   */
+  reserveWidth?: boolean
 }) {
   const reduced = useReducedMotionSafe()
   const dur = reduced ? '0ms' : `${ms}ms`
@@ -40,12 +64,55 @@ export default function Lockup({
       src="/media/brand/cloud-dream.webp"
       alt=""
       aria-hidden
-      className="block h-[0.88em] w-auto max-w-none select-none"
+      className="block w-auto max-w-none select-none"
+      style={{ height: `${IMG_H}em` }}
     />
   )
   const script = (t: string) => (
     <span className="font-script font-normal text-[1.45em] leading-none text-accent">{t}</span>
   )
+
+  const live = (
+    <span
+      className="inline-flex items-baseline"
+      style={{ ...(reserveWidth ? { gridArea: '1 / 1' } : null), filter: LIFT }}
+    >
+      {/* the D holds still; widening this box walks "ream" out from behind it,
+          and because it is a real layout width, the S is pushed along in front of it */}
+      <span
+        className="block overflow-hidden"
+        style={{
+          width: `${expanded ? OPEN_W : SHUT_W}em`,
+          transition: `width ${dur} ${EASE}`,
+        }}
+      >
+        {dream}
+      </span>
+
+      {script('S')}
+
+      {/* "ign" rides out of the S on the same clock. Generous vertical insets: the
+          Great Vibes g drops well below the baseline and must never be cut. */}
+      <span
+        className="block"
+        style={{
+          clipPath: expanded ? 'inset(-45% -16% -45% 0%)' : 'inset(-45% 100% -45% 0%)',
+          transition: `clip-path ${dur} ${EASE}`,
+        }}
+      >
+        {script('ign')}
+      </span>
+    </span>
+  )
+
+  // centred mode: intrinsic width, so the parent's centring holds through the whole open
+  if (!reserveWidth) {
+    return (
+      <span className={`relative inline-flex items-baseline leading-none ${className}`} aria-hidden>
+        {live}
+      </span>
+    )
+  }
 
   return (
     <span className={`relative inline-grid items-end leading-none ${className}`} aria-hidden>
@@ -56,38 +123,7 @@ export default function Lockup({
         {script('S')}
         {script('ign')}
       </span>
-
-      {/* the live mark */}
-      <span
-        className="inline-flex items-baseline"
-        style={{ gridArea: '1 / 1', filter: LIFT }}
-      >
-        {/* the D holds still; widening this box walks "ream" out from behind it,
-            and because it is a real layout width, the S is pushed along in front of it */}
-        <span
-          className="block overflow-hidden"
-          style={{
-            width: `${expanded ? OPEN_W : SHUT_W}em`,
-            transition: `width ${dur} ${EASE}`,
-          }}
-        >
-          {dream}
-        </span>
-
-        {script('S')}
-
-        {/* "ign" rides out of the S on the same clock. Generous vertical insets: the
-            Great Vibes g drops well below the baseline and must never be cut. */}
-        <span
-          className="block"
-          style={{
-            clipPath: expanded ? 'inset(-45% -16% -45% 0%)' : 'inset(-45% 100% -45% 0%)',
-            transition: `clip-path ${dur} ${EASE}`,
-          }}
-        >
-          {script('ign')}
-        </span>
-      </span>
+      {live}
     </span>
   )
 }
