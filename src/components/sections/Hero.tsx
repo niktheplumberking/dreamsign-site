@@ -31,9 +31,21 @@ export default function Hero() {
             className="h-[0.74em] w-auto max-w-none"
             style={{ mixBlendMode: 'hard-light', filter: 'drop-shadow(0 2px 7px rgba(22,50,79,0.20))' }}
           />
+          {/* `background-clip: text` paints the gradient only where the element's own box
+              reaches — and Great Vibes throws the S's flag above it and the g's tail below.
+              Those parts were getting no paint at all, which read as the letters being cut.
+              The padding grows the painted box; the equal negative margins keep the layout
+              and the baseline exactly where they were. */}
           <span
             className="font-script font-normal text-[1.12em] ml-[-0.11em] bg-clip-text text-transparent mix-blend-multiply"
-            style={{ backgroundImage: 'linear-gradient(to bottom, #16324F, #6FA5D8)' }}
+            style={{
+              backgroundImage: 'linear-gradient(to bottom, #16324F, #6FA5D8)',
+              lineHeight: 1,
+              paddingTop: '0.5em',
+              paddingBottom: '0.5em',
+              marginTop: '-0.5em',
+              marginBottom: '-0.5em',
+            }}
           >
             Sign
           </span>
