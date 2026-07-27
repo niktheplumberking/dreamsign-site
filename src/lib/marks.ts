@@ -24,15 +24,24 @@ export const LEGAL = {
   /** skraćeno poslovno ime — the registered short form */
   shortName: 'Nikola Šukunda preduzetnik DREAMSIGN',
   form: 'Preduzetnik',
-  seat: 'Dušana Jerkovića 42, 22400 Ruma, Republika Srbija',
+  /** batch 4: "Srbija", not "Republika Srbija" — footer display form. The legal pages keep
+      the official register wording; this is the shop window, not the certificate. */
+  seat: 'Dušana Jerkovića 42, 22400 Ruma, Srbija',
   registrationNo: '68643627',
   pib: '115798587',
   activity: '6201 — Računarsko programiranje',
   registeredAt: 'Agencija za privredne registre',
   registeredOn: '03.07.2026.',
   owner: 'Nikola Šukunda',
-  /** the address registered with APR for receiving electronic mail */
-  email: 'nicolasukunda@gmail.com',
+  /**
+   * The public contact address (batch 4, Nick's instruction). KNOWN LIMITATION, on the
+   * record: dreamsign.rs is not purchased yet, so this mailbox DOES NOT EXIST — mail sent
+   * here bounces until the Stage 8 domain purchase creates it. The legal pages keep the
+   * APR-registered gmail, so a working address is always published somewhere on the site.
+   */
+  email: 'podrska@dreamsign.rs',
+  /** the address registered with APR for receiving electronic mail — the legal pages use it */
+  registeredEmail: 'nicolasukunda@gmail.com',
   phone: '+381 63 773 6963',
   phoneHref: 'tel:+381637736963',
 } as const

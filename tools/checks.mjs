@@ -150,7 +150,7 @@ for (const dev of DEVICES) {
 }
 
 // ---- entrance: on time, and gone ----
-// Budget raised 3.7s → 6.5s (batch 2, five held beats) → 9.5s (batch 3, where every puff now
+// Budget raised 3.7s → 6.5s (batch 2, five held beats) → 10.5s (batch 4, where every puff now
 // crossfades over a window longer than its own travel so nothing can blink in or out). Nick
 // authorised the length explicitly: "doesnt matter if it takes even more time". The check
 // still exists for the one thing that would be a bug — an entrance that never LEAVES.
@@ -163,10 +163,10 @@ for (const dev of DEVICES) {
     if (wait > 0) await new Promise(r => setTimeout(r, wait))
     await page.screenshot({ path: `${OUT}/check-entrance-${t}.png` })
   }
-  const wait = 9500 - (Date.now() - t0)
+  const wait = 10500 - (Date.now() - t0)
   if (wait > 0) await new Promise(r => setTimeout(r, wait))
   const gone = await page.evaluate(() => !document.querySelector('.fixed.z-\\[100\\]'))
-  ok('entrance is finished inside 9.5s', gone, 'overlay unmounted')
+  ok('entrance is finished inside 10.5s', gone, 'overlay unmounted')
   await page.close()
 }
 

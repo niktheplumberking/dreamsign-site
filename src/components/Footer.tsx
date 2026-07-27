@@ -42,14 +42,15 @@ export default function Footer() {
         aria-hidden
       />
       <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-6">
-        {/* ---- band 1: who, where to go, how to reach ---- */}
+        {/* ---- band 1 (batch 4 layout): the brand column carries the signature; the legal
+                links ride under the WhatsApp line in the contact column ---- */}
         <div className="pt-14 pb-12 grid gap-10 md:grid-cols-[1.5fr_0.9fr_1.1fr]">
           <div>
-            {/* the same lockup the nav and the entrance use — one D/S balance for the site.
-                Extra lift here: the cloud letters are near-white and the footer stands on a
-                pale plain, so the mark needs an edge the nav's glass never has to give it. */}
+            {/* the same lockup the nav and the entrance use — one D/S balance for the site,
+                +50% over batch 3 (26px → 39px) on Nick's instruction. Extra lift: near-white
+                cloud letters on a pale plain need an edge the nav's glass gives for free. */}
             <span
-              className="inline-block text-[26px]"
+              className="inline-block text-[39px]"
               style={{ filter: 'drop-shadow(0 2px 5px rgba(22,50,79,0.30))' }}
             >
               <Lockup expanded reserveWidth={false} />
@@ -57,24 +58,28 @@ export default function Footer() {
             <p className="mt-4 text-[14.5px] leading-relaxed text-ink/75 max-w-xs" style={GLOW}>
               Izrada sajtova za firme u Srbiji. Jasan dogovor, fiksan rok, bez skrivenih troškova.
             </p>
+
+            {/* the owner signs his own column now (batch 4 — moved up from its own band) */}
+            <div className="mt-8" style={GLOW}>
+              <span className="font-script text-accent leading-none text-[clamp(1.7rem,3.4vw,2.2rem)]">
+                {LEGAL.owner}
+              </span>
+              <svg viewBox={SIGNATURE_VIEWBOX} className="mt-1 w-[200px] overflow-visible" aria-hidden>
+                <path d={SIGNATURE_STROKE} fill="#2458A6" />
+              </svg>
+              <p className="mt-2 text-[11.5px] uppercase tracking-[0.16em] text-ink/55">
+                Vlasnik · DreamSign
+              </p>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-2.5 text-[15px]" style={GLOW}>
-            <nav className="flex flex-col gap-2.5" aria-label="Stranice">
-              {PAGES.map(p => (
-                <a key={p.href} href={p.href} className="text-ink/75 hover:text-ink transition-colors w-fit">
-                  {p.label}
-                </a>
-              ))}
-            </nav>
-            <nav className="mt-3 flex flex-col gap-2 text-[13px]" aria-label="Pravno">
-              {LEGAL_PAGES.map(p => (
-                <a key={p.href} href={p.href} className="text-ink/60 hover:text-ink transition-colors w-fit">
-                  {p.label}
-                </a>
-              ))}
-            </nav>
-          </div>
+          <nav className="flex flex-col gap-2.5 text-[15px]" aria-label="Stranice" style={GLOW}>
+            {PAGES.map(p => (
+              <a key={p.href} href={p.href} className="text-ink/75 hover:text-ink transition-colors w-fit">
+                {p.label}
+              </a>
+            ))}
+          </nav>
 
           <div className="text-[15px] space-y-2.5" style={GLOW}>
             <p className="text-ink/75">{LEGAL.seat}</p>
@@ -94,23 +99,18 @@ export default function Footer() {
                 WhatsApp — započnite razgovor
               </a>
             </p>
+            {/* the legal pair, side by side beneath the WhatsApp line (batch 4) */}
+            <p className="flex flex-wrap gap-x-6 gap-y-1 pt-1 text-[13px]">
+              {LEGAL_PAGES.map(p => (
+                <a key={p.href} href={p.href} className="text-ink/60 hover:text-ink transition-colors">
+                  {p.label}
+                </a>
+              ))}
+            </p>
           </div>
         </div>
 
-        {/* ---- band 2: the owner signs his own page ---- */}
-        <div className="pb-10 flex flex-col items-center text-center" style={GLOW}>
-          <span className="font-script text-accent leading-none text-[clamp(1.9rem,4.5vw,2.6rem)]">
-            {LEGAL.owner}
-          </span>
-          <svg viewBox={SIGNATURE_VIEWBOX} className="mt-1 w-[min(62%,240px)] overflow-visible" aria-hidden>
-            <path d={SIGNATURE_STROKE} fill="#2458A6" />
-          </svg>
-          <p className="mt-2 text-[11.5px] uppercase tracking-[0.16em] text-ink/55">
-            Vlasnik · DreamSign
-          </p>
-        </div>
-
-        {/* ---- band 3: the three things on one line ---- */}
+        {/* ---- band 2: the three things on one line ---- */}
         <div
           className="pb-7 grid gap-2 text-[11.5px] text-ink/60 text-center
                      sm:grid-cols-3 sm:items-baseline sm:text-left"
