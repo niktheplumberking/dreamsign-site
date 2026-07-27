@@ -122,6 +122,40 @@ export function SeamBridge({ className = '' }: { className?: string }) {
   )
 }
 
+/**
+ * Where an element sits inside the world's single progress value, as a [start, end] pair.
+ * This is how a beat gets scroll-driven motion WITHOUT a second useScroll: it reads the
+ * one world progress and only asks which slice of it belongs to this element.
+ * `enterVh`/`exitVh` are the element's top measured in viewports from the bottom edge.
+ */
+export function useWorldRange<T extends HTMLElement>(
+  ref: React.RefObject<T | null>,
+  enterVh = 0.92,
+  exitVh = 0.42,
+): [number, number] {
+  const [range, setRange] = useState<[number, number]>([0, 1])
+
+  useEffect(() => {
+    const measure = () => {
+      const el = ref.current
+      if (!el) return
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight
+      if (scrollable <= 0) { setRange([0, 1]); return }
+      const top = el.getBoundingClientRect().top + window.scrollY
+      const clamp = (v: number) => Math.max(0, Math.min(1, v))
+      const a = clamp((top - window.innerHeight * enterVh) / scrollable)
+      const b = clamp((top - window.innerHeight * exitVh) / scrollable)
+      setRange([a, Math.max(b, a + 0.0001)]) // never let the range collapse to a point
+    }
+    measure()
+    const t = setTimeout(measure, 800) // after fonts + media settle the page height
+    window.addEventListener('resize', measure)
+    return () => { window.removeEventListener('resize', measure); clearTimeout(t) }
+  }, [ref, enterVh, exitVh])
+
+  return range
+}
+
 /** A beat of the descent: its layers straddle outward, its content always rides on top.
  *  `name` is the Eyes hook — the junction test reads every data-beat boundary. */
 export function Beat({ name, layers, children }: { name: string; layers?: React.ReactNode; children: React.ReactNode }) {
