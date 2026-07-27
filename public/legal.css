@@ -1,0 +1,37 @@
+/* Shared shell for the legal pages. These are deliberately plain static HTML: legal text must
+   render with no JavaScript, on any device, forever. Same fonts and tokens as the site. */
+@font-face { font-family: 'Inter Tight'; font-weight: 400; font-display: swap; src: url('/fonts/inter-tight-400-latin-ext.woff2') format('woff2'); }
+@font-face { font-family: 'Inter Tight'; font-weight: 500; font-display: swap; src: url('/fonts/inter-tight-500-latin-ext.woff2') format('woff2'); }
+@font-face { font-family: 'Inter Tight'; font-weight: 600; font-display: swap; src: url('/fonts/inter-tight-600-latin-ext.woff2') format('woff2'); }
+@font-face { font-family: 'Great Vibes'; font-weight: 400; font-display: swap; src: url('/fonts/great-vibes-400-latin-ext.woff2') format('woff2'); }
+
+:root {
+  --bg: #F5F9FD; --ink: #16324F; --accent: #2458A6; --mist: #C7D9EA;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 40px 22px 90px; }
+header.mast { display: flex; align-items: baseline; gap: 2px; margin-bottom: 34px; text-decoration: none; }
+header.mast .d { font-weight: 600; font-size: 25px; letter-spacing: -0.02em; color: var(--ink); }
+header.mast .s { font-family: 'Great Vibes', cursive; font-size: 34px; color: var(--accent); margin-left: 2px; }
+h1 { font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 8px; }
+.updated { color: rgba(22,50,79,0.55); font-size: 14px; margin: 0 0 38px; }
+h2 { font-size: 1.18rem; margin: 38px 0 10px; letter-spacing: -0.01em; }
+h3 { font-size: 1rem; margin: 24px 0 6px; }
+p, li { font-size: 15.5px; color: rgba(22,50,79,0.86); }
+ul { padding-left: 20px; }
+li { margin: 6px 0; }
+a { color: var(--accent); }
+dl.facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 14px 0 0; }
+dl.facts dt { color: rgba(22,50,79,0.55); font-size: 14.5px; }
+dl.facts dd { margin: 0; font-size: 14.5px; font-weight: 500; }
+.card { background: #fff; border-radius: 18px; padding: 22px 24px; box-shadow: 0 8px 30px rgba(22,50,79,0.06); }
+.back { display: inline-block; margin-top: 46px; font-size: 14.5px; }
+@media (max-width: 520px) { dl.facts { grid-template-columns: 1fr; gap: 2px 0; } dl.facts dd { margin-bottom: 10px; } }

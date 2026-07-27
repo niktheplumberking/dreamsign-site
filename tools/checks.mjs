@@ -15,26 +15,47 @@ const ok = (label, pass, detail) => {
   if (!pass) fail.push(label)
 }
 
-// ---- hero: a still sky, and the bank closing over the wordmark ----
+// ---- hero: a still sky, and an h1 the cloud bank never climbs over ----
+// Batch 3 replaced the cloud wordmark with the page's h1, so the old "bank is above the
+// wordmark" check no longer has a subject. What matters now is the opposite: the bank must
+// NOT reach the type, and the type must stay readable over whatever sky is behind it.
 for (const dev of DEVICES) {
   const page = await openPage(browser, dev.w, dev.h, dev.mobile)
   await page.goto(`${BASE}/?jump=0`, { waitUntil: 'networkidle0' })
   await ready(page)
   const geo = await page.evaluate(() => {
-    const word = document.querySelector('section[data-beat="hero"] img[src*="cloud-dream"]')
-    const r = word.getBoundingClientRect()
-    const bank = document.querySelector('img[src*="hero-bank-fade"]')
+    const h1 = document.querySelector('section[data-beat="hero"] h1')
+    const sub = h1?.parentElement?.querySelector('p')
+    const r = h1.getBoundingClientRect()
+    const s = sub.getBoundingClientRect()
     return {
       still: !!document.querySelector('img[src*="hero-sky-still"]'),
       video: !!document.querySelector('video'),
-      wordTop: Math.round(r.top), wordBottom: Math.round(r.bottom),
-      bankZ: bank ? +getComputedStyle(bank).zIndex : null,
-      wordZ: +getComputedStyle(word.closest('[class*="z-"]') || word).zIndex || null,
+      text: h1.textContent.trim(),
+      top: Math.round(r.top), bottom: Math.round(Math.max(r.bottom, s.bottom)),
+      x: Math.round(Math.min(r.left, s.left)), w: Math.round(Math.max(r.width, s.width)),
+      vh: window.innerHeight,
     }
   })
   await page.screenshot({ path: `${OUT}/check-hero-${dev.id}.png` })
   ok(`hero ${dev.id} sky is a still`, geo.still && !geo.video, `still=${geo.still} video=${geo.video}`)
-  ok(`hero ${dev.id} bank is above the wordmark`, geo.bankZ > (geo.wordZ ?? 0), `bank z${geo.bankZ} vs word z${geo.wordZ}`)
+
+  // the copy has to sit in the clear upper half — below that the bank starts climbing
+  ok(`hero ${dev.id} copy clears the cloud bank`, geo.bottom < geo.vh * 0.62,
+     `copy ends at ${geo.bottom} of ${geo.vh} (${((geo.bottom / geo.vh) * 100).toFixed(0)}%)`)
+
+  // ...and it has to be readable against whatever the sky is doing behind it. Hide the type
+  // first, exactly as the footer check does — measuring WITH the text in frame just measures
+  // the ink against itself and always returns 1.00:1.
+  await page.evaluate(() => {
+    const block = document.querySelector('section[data-beat="hero"] h1').parentElement
+    block.style.visibility = 'hidden'
+  })
+  const band = await page.screenshot({
+    clip: { x: Math.max(0, geo.x - 8), y: Math.max(0, geo.top - 6), width: Math.min(geo.w + 16, dev.w), height: (geo.bottom - geo.top) + 12 },
+  })
+  const ratio = contrast(hexLum('#16324F'), p05Luminance(band))
+  ok(`hero ${dev.id} h1 clears AA over the sky`, ratio >= 4.5, `${ratio.toFixed(2)}:1 — "${geo.text}"`)
   await page.close()
 }
 
@@ -129,22 +150,23 @@ for (const dev of DEVICES) {
 }
 
 // ---- entrance: on time, and gone ----
-// Budget raised from 3.7s to 6.5s deliberately (change batch 2): the entrance was re-timed
-// into five held beats — mark in, hold, push, cover, reverse — because the old one read as
-// one rushed 670ms event. The check still exists to catch an entrance that never LEAVES.
+// Budget raised 3.7s → 6.5s (batch 2, five held beats) → 9.5s (batch 3, where every puff now
+// crossfades over a window longer than its own travel so nothing can blink in or out). Nick
+// authorised the length explicitly: "doesnt matter if it takes even more time". The check
+// still exists for the one thing that would be a bug — an entrance that never LEAVES.
 {
   const page = await openPage(browser, 1440, 900)
   const t0 = Date.now()
   await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' })
-  for (const t of [1000, 1800, 2600, 3400, 4200, 5000]) {
+  for (const t of [1200, 2200, 3200, 4200, 5200, 6200, 7000]) {
     const wait = t - (Date.now() - t0)
     if (wait > 0) await new Promise(r => setTimeout(r, wait))
     await page.screenshot({ path: `${OUT}/check-entrance-${t}.png` })
   }
-  const wait = 6500 - (Date.now() - t0)
+  const wait = 9500 - (Date.now() - t0)
   if (wait > 0) await new Promise(r => setTimeout(r, wait))
   const gone = await page.evaluate(() => !document.querySelector('.fixed.z-\\[100\\]'))
-  ok('entrance is finished inside 6.5s', gone, 'overlay unmounted')
+  ok('entrance is finished inside 9.5s', gone, 'overlay unmounted')
   await page.close()
 }
 
