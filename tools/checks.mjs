@@ -168,6 +168,39 @@ for (const dev of DEVICES) {
   await page.close()
 }
 
+// ---- the social card actually exists and actually resolves ----
+// A relative og:image produces no preview on any platform, and that is exactly what shipped
+// until 2026-07-27. This asserts both halves: absolute, and reachable from where it claims to
+// be. At Stage 8 the host changes to dreamsign.rs — if the tag is not swapped, this fails.
+{
+  const page = await openPage(browser, 1200, 800)
+  await page.goto(`${BASE}/?jump=0`, { waitUntil: 'networkidle0' })
+  const meta = await page.evaluate(() => ({
+    image: document.querySelector('meta[property="og:image"]')?.content ?? '',
+    title: document.querySelector('meta[property="og:title"]')?.content ?? '',
+    canonical: document.querySelector('link[rel="canonical"]')?.href ?? '',
+    h1: document.querySelectorAll('h1').length,
+    noAlt: [...document.querySelectorAll('img')].filter(i => !i.hasAttribute('alt')).length,
+  }))
+  const absolute = /^https?:\/\//.test(meta.image)
+  ok('og:image is an absolute URL', absolute, meta.image || '(missing)')
+
+  let reachable = false, note = 'not attempted (url not absolute)'
+  if (absolute) {
+    try {
+      const res = await fetch(meta.image, { method: 'GET' })
+      const buf = Buffer.from(await res.arrayBuffer())
+      reachable = res.ok && buf.length > 5000
+      note = `${res.status} · ${(buf.length / 1024).toFixed(1)} KB`
+    } catch (e) { note = String(e.message || e) }
+  }
+  ok('og:image resolves to a real image', reachable, note)
+  ok('og:title and canonical are present', !!meta.title && !!meta.canonical, meta.canonical || '(no canonical)')
+  ok('exactly one h1', meta.h1 === 1, `${meta.h1} found`)
+  ok('every image carries an alt attribute', meta.noAlt === 0, `${meta.noAlt} missing`)
+  await page.close()
+}
+
 await browser.close()
 console.log(`\n${fail.length ? fail.length + ' FAILED: ' + fail.join(', ') : 'all checks pass'} · shots -> ${OUT}`)
 process.exitCode = fail.length ? 1 : 0
