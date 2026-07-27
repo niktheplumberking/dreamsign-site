@@ -10,8 +10,10 @@
 // cloud letters that emerge are the real ones, perfectly registered.
 import { useReducedMotionSafe } from '../lib/hooks'
 
-const ASPECT = 2000 / 678        // cloud-dream.webp
-const D_EDGE = 0.2745            // the D/r gap, as a fraction of the full word
+// Exported: the entrance renders its own transform-only mark (Bennett principle — zero
+// layout animation) and must share these exact numbers or the two marks drift apart.
+export const ASPECT = 2000 / 678        // cloud-dream.webp
+export const D_EDGE = 0.2745            // the D/r gap, as a fraction of the full word
 
 /**
  * How tall the cloud word is set, in em. This is the D/S balance knob, and it was measured,
@@ -21,11 +23,12 @@ const D_EDGE = 0.2745            // the D/r gap, as a fraction of the full word
  *
  *   D ink = IMG_H × 660/678      S ink = 1.45 × 0.920 = 1.334em
  *
- * At 1.23em the D inks at 1.197em, i.e. **90% of the S** — near-equal with the S still
- * deliberately ahead, which is the balance Nick asked for. Change this one number to retune
- * the whole site: the entrance, the nav and the footer all render this component.
+ * At 1.23em the D inked at 90% of the S; Nick's batch 4 verdict was "too big now — decrease
+ * by 15-20%". 1.23 × 0.83 = 1.02em, which inks the D at 0.995em = **75% of the S**: clearly
+ * bigger than the original 64%, clearly smaller than the S. Change this one number to retune
+ * the whole site: the entrance, the nav and the footer all render this mark.
  */
-const IMG_H = 1.23
+export const IMG_H = 1.02
 const OPEN_W = IMG_H * ASPECT    // the whole word
 const SHUT_W = OPEN_W * D_EDGE   // the D alone
 
