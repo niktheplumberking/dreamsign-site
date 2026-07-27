@@ -1,43 +1,93 @@
-// The mark that becomes the name: DS ⇄ DreamSign, one gesture. The nav runs it on
-// hover/focus, the entrance runs it on a timer — deliberately the same transition.
-// The full lockup always holds the layout width (it is only clipped), so nothing
-// around it ever moves; the DS mark rides on top of it and fades.
+// The mark that becomes the name — ONE gesture, no crossfade, nothing ever fades into
+// anything else. The cloud D is nailed down; "ream" is drawn OUT of it and physically
+// shoves the hand-signed S to the right, while "ign" is drawn out of the S on the same
+// clock. The D's x and y never move: at any point in the transition it is the same
+// pixels in the same place, which is what lets the nav run this on hover.
+//
+// "ream" is not a second asset — it is the rest of cloud-dream.webp, revealed. The gap
+// between the D and the r was measured off the file's own alpha channel (2000×678, gap
+// at x 546–551 → 27.42% of the width), so the closed state ends inside that gap and the
+// cloud letters that emerge are the real ones, perfectly registered.
 import { useReducedMotionSafe } from '../lib/hooks'
 
-export default function Lockup({ expanded, className = '' }: { expanded: boolean; className?: string }) {
+const ASPECT = 2000 / 678        // cloud-dream.webp
+const D_EDGE = 0.2745            // the D/r gap, as a fraction of the full word
+const IMG_H = 0.88               // em — sized so the D matches the old standalone mark
+const OPEN_W = IMG_H * ASPECT    // the whole word
+const SHUT_W = OPEN_W * D_EDGE   // the D alone
+
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
+
+/** the lift, applied to the whole lockup so the clip boxes can never cut a shadow edge */
+const LIFT = 'drop-shadow(0 1px 1.5px rgba(22,50,79,0.28))'
+
+export default function Lockup({
+  expanded,
+  className = '',
+  ms = 720,
+}: {
+  expanded: boolean
+  className?: string
+  /** how long the push takes. The nav wants a hover-responsive 720ms; the entrance
+      opens the same gesture out to ~1.1s because there it is the whole event. */
+  ms?: number
+}) {
   const reduced = useReducedMotionSafe()
-  const dur = reduced ? '0ms' : '640ms'
-  const ease = 'cubic-bezier(0.22, 1, 0.36, 1)'
+  const dur = reduced ? '0ms' : `${ms}ms`
+
+  const dream = (
+    <img
+      src="/media/brand/cloud-dream.webp"
+      alt=""
+      aria-hidden
+      className="block h-[0.88em] w-auto max-w-none select-none"
+    />
+  )
+  const script = (t: string) => (
+    <span className="font-script font-normal text-[1.45em] leading-none text-accent">{t}</span>
+  )
 
   return (
-    <span className={`relative inline-flex items-baseline leading-none ${className}`} aria-hidden>
-      {/* the name — clipped shut when collapsed, unfurled left to right when open */}
-      <span
-        className="inline-flex items-baseline"
-        style={{
-          clipPath: expanded ? 'inset(-30% -14% -30% 0%)' : 'inset(-30% 100% -30% 0%)',
-          transition: `clip-path ${dur} ${ease}`,
-        }}
-      >
-        <img
-          src="/media/brand/cloud-d.webp" alt="" aria-hidden
-          className="h-[0.86em] w-auto max-w-none"
-          style={{ filter: 'drop-shadow(0 1px 1.5px rgba(22,50,79,0.30))' }}
-        />
-        <span className="font-medium tracking-tight text-ink">ream</span>
-        <span className="font-script font-normal text-[1.45em] ml-[-0.015em] text-accent">Sign</span>
+    <span className={`relative inline-grid items-end leading-none ${className}`} aria-hidden>
+      {/* the ghost holds the OPEN width, so the lockup's footprint is constant and
+          nothing around it reflows while the name pushes itself open inside */}
+      <span className="invisible inline-flex items-baseline" style={{ gridArea: '1 / 1' }}>
+        <span className="block overflow-hidden" style={{ width: `${OPEN_W}em` }}>{dream}</span>
+        {script('S')}
+        {script('ign')}
       </span>
 
-      {/* the DS mark, sitting on the name's own D */}
-      <img
-        src="/media/brand/ds-mark.webp" alt="" aria-hidden
-        className="absolute left-[-0.06em] bottom-[-0.16em] h-[1.5em] w-auto max-w-none"
-        style={{
-          opacity: expanded ? 0 : 1,
-          transition: `opacity ${reduced ? '0ms' : expanded ? '240ms' : '440ms'} ease`,
-          filter: 'drop-shadow(0 1px 1.5px rgba(22,50,79,0.22))',
-        }}
-      />
+      {/* the live mark */}
+      <span
+        className="inline-flex items-baseline"
+        style={{ gridArea: '1 / 1', filter: LIFT }}
+      >
+        {/* the D holds still; widening this box walks "ream" out from behind it,
+            and because it is a real layout width, the S is pushed along in front of it */}
+        <span
+          className="block overflow-hidden"
+          style={{
+            width: `${expanded ? OPEN_W : SHUT_W}em`,
+            transition: `width ${dur} ${EASE}`,
+          }}
+        >
+          {dream}
+        </span>
+
+        {script('S')}
+
+        {/* "ign" rides out of the S on the same clock. Generous vertical insets: the
+            Great Vibes g drops well below the baseline and must never be cut. */}
+        <span
+          className="block"
+          style={{
+            clipPath: expanded ? 'inset(-45% -16% -45% 0%)' : 'inset(-45% 100% -45% 0%)',
+            transition: `clip-path ${dur} ${EASE}`,
+          }}
+        >
+          {script('ign')}
+        </span>
+      </span>
     </span>
   )
 }
