@@ -34,7 +34,7 @@ export default function Zavrsnica() {
         className="font-script text-accent leading-tight text-[clamp(2.4rem,5.5vw,3.8rem)]"
         style={{ textShadow: '0 1px 0 currentColor' }}
       >
-        Potpišite svoj san
+        Imate projekat na umu?
       </motion.p>
 
       <svg

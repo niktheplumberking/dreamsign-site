@@ -3,9 +3,13 @@
 // contractual facts — no invented performance claims (factory law).
 import { motion } from 'motion/react'
 
+// Order is 2 · 1 · 3 · 0 (batch 3). It breaks the counting-up run, which is what made the row
+// look like a list rather than a claim — and it happens to be the customer's actual sequence:
+// two clicks to reach us, one signature to start, three revision rounds, no hidden costs ever.
+// The numbers are contractual facts. Never invent a fifth.
 const STATS = [
-  { value: '1', label: 'Potpis do početka' },
   { value: '2', label: 'Klika do razgovora' },
+  { value: '1', label: 'Potpis do početka' },
   { value: '3', label: 'Runde revizija' },
   { value: '0', label: 'Skrivenih troškova' },
 ]
@@ -21,7 +25,11 @@ export default function Stats() {
           viewport={{ once: true, margin: '-100px' }} transition={{ duration: 0.6 }}
           className="text-2xl md:text-[40px] md:leading-[44px] font-medium text-ink text-center mb-10 sm:mb-16"
         >
-          Jasna pravila, od prvog dana.
+          Jasna pravila,{' '}
+          {/* the hand comes in on the promise — same quill as the signature */}
+          <span className="font-script font-normal text-accent text-[1.5em] leading-none">
+            od prvog dana.
+          </span>
         </motion.h2>
         <div className="mx-auto max-w-5xl grid grid-cols-2 gap-8 md:flex md:items-center md:justify-center">
           {STATS.map((s, i) => (
