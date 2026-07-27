@@ -4,7 +4,7 @@
 // Galaxy Home structure kept exactly; only the assets and the Serbian content are ours.
 import { useEffect, useRef, useState } from 'react'
 import Lenis from 'lenis'
-import Entrance from './components/Entrance'
+import Entrance, { ENTRANCE_MS } from './components/Entrance'
 import Nav from './components/Nav'
 import { World, WorldLayer, SeamBridge, Beat } from './components/World'
 import Hero from './components/sections/Hero'
@@ -57,10 +57,12 @@ export default function App() {
     }
     const ready = () => { window.__ready = true }
     if (document.fonts?.ready) {
-      const timeout = setTimeout(ready, 2500)
-      document.fonts.ready.then(() => { clearTimeout(timeout); setTimeout(ready, playEntrance ? 3200 : 300) })
+      const timeout = setTimeout(ready, ENTRANCE_MS + 900)
+      // the rig may not capture until the entrance is fully off the page — this tracks
+      // the entrance's own clock, so retuning the beats can never desync the Eyes
+      document.fonts.ready.then(() => { clearTimeout(timeout); setTimeout(ready, playEntrance ? ENTRANCE_MS + 400 : 300) })
     } else {
-      setTimeout(ready, 2500)
+      setTimeout(ready, playEntrance ? ENTRANCE_MS + 400 : 2500)
     }
   }, [playEntrance])
 

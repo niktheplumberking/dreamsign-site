@@ -129,18 +129,22 @@ for (const dev of DEVICES) {
 }
 
 // ---- entrance: on time, and gone ----
+// Budget raised from 3.7s to 6.5s deliberately (change batch 2): the entrance was re-timed
+// into five held beats — mark in, hold, push, cover, reverse — because the old one read as
+// one rushed 670ms event. The check still exists to catch an entrance that never LEAVES.
 {
   const page = await openPage(browser, 1440, 900)
   const t0 = Date.now()
   await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' })
-  for (const t of [800, 1400, 1900, 2300, 2800]) {
+  for (const t of [1000, 1800, 2600, 3400, 4200, 5000]) {
     const wait = t - (Date.now() - t0)
     if (wait > 0) await new Promise(r => setTimeout(r, wait))
     await page.screenshot({ path: `${OUT}/check-entrance-${t}.png` })
   }
-  await new Promise(r => setTimeout(r, 900))
+  const wait = 6500 - (Date.now() - t0)
+  if (wait > 0) await new Promise(r => setTimeout(r, wait))
   const gone = await page.evaluate(() => !document.querySelector('.fixed.z-\\[100\\]'))
-  ok('entrance is finished inside 3.7s', gone, 'overlay unmounted')
+  ok('entrance is finished inside 6.5s', gone, 'overlay unmounted')
   await page.close()
 }
 
