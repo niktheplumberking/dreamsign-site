@@ -33,8 +33,9 @@ export default function Hero() {
           the same primary/script duet as the logo. Still ONE h1: the search engine reads
           "Izrada sajtova koji prodaju" whole; the fonts split it for humans. */}
       {/* batch 5: lowered — halfway between the old seat (17/15vh) and a true vertical
-          centre (~29/27vh for this block). The bank still never reaches the type. */}
-      <div className="relative z-10 flex flex-col items-center px-5 sm:px-6 pt-[23vh] md:pt-[21vh] text-center">
+          centre. batch 6: z-40, ABOVE the foreground bank (z-30), so the supporting line
+          reads on top of the cloud instead of being swallowed by it. */}
+      <div className="relative z-40 flex flex-col items-center px-5 sm:px-6 pt-[23vh] md:pt-[21vh] text-center">
         <h1 className="leading-none">
           {/* gradient-clip paints only the element's own box, and j/y descend past it —
               the batch-2 hero scar. Padding grows the painted box; margins hand it back. */}
@@ -51,8 +52,9 @@ export default function Hero() {
           </span>
           <span
             aria-hidden={false}
+            // batch 6: +30% (5.4vw → 7vw, 4.3rem → 5.6rem cap)
             className="block font-script font-normal text-accent
-                       text-[clamp(1.9rem,5.4vw,4.3rem)] mt-[0.06em]"
+                       text-[clamp(2.5rem,7vw,5.6rem)] mt-[0.04em]"
             style={GLOW}
           >
             koji prodaju

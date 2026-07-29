@@ -9,7 +9,7 @@ import Nav from './components/Nav'
 import { World, WorldLayer, SeamBridge, Beat } from './components/World'
 import Hero from './components/sections/Hero'
 import Radovi from './components/sections/Radovi'
-import Publika from './components/sections/Publika'
+import NaseUsluge from './components/sections/NaseUsluge'
 import Opis from './components/sections/Opis'
 import TextFill from './components/sections/TextFill'
 import Marquee from './components/sections/Marquee'
@@ -98,8 +98,8 @@ export default function App() {
                 <Radovi />
               </Beat>
 
-              {/* who we build for — the quill flourish rides the right margin, a whisper */}
-              <Beat name="publika" layers={
+              {/* what we sell — the quill flourish rides the right margin, a whisper */}
+              <Beat name="usluge" layers={
                 <WorldLayer
                   src="/media/B2-vertical-flourish.webp"
                   box="-top-[26vh] -bottom-[30vh]"
@@ -108,7 +108,7 @@ export default function App() {
                   opacity={{ range: [0.10, 0.22, 0.40], values: [0, 0.32, 0.10] }}
                 />
               }>
-                <Publika />
+                <NaseUsluge />
               </Beat>
 
               {/* the mountain: one instance, faded top eating the hero seam */}
