@@ -144,23 +144,27 @@ export default function NaseUsluge() {
 
   return (
     <div ref={ref} className="relative mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-28">
-      {/* THE DISPLAY LINE — full width, Naše flush left, Usluge flush right, and the D
-          standing in the middle BIGGER than the words, breaking out of the line */}
-      <h2 className="flex items-center justify-between leading-none">
+      {/* THE DISPLAY LINE — REF 2 MEASURED: one continuous word-line anchored at the TOP,
+          filling the full width; the giant letter is TOP-ALIGNED with the caps and DROPS
+          DOWNWARD out of the word to ~3× the cap height; the subtext band sits immediately
+          under the letter's bottom. items-start does the anchoring: the words hold the top
+          line while the D's box (the tallest child) hangs below, and the next band lands
+          right at its foot. */}
+      <h2 className="flex items-start justify-between leading-none">
         <motion.span
           initial={{ opacity: 0, x: -28 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="font-semibold tracking-tight text-ink text-[clamp(2.6rem,8.6vw,6.8rem)]"
+          className="font-semibold tracking-tight text-ink text-[clamp(2.9rem,10vw,8rem)]"
         >
           Naše
         </motion.span>
 
         <span
           aria-hidden
-          className="relative block shrink-0 mx-2 sm:mx-4"
-          style={{ perspective: 900, width: 'clamp(5rem,15.5vw,12.5rem)', margin: '-0.35em 0' }}
+          className="relative block shrink-0 mx-1 sm:mx-3"
+          style={{ perspective: 900, width: 'clamp(6rem,19vw,15rem)', marginTop: '-0.04em' }}
         >
           {/* a puff grounds the letter so it never turns against bare sky */}
           <span
@@ -190,14 +194,15 @@ export default function NaseUsluge() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="font-script font-normal text-accent text-[clamp(3rem,10.5vw,8.2rem)]"
+          className="font-script font-normal text-accent text-[clamp(3.6rem,12.6vw,10rem)]"
         >
           Usluge
         </motion.span>
       </h2>
 
-      {/* the second band: spaced caps LEFT, the minimal underlined action RIGHT */}
-      <div className="mt-10 md:mt-14 flex flex-wrap items-end justify-between gap-8">
+      {/* the second band sits TIGHT under the hanging letter, exactly like the reference:
+          spaced caps LEFT, the minimal underlined action RIGHT */}
+      <div className="mt-5 md:mt-7 flex flex-wrap items-end justify-between gap-8">
         <motion.p
           initial={{ opacity: 0, y: 22 }}
           whileInView={{ opacity: 1, y: 0 }}
