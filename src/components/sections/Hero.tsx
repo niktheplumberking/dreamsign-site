@@ -32,7 +32,9 @@ export default function Hero() {
           gradient-clipped line in the primary face, with the script answering underneath —
           the same primary/script duet as the logo. Still ONE h1: the search engine reads
           "Izrada sajtova koji prodaju" whole; the fonts split it for humans. */}
-      <div className="relative z-10 flex flex-col items-center px-5 sm:px-6 pt-[17vh] md:pt-[15vh] text-center">
+      {/* batch 5: lowered — halfway between the old seat (17/15vh) and a true vertical
+          centre (~29/27vh for this block). The bank still never reaches the type. */}
+      <div className="relative z-10 flex flex-col items-center px-5 sm:px-6 pt-[23vh] md:pt-[21vh] text-center">
         <h1 className="leading-none">
           {/* gradient-clip paints only the element's own box, and j/y descend past it —
               the batch-2 hero scar. Padding grows the painted box; margins hand it back. */}

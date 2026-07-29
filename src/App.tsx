@@ -8,6 +8,8 @@ import Entrance, { ENTRANCE_MS } from './components/Entrance'
 import Nav from './components/Nav'
 import { World, WorldLayer, SeamBridge, Beat } from './components/World'
 import Hero from './components/sections/Hero'
+import Radovi from './components/sections/Radovi'
+import Publika from './components/sections/Publika'
 import Opis from './components/sections/Opis'
 import TextFill from './components/sections/TextFill'
 import Marquee from './components/sections/Marquee'
@@ -25,6 +27,8 @@ const jumpParam = new URLSearchParams(window.location.search).get('jump')
 const PLAY_ENTRANCE = !jumpParam && sessionOnce('ds_entered')
 
 const MASK = {
+  sky: 'linear-gradient(to bottom, transparent 0%, black 18%, black 72%, transparent 100%)',
+  flourish: 'linear-gradient(to bottom, transparent 4%, black 34%, black 66%, transparent 96%)',
   tower: 'linear-gradient(to bottom, transparent 0%, black 7%, black 52%, transparent 100%)',
   sea: 'linear-gradient(to bottom, transparent 0%, black 46%, black 78%, transparent 100%)',
   rays: 'linear-gradient(to bottom, transparent 0%, black 26%, black 64%, transparent 100%)',
@@ -80,6 +84,33 @@ export default function App() {
             <SeamBridge className="top-[8vh] h-[86vh]" />
 
             <div className="pt-24 sm:pt-32 md:pt-40">
+              {/* batch 5, Nick's order — the proof lands right under the hero: past work +
+                  the trust facts, on B3's quiet sky (small clouds, no mass — the cards are
+                  the mass). The layer straddles both junctions per the one-descent law. */}
+              <Beat name="radovi" layers={
+                <WorldLayer
+                  src="/media/B3-square-sky.webp"
+                  box="-top-[34vh] -bottom-[40vh]"
+                  imgClass="absolute inset-0 h-[126%] w-full object-cover object-center"
+                  y={['0%', '-10%']} base={0.85} mask={MASK.sky}
+                />
+              }>
+                <Radovi />
+              </Beat>
+
+              {/* who we build for — the quill flourish rides the right margin, a whisper */}
+              <Beat name="publika" layers={
+                <WorldLayer
+                  src="/media/B2-vertical-flourish.webp"
+                  box="-top-[26vh] -bottom-[30vh]"
+                  imgClass="absolute right-[-14%] top-0 h-full w-auto max-w-none object-contain md:right-[-6%]"
+                  y={['0%', '-7%']} mask={MASK.flourish}
+                  opacity={{ range: [0.10, 0.22, 0.40], values: [0, 0.32, 0.10] }}
+                />
+              }>
+                <Publika />
+              </Beat>
+
               {/* the mountain: one instance, faded top eating the hero seam */}
               <Beat name="opis" layers={
                 <WorldLayer
@@ -111,7 +142,9 @@ export default function App() {
                   box="-top-[30vh] -bottom-[64vh]"
                   imgClass="absolute inset-0 h-[130%] w-full object-cover object-center"
                   y={['0%', '-8%']} mask={MASK.rays}
-                  opacity={{ range: [0.34, 0.50, 0.72], values: [0, 0.62, 0.12] }}
+                  // batch 5: two beats were inserted above — every world-fraction window
+                  // slides later or the light arrives during the wrong beat
+                  opacity={{ range: [0.56, 0.71, 0.86], values: [0, 0.62, 0.12] }}
                 />
               }>
                 <Marquee />
@@ -133,7 +166,7 @@ export default function App() {
                 box="-top-[30vh] bottom-0"
                 imgClass="absolute inset-0 h-[112%] w-full object-cover object-bottom"
                 y={['0%', '-4%']} mask={MASK.paper}
-                opacity={{ range: [0.58, 0.70, 1], values: [0, 0.7, 0.7] }}
+                opacity={{ range: [0.70, 0.82, 1], values: [0, 0.7, 0.7] }}
               />
               {/* the plain: once it is up it stays up, at full opacity, through the footer */}
               <WorldLayer
@@ -141,7 +174,7 @@ export default function App() {
                 box="-top-[42vh] bottom-0"
                 imgClass="absolute inset-0 h-[118%] w-full object-cover object-bottom"
                 y={['0%', '-6%']} mask={MASK.plain}
-                opacity={{ range: [0.52, 0.68, 1], values: [0, 1, 1] }}
+                opacity={{ range: [0.64, 0.80, 1], values: [0, 1, 1] }}
               />
               <div className="relative z-10">
                 <Beat name="finale"><Zavrsnica /></Beat>
