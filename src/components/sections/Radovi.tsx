@@ -14,8 +14,10 @@ import { motion, useTransform } from 'motion/react'
 import { WA_LINK } from '../../lib/hooks'
 import { useWorld, useWorldRange } from '../World'
 
+// Tight melt: just enough to spread the cover's edge over ~15px so no razor row exists
+// (the batch-5 mobile lesson) while the card still reads as a solid plate like the reference.
 const MELT =
-  'linear-gradient(to bottom, transparent 0%, black 11%, black 86%, transparent 100%)'
+  'linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%)'
 
 type Project = {
   name: string
@@ -23,9 +25,11 @@ type Project = {
   blurb: string
   href: string
   cover?: string
-  /** cascade seat: how far this card is pushed DOWN, and how tall its cover stands */
+  /** cascade seat: push-down, cover height, and width — sizes GROW to the right (ref: the
+      last card is ~2x the first) while the caption line steps down diagonally */
   drop: number
   tall: number
+  w: number
 }
 
 const PROJECTS: Project[] = [
@@ -35,7 +39,7 @@ const PROJECTS: Project[] = [
     blurb: 'Studio za web dizajn — kompletan identitet i korporativni sajt.',
     href: 'https://www.bennettndco.com',
     cover: '/media/radovi/bennett.webp',
-    drop: 104, tall: 244,
+    drop: 140, tall: 220, w: 196,
   },
   {
     name: 'Metal Kolor',
@@ -43,7 +47,7 @@ const PROJECTS: Project[] = [
     blurb: 'Farbara koja snabdeva majstore — katalog, galerija i kontakt.',
     href: 'https://metal-kolor.rs/',
     cover: '/media/radovi/metalkolor.webp',
-    drop: 68, tall: 286,
+    drop: 95, tall: 290, w: 226,
   },
   {
     name: 'Pizzdarija',
@@ -51,14 +55,14 @@ const PROJECTS: Project[] = [
     blurb: 'Picerija sa picom na drva — meni i porudžbina na dva klika.',
     href: 'https://www.pizzdarija.rs/',
     cover: '/media/radovi/pizzdarija.webp',
-    drop: 32, tall: 328,
+    drop: 48, tall: 362, w: 258,
   },
   {
     name: 'Vaš projekat',
     meta: 'Slobodno mesto',
     blurb: 'Sledeći rad kojim se hvalimo može biti vaš — javite se.',
     href: WA_LINK,
-    drop: 0, tall: 370,
+    drop: 0, tall: 435, w: 296,
   },
 ]
 
@@ -84,11 +88,11 @@ function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
       href={p.href}
       target="_blank"
       rel="noopener"
-      // desktop widths are sized to FIT the container: 4 × 254 + 3 × 24 = 1088 inside the
-      // 1104px content column. justify-center on an overflowing flex row makes the left-hand
-      // overflow permanently unreachable, which was clipping the first card's caption.
-      className="group relative block shrink-0 w-[240px] sm:w-[254px]"
-      style={{ marginTop: p.drop, y: drift as never }}
+      // per-card width from the cascade seat (196→296, they GROW like the reference);
+      // phones cap at 62vw and ride the horizontal scroll. 196+226+258+296 + 3×24 = 1048
+      // fits the 1104 column — justify-center on an overflowing row clips the left card.
+      className="group relative block shrink-0"
+      style={{ marginTop: p.drop, width: `min(${p.w}px, 62vw)`, y: drift as never }}
       initial={{ opacity: 0, y: 46 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-90px' }}
@@ -161,18 +165,21 @@ export default function Radovi() {
 
   return (
     <div ref={ref} className="relative mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-28">
-      {/* headline left, the note right — the reference's opening geometry */}
-      <div className="grid gap-6 md:grid-cols-[1.35fr_1fr] md:items-end">
+      {/* the reference's opening: a MASSIVE stacked headline owning the left half, the small
+          note on the right sitting at the headline's foot. Two stacked lines, giant. */}
+      <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-end">
         <motion.h2
           {...fadeUp(0)}
-          className="font-semibold tracking-tight text-ink leading-[1.05] text-[clamp(1.9rem,4.6vw,3.2rem)]"
+          className="font-semibold tracking-tight text-ink leading-[1.02] text-[clamp(2.7rem,6.4vw,4.8rem)]"
         >
-          Radovi koji{' '}
-          <span className="font-script font-normal text-accent text-[1.35em] leading-none">govore.</span>
+          Radovi koji
+          <span className="block font-script font-normal text-accent text-[1.3em] leading-[0.95]">
+            govore.
+          </span>
         </motion.h2>
         <motion.p
           {...fadeUp(1)}
-          className="text-[14.5px] leading-relaxed text-ink/65 md:pb-2 md:max-w-sm md:justify-self-end"
+          className="max-w-[34ch] text-[13.5px] leading-relaxed text-ink/60 md:justify-self-end md:pb-3"
         >
           Svaki sajt gradimo sa jednim zadatkom — da posetioca pretvori u upit. Otvorite bilo
           koji i vidite sami.
@@ -181,10 +188,10 @@ export default function Radovi() {
 
       <motion.div
         {...fadeUp(2)}
-        className="mt-10 flex items-baseline justify-between text-[11.5px] uppercase tracking-[0.16em] text-ink/45"
+        className="mt-12 flex items-baseline justify-between text-[11.5px] uppercase tracking-[0.16em] text-ink/45"
       >
         <span>Projekti</span>
-        <span>Novi radovi u pripremi</span>
+        <span>Više uskoro +</span>
       </motion.div>
 
       {/* THE CASCADE — steps up and to the right; scrolls sideways on a phone */}
