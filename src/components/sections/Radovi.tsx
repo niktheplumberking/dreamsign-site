@@ -9,15 +9,10 @@
 //
 // The cloud is in the cards themselves: each cover DISSOLVES at its top and bottom into the
 // sky (the page's no-straight-lines law), so the work floats rather than sits in a box.
-import { useRef } from 'react'
-import { motion, useTransform } from 'motion/react'
+import { useEffect, useRef } from 'react'
+import { motion, useMotionValue, useSpring, useTransform } from 'motion/react'
 import { WA_LINK } from '../../lib/hooks'
 import { useWorld, useWorldRange } from '../World'
-
-// Tight melt: just enough to spread the cover's edge over ~15px so no razor row exists
-// (the batch-5 mobile lesson) while the card still reads as a solid plate like the reference.
-const MELT =
-  'linear-gradient(to bottom, transparent 0%, black 6%, black 94%, transparent 100%)'
 
 type Project = {
   name: string
@@ -39,7 +34,7 @@ const PROJECTS: Project[] = [
     blurb: 'Studio za web dizajn — kompletan identitet i korporativni sajt.',
     href: 'https://www.bennettndco.com',
     cover: '/media/radovi/bennett.webp',
-    drop: 87, tall: 460, w: 245,
+    drop: 150, tall: 400, w: 220,
   },
   {
     name: 'Metal Kolor',
@@ -47,7 +42,7 @@ const PROJECTS: Project[] = [
     blurb: 'Farbara koja snabdeva majstore — katalog, galerija i kontakt.',
     href: 'https://metal-kolor.rs/',
     cover: '/media/radovi/metalkolor.webp',
-    drop: 154, tall: 430, w: 230,
+    drop: 105, tall: 470, w: 280,
   },
   {
     name: 'Pizzdarija',
@@ -55,7 +50,7 @@ const PROJECTS: Project[] = [
     blurb: 'Picerija sa picom na drva — meni i porudžbina na dva klika.',
     href: 'https://www.pizzdarija.rs/',
     cover: '/media/radovi/pizzdarija.webp',
-    drop: 58, tall: 590, w: 320,
+    drop: 52, tall: 560, w: 360,
   },
   {
     name: 'Vaš projekat',
@@ -80,6 +75,58 @@ const fadeUp = (i: number) => ({
   transition: { duration: 0.6, delay: 0.1 * i },
 })
 
+/** a trust pill that floats idle and shies away from the cursor (batch 8) */
+function TrustPill({ b, i, reduced }: { b: (typeof TRUST)[number]; i: number; reduced: boolean }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const rx = useMotionValue(0)
+  const ry = useMotionValue(0)
+  const sx = useSpring(rx, { stiffness: 55, damping: 13, mass: 0.6 })
+  const sy = useSpring(ry, { stiffness: 55, damping: 13, mass: 0.6 })
+
+  useEffect(() => {
+    if (reduced) return
+    const RADIUS = 240 // the pill notices the cursor from here
+    const PUSH = 30    // ...and never strays further than this from its seat
+    const onMove = (e: MouseEvent) => {
+      const el = ref.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      const cx = r.left + r.width / 2
+      const cy = r.top + r.height / 2
+      const dx = cx - e.clientX
+      const dy = cy - e.clientY
+      const dist = Math.hypot(dx, dy)
+      if (dist > RADIUS || dist === 0) { rx.set(0); ry.set(0); return }
+      const f = ((RADIUS - dist) / RADIUS) * PUSH
+      rx.set((dx / dist) * f)
+      ry.set((dy / dist) * f)
+    }
+    window.addEventListener('mousemove', onMove, { passive: true })
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [reduced, rx, ry])
+
+  return (
+    <motion.div
+      {...fadeUp(3 + i)}
+      // four distinct seats — a shared bottom edge across four glass pills reads as a
+      // full-width line to the junction rig (measured 34 in batch 5)
+      className={['', 'mt-6', 'mt-11', 'mt-3'][i]}
+    >
+      {/* idle float on the outer shell, cursor-repel springs on the inner one */}
+      <motion.div
+        animate={reduced ? undefined : { y: [0, -7, 0] }}
+        transition={{ duration: 5.2 + i * 0.7, repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
+      >
+        <motion.div ref={ref} style={reduced ? undefined : { x: sx, y: sy }} className="liquid-glass rounded-[1.5rem] px-5 py-5 text-center">
+          <span className="font-script text-accent text-[26px] leading-none" aria-hidden>{b.k}</span>
+          <p className="mt-2 font-semibold text-ink text-[14px] leading-snug">{b.t}</p>
+          <p className="mt-1 text-[12.5px] text-ink/60">{b.d}</p>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 /** one card of the cascade — it drifts on the world's scroll at its own rate */
 function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
   const external = p.href.startsWith('http') && !p.href.includes('wa.me')
@@ -99,8 +146,8 @@ function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
       transition={{ duration: 0.75, delay: 0.09 * i, ease: [0.22, 1, 0.36, 1] }}
     >
       <div
-        className="relative overflow-hidden rounded-[1.4rem] transition-transform duration-500 ease-out group-hover:-translate-y-2"
-        style={{ height: p.tall, WebkitMaskImage: MELT, maskImage: MELT }}
+        className="relative overflow-hidden rounded-[0.9rem] border border-ink/10 transition-transform duration-500 ease-out group-hover:-translate-y-2"
+        style={{ height: p.tall }}
       >
         {p.cover ? (
           <img
@@ -130,12 +177,6 @@ function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
             </span>
           </div>
         )}
-        {/* the weather passes over the work on hover */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          style={{ background: 'linear-gradient(to top, rgba(236,245,252,0.92), transparent)' }}
-        />
       </div>
 
       <div className="pt-4">
@@ -178,10 +219,7 @@ export default function Radovi() {
           className="font-semibold tracking-tight text-ink leading-[1.04] text-[clamp(2.6rem,5.8vw,4.4rem)]"
         >
           Radovi
-          <span className="block">koji</span>
-          <span className="block font-script font-normal text-accent text-[1.28em] leading-[0.95]">
-            govore.
-          </span>
+          <span className="block">koji{' '}<span className="font-script font-normal text-accent text-[1.28em] leading-[0.95]">govore.</span></span>
         </motion.h2>
         <motion.p
           {...fadeUp(1)}
@@ -197,36 +235,33 @@ export default function Radovi() {
         className="mt-12 flex items-baseline justify-between text-[11.5px] uppercase tracking-[0.16em] text-ink/45"
       >
         <span>Projekti</span>
-        <span>Više uskoro +</span>
       </motion.div>
 
-      {/* THE CASCADE — ref 1 runs it EDGE TO EDGE: the first card bleeds off the left side
-          of the screen and the last sits flush against the right margin. Full-bleed wrapper
-          (w-screen recentred), row justified to the right; phones ride the horizontal scroll. */}
+      {/* THE CASCADE (batch 8) — smallest → biggest, left to right, and each bigger card
+          OVERLAPS the right edge of the smaller one before it (z rises to the right).
+          The smallest card is cut 40% by the left screen edge (88px of its 220), the
+          biggest sits flush right. No gaps — the overlap IS the rhythm. Phones h-scroll. */}
       <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex items-start gap-5 pr-4 sm:gap-7 md:justify-end md:pr-2">
+        <div className="flex items-start pr-4 md:justify-end md:pr-2">
           {PROJECTS.map((p, i) => (
-            <div key={p.name} className={i === 0 ? '-ml-14 md:-ml-[120px]' : ''}>
+            <div
+              key={p.name}
+              className={`relative ${i === 0 ? '-ml-[88px]' : '-ml-10 md:-ml-14'}`}
+              style={{ zIndex: 10 + i * 10 }}
+            >
               <Card p={p} i={i} drift={drifts[i]} />
             </div>
           ))}
         </div>
       </div>
 
-      {/* the trust facts — glass, cloud-soft, all of them true */}
+      {/* the trust facts — glass, cloud-soft, all of them true. Batch 8: they FLOAT in
+          place, and they shy away from the cursor — approach one and it drifts off, capped
+          so it never leaves its seat. Springs do the settling; reduced motion gets them
+          still and seated. */}
       <div className="mt-14 md:mt-20 grid grid-cols-2 gap-4 lg:grid-cols-4 items-start">
         {TRUST.map((b, i) => (
-          <motion.div
-            key={b.t}
-            {...fadeUp(3 + i)}
-            // four distinct seats — a shared bottom edge across four glass pills reads as a
-            // full-width line to the junction rig (measured 34 in batch 5)
-            className={`liquid-glass rounded-[1.5rem] px-5 py-5 text-center ${['', 'mt-6', 'mt-11', 'mt-3'][i]}`}
-          >
-            <span className="font-script text-accent text-[26px] leading-none" aria-hidden>{b.k}</span>
-            <p className="mt-2 font-semibold text-ink text-[14px] leading-snug">{b.t}</p>
-            <p className="mt-1 text-[12.5px] text-ink/60">{b.d}</p>
-          </motion.div>
+          <TrustPill key={b.t} b={b} i={i} reduced={reduced} />
         ))}
       </div>
     </div>

@@ -98,27 +98,54 @@ export default function App() {
                 <Radovi />
               </Beat>
 
-              {/* what we sell — the quill flourish rides the right margin, a whisper */}
+              {/* what we sell — the quill flourish rides the right margin, a whisper;
+                  batch 8 adds two ambient puffs drifting behind the giant word-line so the
+                  section lives in weather, not on a flat wall */}
               <Beat name="usluge" layers={
-                <WorldLayer
-                  src="/media/B2-vertical-flourish.webp"
-                  box="-top-[26vh] -bottom-[30vh]"
-                  imgClass="absolute right-[-14%] top-0 h-full w-auto max-w-none object-contain md:right-[-6%]"
-                  y={['0%', '-7%']} mask={MASK.flourish}
-                  opacity={{ range: [0.10, 0.22, 0.40], values: [0, 0.32, 0.10] }}
-                />
+                <>
+                  <WorldLayer
+                    src="/media/B2-vertical-flourish.webp"
+                    box="-top-[26vh] -bottom-[30vh]"
+                    imgClass="absolute right-[-14%] top-0 h-full w-auto max-w-none object-contain md:right-[-6%]"
+                    y={['0%', '-7%']} mask={MASK.flourish}
+                    opacity={{ range: [0.10, 0.22, 0.40], values: [0, 0.32, 0.10] }}
+                  />
+                  <WorldLayer
+                    src="/media/bank-soft.webp"
+                    box="-top-[6vh] -bottom-[10vh]"
+                    imgClass="absolute left-[-18%] top-[6%] w-[52%] h-auto max-w-none"
+                    y={['0%', '-14%']} base={0.55}
+                  />
+                  <WorldLayer
+                    src="/media/bank-soft.webp"
+                    box="-top-[6vh] -bottom-[10vh]"
+                    imgClass="absolute right-[-14%] top-[46%] w-[44%] h-auto max-w-none scale-x-[-1]"
+                    y={['0%', '-8%']} base={0.45}
+                  />
+                </>
               }>
                 <NaseUsluge />
               </Beat>
 
-              {/* the mountain: one instance, faded top eating the hero seam */}
+              {/* the mountain: one instance, faded top eating the hero seam.
+                  Batch 8: the seam INTO this warm zone must never read as a horizontal fade
+                  — a true-alpha cloud bank straddles the junction so the boundary is a puffy
+                  silhouette: the visitor comes out from UNDER a cloud and sees the mass. */}
               <Beat name="opis" layers={
-                <WorldLayer
-                  src="/media/B4-tower-fade.webp" eager
-                  box="-top-[38vh] -bottom-[58vh]"
-                  imgClass="absolute inset-0 h-[115%] w-full object-cover object-top"
-                  y={['0%', '-20%']} mask={MASK.tower}
-                />
+                <>
+                  <WorldLayer
+                    src="/media/B4-tower-fade.webp" eager
+                    box="-top-[38vh] -bottom-[58vh]"
+                    imgClass="absolute inset-0 h-[115%] w-full object-cover object-top"
+                    y={['0%', '-20%']} mask={MASK.tower}
+                  />
+                  <WorldLayer
+                    src="/media/hero-cloud-fg-frame.webp"
+                    box="-top-[46vh] -bottom-[8vh]"
+                    imgClass="absolute inset-x-0 top-0 w-full h-auto max-w-none"
+                    y={['0%', '-9%']}
+                  />
+                </>
               }>
                 <Opis />
               </Beat>

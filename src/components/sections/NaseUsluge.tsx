@@ -144,40 +144,42 @@ export default function NaseUsluge() {
 
   return (
     <div ref={ref} className="relative mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-28">
-      {/* THE DISPLAY LINE — REF 2 MEASURED: one continuous word-line anchored at the TOP,
-          filling the full width; the giant letter is TOP-ALIGNED with the caps and DROPS
-          DOWNWARD out of the word to ~3× the cap height; the subtext band sits immediately
-          under the letter's bottom. items-start does the anchoring: the words hold the top
-          line while the D's box (the tallest child) hangs below, and the next band lands
-          right at its foot. */}
-      <h2 className="flex items-start justify-between leading-none">
+      {/* THE DISPLAY LINE — batch 8, ref 2 treated as ONE FULL VIEWPORT: the words are set
+          at true display scale (~14vw), NAŠE pinned to the left edge, USLUGE to the right,
+          and the 3D cloud D standing dead centre at ~55% of the viewport height — so big it
+          TOUCHES/OVERLAPS both words, exactly like the zebra A. The D is absolutely centred
+          and z-raised; the words tuck slightly UNDER its edges (negative margins on the D's
+          box do the touching). It still turns on the world's scroll, square-on at rest. */}
+      <h2 className="relative flex items-start justify-between leading-none">
         <motion.span
           initial={{ opacity: 0, x: -28 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="font-semibold tracking-tight text-ink text-[clamp(2.9rem,10vw,8rem)]"
+          className="font-semibold tracking-tight text-ink text-[clamp(3.2rem,13.5vw,11rem)]"
         >
           Naše
         </motion.span>
 
+        <motion.span
+          initial={{ opacity: 0, x: 28 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="font-script font-normal text-accent text-[clamp(3.9rem,16.5vw,13.4rem)]"
+        >
+          Usluge
+        </motion.span>
+
+        {/* the D, above the words, centred — its box is wider than the gap so it touches */}
         <span
           aria-hidden
-          className="relative block shrink-0 mx-1 sm:mx-3"
-          style={{ perspective: 900, width: 'clamp(6rem,19vw,15rem)', marginTop: '-0.04em' }}
+          className="absolute left-1/2 top-1/2 z-10 block -translate-x-1/2 -translate-y-[46%]"
+          style={{ perspective: 1100, width: 'clamp(10rem,27vw,21.5rem)' }}
         >
-          {/* a puff grounds the letter so it never turns against bare sky */}
-          <span
-            className="absolute left-1/2 top-1/2 block w-[230%] -translate-x-1/2 -translate-y-1/2 rounded-full"
-            style={{
-              paddingBottom: '150%',
-              background: 'radial-gradient(closest-side, rgba(255,255,255,0.9), transparent 72%)',
-            }}
-          />
-          {/* NO filter here: a drop-shadow recomputed per frame during rotateY took the
-              worst frame to 46ms. willChange keeps the letter on its own compositor layer. */}
+          {/* NO filter on the turning letter (jank law) — the render carries its own light */}
           <motion.img
-            src="/media/brand/cloud-d.webp"
+            src="/media/brand/cloud-d-3d.webp"
             alt=""
             className="relative block h-auto w-full select-none"
             style={{
@@ -188,31 +190,24 @@ export default function NaseUsluge() {
             }}
           />
         </span>
-
-        <motion.span
-          initial={{ opacity: 0, x: 28 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="font-script font-normal text-accent text-[clamp(3.6rem,12.6vw,10rem)]"
-        >
-          Usluge
-        </motion.span>
       </h2>
 
-      {/* the second band sits TIGHT under the hanging letter, exactly like the reference:
-          spaced caps LEFT, the minimal underlined action RIGHT */}
-      <div className="mt-5 md:mt-7 flex flex-wrap items-end justify-between gap-8">
+      {/* the staircase subtext (batch 8, measured off the reference): one word · two words
+          pushed right with a wider gap · one plain full line — set at display size */}
+      <div className="mt-8 md:mt-12 flex flex-wrap items-end justify-between gap-8">
         <motion.p
           initial={{ opacity: 0, y: 22 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
-          className="text-[13px] md:text-[14px] font-medium uppercase leading-loose tracking-[0.22em] text-ink/75"
+          className="font-medium uppercase leading-[1.6] tracking-[0.18em] text-ink/80 text-[clamp(1.05rem,2.2vw,1.8rem)]"
         >
-          Sajt, vidljivost <span className="font-script normal-case text-accent text-[1.7em] tracking-normal">&</span> podrška
-          <br />
-          sve na jednom mestu
+          <span className="block">Sajt,</span>
+          <span className="block whitespace-nowrap pl-[14%]">
+            vidljivost <span className="font-script normal-case text-accent text-[1.6em] tracking-normal">&</span>{' '}
+            <span className="ml-[0.9em]">podrška</span>
+          </span>
+          <span className="block">sve na jednom mestu</span>
         </motion.p>
         <motion.a
           href={WA_LINK}
