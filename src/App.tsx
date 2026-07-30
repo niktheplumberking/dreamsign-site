@@ -30,6 +30,22 @@ const MASK = {
   sky: 'linear-gradient(to bottom, transparent 0%, black 18%, black 72%, transparent 100%)',
   flourish: 'linear-gradient(to bottom, transparent 4%, black 34%, black 66%, transparent 96%)',
   tower: 'linear-gradient(to bottom, transparent 0%, black 7%, black 52%, transparent 100%)',
+  // batch 9 — Nick's red line, as a mask: the warm zone's top edge is an IRREGULAR wavy
+  // cloud-line (±45px undulations, drawn from his sketch), blurred 24px so no row of pixels
+  // ever carries a hard step. preserveAspectRatio=none stretches it across any viewport.
+  wavy: `url("data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 1000' preserveAspectRatio='none'>` +
+    `<defs>` +
+    `<linearGradient id='g' x1='0' y1='0' x2='0' y2='1'>` +
+    `<stop offset='0' stop-color='white'/><stop offset='0.55' stop-color='white'/>` +
+    `<stop offset='0.98' stop-color='white' stop-opacity='0'/>` +
+    `</linearGradient>` +
+    `<filter id='b' x='-10%' y='-10%' width='120%' height='120%'><feGaussianBlur stdDeviation='24'/></filter>` +
+    `</defs>` +
+    `<path filter='url(%23b)' fill='url(%23g)' d='M0,210 C90,168 170,232 290,206 C420,178 470,252 590,240 ` +
+    `C700,232 760,178 870,196 C980,214 1030,148 1150,164 C1260,178 1350,118 1440,140 L1440,1000 L0,1000 Z'/>` +
+    `</svg>`,
+  )}")`,
   sea: 'linear-gradient(to bottom, transparent 0%, black 46%, black 78%, transparent 100%)',
   rays: 'linear-gradient(to bottom, transparent 0%, black 26%, black 64%, transparent 100%)',
   // the ground plates fade IN at the top only — never out at the bottom, they are the end
@@ -127,25 +143,17 @@ export default function App() {
                 <NaseUsluge />
               </Beat>
 
-              {/* the mountain: one instance, faded top eating the hero seam.
-                  Batch 8: the seam INTO this warm zone must never read as a horizontal fade
-                  — a true-alpha cloud bank straddles the junction so the boundary is a puffy
-                  silhouette: the visitor comes out from UNDER a cloud and sees the mass. */}
+              {/* the mountain: one instance, its TOP edge cut by MASK.wavy — an irregular,
+                  blurred cloud-line silhouette drawn to Nick's red-line sketch (batch 9):
+                  high left, dipping, rising, dipping deeper, climbing off the right edge.
+                  Never a horizontal fade. The batch-8 outlined bank he circled is deleted. */}
               <Beat name="opis" layers={
-                <>
-                  <WorldLayer
-                    src="/media/B4-tower-fade.webp" eager
-                    box="-top-[38vh] -bottom-[58vh]"
-                    imgClass="absolute inset-0 h-[115%] w-full object-cover object-top"
-                    y={['0%', '-20%']} mask={MASK.tower}
-                  />
-                  <WorldLayer
-                    src="/media/hero-cloud-fg-frame.webp"
-                    box="-top-[46vh] -bottom-[8vh]"
-                    imgClass="absolute inset-x-0 top-0 w-full h-auto max-w-none"
-                    y={['0%', '-9%']}
-                  />
-                </>
+                <WorldLayer
+                  src="/media/B4-tower-fade.webp" eager
+                  box="-top-[38vh] -bottom-[58vh]"
+                  imgClass="absolute inset-0 h-[115%] w-full object-cover object-top"
+                  y={['0%', '-20%']} mask={MASK.wavy}
+                />
               }>
                 <Opis />
               </Beat>

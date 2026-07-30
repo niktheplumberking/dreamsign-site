@@ -21,6 +21,7 @@ import { useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react'
 import { WA_LINK } from '../../lib/hooks'
 import { useWorld, useWorldRange } from '../World'
+import CloudD3D from '../CloudD3D'
 
 type Service = {
   n: string
@@ -139,7 +140,7 @@ export default function NaseUsluge() {
 
   // the D turns as the section arrives and is square-on once the section is fully yours
   const [enter, exit] = useWorldRange(ref, 1.12, 0.32)
-  const rotY = useTransform(world, [enter, exit], [-84, 0], { clamp: true })
+  const rotY = useTransform(world, [enter, exit], [-1.35, 0], { clamp: true })
   const lift = useTransform(world, [enter, exit], [0.9, 1], { clamp: true })
 
   return (
@@ -174,27 +175,19 @@ export default function NaseUsluge() {
         {/* the D, above the words, centred — its box is wider than the gap so it touches */}
         <span
           aria-hidden
-          className="absolute left-1/2 top-1/2 z-10 block -translate-x-1/2 -translate-y-[46%]"
+          className="absolute left-[46.5%] top-1/2 z-10 block -translate-x-1/2 -translate-y-[46%]"
           style={{ perspective: 1100, width: 'clamp(10rem,27vw,21.5rem)' }}
         >
           {/* NO filter on the turning letter (jank law) — the render carries its own light */}
-          <motion.img
-            src="/media/brand/cloud-d-3d.webp"
-            alt=""
-            className="relative block h-auto w-full select-none"
-            style={{
-              rotateY: reduced ? 0 : rotY,
-              scale: reduced ? 1 : lift,
-              transformStyle: 'preserve-3d',
-              willChange: 'transform',
-            }}
-          />
+          <motion.div style={{ scale: reduced ? 1 : lift }}>
+            <CloudD3D rot={rotY} reduced={reduced} />
+          </motion.div>
         </span>
       </h2>
 
       {/* the staircase subtext (batch 8, measured off the reference): one word · two words
           pushed right with a wider gap · one plain full line — set at display size */}
-      <div className="mt-8 md:mt-12 flex flex-wrap items-end justify-between gap-8">
+      <div className="mt-16 md:mt-24 flex flex-wrap items-end justify-between gap-8">
         <motion.p
           initial={{ opacity: 0, y: 22 }}
           whileInView={{ opacity: 1, y: 0 }}

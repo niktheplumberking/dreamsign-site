@@ -34,7 +34,7 @@ const PROJECTS: Project[] = [
     blurb: 'Studio za web dizajn — kompletan identitet i korporativni sajt.',
     href: 'https://www.bennettndco.com',
     cover: '/media/radovi/bennett.webp',
-    drop: 150, tall: 400, w: 220,
+    drop: 130, tall: 380, w: 280,
   },
   {
     name: 'Metal Kolor',
@@ -42,7 +42,7 @@ const PROJECTS: Project[] = [
     blurb: 'Farbara koja snabdeva majstore — katalog, galerija i kontakt.',
     href: 'https://metal-kolor.rs/',
     cover: '/media/radovi/metalkolor.webp',
-    drop: 105, tall: 470, w: 280,
+    drop: 85, tall: 440, w: 360,
   },
   {
     name: 'Pizzdarija',
@@ -50,14 +50,14 @@ const PROJECTS: Project[] = [
     blurb: 'Picerija sa picom na drva — meni i porudžbina na dva klika.',
     href: 'https://www.pizzdarija.rs/',
     cover: '/media/radovi/pizzdarija.webp',
-    drop: 52, tall: 560, w: 360,
+    drop: 40, tall: 505, w: 450,
   },
   {
     name: 'Vaš projekat',
     meta: 'Slobodno mesto',
     blurb: 'Sledeći rad kojim se hvalimo može biti vaš — javite se.',
     href: WA_LINK,
-    drop: 0, tall: 700, w: 525,
+    drop: 0, tall: 560, w: 560,
   },
 ]
 
@@ -237,16 +237,18 @@ export default function Radovi() {
         <span>Projekti</span>
       </motion.div>
 
-      {/* THE CASCADE (batch 8) — smallest → biggest, left to right, and each bigger card
-          OVERLAPS the right edge of the smaller one before it (z rises to the right).
-          The smallest card is cut 40% by the left screen edge (88px of its 220), the
-          biggest sits flush right. No gaps — the overlap IS the rhythm. Phones h-scroll. */}
+      {/* THE CASCADE (batch 9 spread) — smallest → biggest, left to right, each bigger card
+          overlapping the right edge of the one before it (z rises rightward). The smallest
+          card is cut EXACTLY 40% by the left screen edge (112px of its 280); the biggest
+          keeps a small distance from the right edge (pr-7). Row spans the full viewport:
+          280+360+450+560 − 3×42 = 1524; 1524 − 112 + 28 = 1440. Tallest card 560 + caption
+          ≈ 660 — the whole cascade fits one desktop viewport. Phones h-scroll. */}
       <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex items-start pr-4 md:justify-end md:pr-2">
+        <div className="flex items-start pr-4 md:justify-end md:pr-7">
           {PROJECTS.map((p, i) => (
             <div
               key={p.name}
-              className={`relative ${i === 0 ? '-ml-[88px]' : '-ml-10 md:-ml-14'}`}
+              className={`relative ${i === 0 ? '-ml-[112px]' : '-ml-8 md:-ml-[42px]'}`}
               style={{ zIndex: 10 + i * 10 }}
             >
               <Card p={p} i={i} drift={drifts[i]} />
