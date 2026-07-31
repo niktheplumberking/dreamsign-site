@@ -72,7 +72,7 @@ export function World({ children }: { children: React.ReactNode }) {
  */
 export function WorldLayer({
   src, box, imgClass = 'absolute inset-0 h-full w-full object-cover', y = ['0%', '0%'],
-  opacity, base = 1, mask, blend, eager = false,
+  opacity, base = 1, mask, blend, eager = false, float,
 }: {
   src: string
   box: string
@@ -83,11 +83,27 @@ export function WorldLayer({
   mask?: string
   blend?: string
   eager?: boolean
+  /** batch 11: an idle bob for the small discrete clouds — px of travel and seconds per
+      cycle. Rides its own wrapper so it stacks with the scroll parallax; off under
+      reduced motion like everything else. */
+  float?: { px: number; sec: number; delay?: number }
 }) {
   const { p, reduced } = useWorld()
   const yv = useTransform(p, [0, 1], y)
   const ov = useTransform(p, opacity?.range ?? [0, 1], opacity?.values ?? [base, base])
   const restOpacity = opacity ? Math.max(...opacity.values) : base
+
+  const img = (
+    <motion.img
+      src={src} alt="" decoding="async" loading={eager ? 'eager' : 'lazy'}
+      className={imgClass}
+      style={{
+        ...(reduced ? {} : { y: yv }),
+        opacity: reduced ? restOpacity : ov,
+        ...(blend ? { mixBlendMode: blend as React.CSSProperties['mixBlendMode'] } : {}),
+      }}
+    />
+  )
 
   return (
     <div
@@ -95,15 +111,17 @@ export function WorldLayer({
       style={mask ? { WebkitMaskImage: mask, maskImage: mask } : undefined}
       aria-hidden
     >
-      <motion.img
-        src={src} alt="" decoding="async" loading={eager ? 'eager' : 'lazy'}
-        className={imgClass}
-        style={{
-          ...(reduced ? {} : { y: yv }),
-          opacity: reduced ? restOpacity : ov,
-          ...(blend ? { mixBlendMode: blend as React.CSSProperties['mixBlendMode'] } : {}),
-        }}
-      />
+      {float && !reduced ? (
+        <motion.div
+          className="absolute inset-0"
+          animate={{ y: [0, -float.px, 0] }}
+          transition={{ duration: float.sec, repeat: Infinity, ease: 'easeInOut', delay: float.delay ?? 0 }}
+        >
+          {img}
+        </motion.div>
+      ) : (
+        img
+      )}
     </div>
   )
 }

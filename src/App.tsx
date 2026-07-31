@@ -132,21 +132,21 @@ export default function App() {
                     src="/media/bank-soft.webp"
                     box="-top-[6vh] -bottom-[10vh]"
                     imgClass="absolute left-[-18%] top-[6%] w-[52%] h-auto max-w-none"
-                    y={['0%', '-14%']} base={0.55}
+                    y={['0%', '-14%']} base={0.55} float={{ px: 9, sec: 9 }}
                   />
                   <WorldLayer
                     src="/media/bank-soft.webp"
                     box="-top-[6vh] -bottom-[10vh]"
                     imgClass="absolute right-[-14%] top-[46%] w-[44%] h-auto max-w-none scale-x-[-1]"
-                    y={['0%', '-8%']} base={0.45}
+                    y={['0%', '-8%']} base={0.45} float={{ px: 7, sec: 11, delay: 1.6 }}
                   />
                   {/* batch 10 — the storybook cloud Nick red-circled into the empty left
                       field beside rows 03/04 */}
                   <WorldLayer
                     src="/media/hero-cloud-foreground.webp"
                     box="-top-[4vh] -bottom-[6vh]"
-                    imgClass="absolute left-[-7%] top-[56%] w-[36%] h-auto max-w-none"
-                    y={['0%', '-11%']} base={0.92}
+                    imgClass="absolute left-[-7%] top-[81%] w-[36%] h-auto max-w-none"
+                    y={['0%', '-11%']} base={0.92} float={{ px: 10, sec: 8, delay: 0.7 }}
                   />
                 </>
               }>

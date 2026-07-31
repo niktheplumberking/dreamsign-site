@@ -222,7 +222,7 @@ export default function Radovi() {
       <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-end">
         <motion.h2
           {...fadeUp(0)}
-          className="font-semibold tracking-tight text-ink leading-[1.04] text-[clamp(2.6rem,5.8vw,4.4rem)]"
+          className="font-semibold tracking-tight text-ink leading-[1.02] text-[clamp(3rem,9.6vw,7.8rem)]"
         >
           Radovi
           <span className="block">koji{' '}<span className="font-script font-normal text-accent text-[1.28em] leading-[0.95]">govore.</span></span>
