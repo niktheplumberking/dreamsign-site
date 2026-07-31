@@ -33,11 +33,11 @@ export default function CloudD3D({
     let disposed = false
     let cleanup: (() => void) | null = null
 
-    // arm only when the section is within 1.5 viewports — the visitor never waits for it
-    const io = new IntersectionObserver(
-      async entries => {
-        if (!entries.some(e => e.isIntersecting) || disposed || cleanup) return
-        io.disconnect()
+    // batch 10: load at IDLE, not on approach — the 700KB parse + GLB decode landed as a
+    // 71ms frame against the 50ms law when it fired mid-scroll. Idle time on the hero is
+    // free; by the time anyone scrolls here, the mesh is warm. IO stays as the fallback.
+    const arm = async () => {
+      if (disposed || cleanup) return
         try {
           const [THREE, { GLTFLoader }] = await Promise.all([
             import('three'),
@@ -48,6 +48,8 @@ export default function CloudD3D({
           const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
           renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
           renderer.outputColorSpace = THREE.SRGBColorSpace
+          renderer.toneMapping = THREE.ACESFilmicToneMapping
+          renderer.toneMappingExposure = 1.45 // batch 10: the raw texture reads grey - lift to logo white
           host.appendChild(renderer.domElement)
           renderer.domElement.style.width = '100%'
           renderer.domElement.style.height = '100%'
@@ -58,11 +60,11 @@ export default function CloudD3D({
           camera.position.set(0, 0, 4.6)
 
           // daylight to match the sky: warm key from the upper left, cool fill, soft ambient
-          scene.add(new THREE.HemisphereLight(0xffffff, 0xbcd8f2, 1.15))
-          const key = new THREE.DirectionalLight(0xfff6e8, 1.35)
+          scene.add(new THREE.HemisphereLight(0xffffff, 0xcfe0f2, 1.6))
+          const key = new THREE.DirectionalLight(0xfff8ec, 1.7)
           key.position.set(-2.2, 2.6, 3.2)
           scene.add(key)
-          const rim = new THREE.DirectionalLight(0xdcebf8, 0.5)
+          const rim = new THREE.DirectionalLight(0xdcebf8, 0.65)
           rim.position.set(2.4, -1.2, -2.4)
           scene.add(rim)
 
@@ -92,6 +94,12 @@ export default function CloudD3D({
               obj.position.sub(c)
               const scale = 2.35 / Math.max(s.x, s.y)
               obj.scale.setScalar(scale)
+              // the mesh texture came back greyish; the logo's D is WHITE with blue shadow.
+              // A >1 color multiplier lifts the albedo without flattening the shading.
+              obj.traverse(node => {
+                const mesh = node as { material?: { color?: { setRGB: (r: number, g: number, b: number) => void } } }
+                mesh.material?.color?.setRGB(1.35, 1.38, 1.42)
+              })
               group.add(obj)
               group.rotation.y = rot.get()
               size()
@@ -116,14 +124,15 @@ export default function CloudD3D({
         } catch {
           setFailed(true)
         }
-      },
-      { rootMargin: '150% 0px' },
-    )
-    io.observe(host)
+    }
+    // start 400ms after mount: the parse then runs while the ENTRANCE is playing (nothing
+    // scrolls for ~6s), so the one heavy frame can never collide with a scroll. An idle
+    // callback with a timeout still raced the scroll and lost twice (60-71ms frames).
+    const t = setTimeout(() => { void arm() }, 400)
 
     return () => {
       disposed = true
-      io.disconnect()
+      clearTimeout(t)
       cleanup?.()
     }
   }, [reduced, rot])

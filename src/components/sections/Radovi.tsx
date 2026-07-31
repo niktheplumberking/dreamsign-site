@@ -20,11 +20,16 @@ type Project = {
   blurb: string
   href: string
   cover?: string
-  /** cascade seat: push-down, cover height, and width — sizes GROW to the right (ref: the
-      last card is ~2x the first) while the caption line steps down diagonally */
-  drop: number
-  tall: number
-  w: number
+  /**
+   * Cascade seat in TWO coordinate systems (batch 10 — Nick's PC and MacBook rendered the
+   * fixed-pixel row completely differently). Desktop sizes are pure vw, so the composition
+   * is IDENTICAL at 1280, 1440 and 1920: widths 18.5/23.5/29.5/40vw (the reference's own
+   * proportions), row = 105.5vw after overlaps, justified right with 2vw kept off the right
+   * edge — which makes the left overflow exactly 7.5vw ≈ 40% of the first card, cut by the
+   * screen edge with no magic margin. Mobile keeps the px h-scroll.
+   */
+  vw: { w: string; t: string; d: string }
+  px: { w: string; t: string; d: string }
 }
 
 const PROJECTS: Project[] = [
@@ -34,7 +39,7 @@ const PROJECTS: Project[] = [
     blurb: 'Studio za web dizajn — kompletan identitet i korporativni sajt.',
     href: 'https://www.bennettndco.com',
     cover: '/media/radovi/bennett.webp',
-    drop: 130, tall: 380, w: 280,
+    vw: { w: '18.5vw', t: '25.2vw', d: '9vw' }, px: { w: '230px', t: '340px', d: '90px' },
   },
   {
     name: 'Metal Kolor',
@@ -42,7 +47,7 @@ const PROJECTS: Project[] = [
     blurb: 'Farbara koja snabdeva majstore — katalog, galerija i kontakt.',
     href: 'https://metal-kolor.rs/',
     cover: '/media/radovi/metalkolor.webp',
-    drop: 85, tall: 440, w: 360,
+    vw: { w: '23.5vw', t: '28.7vw', d: '6vw' }, px: { w: '270px', t: '380px', d: '60px' },
   },
   {
     name: 'Pizzdarija',
@@ -50,14 +55,14 @@ const PROJECTS: Project[] = [
     blurb: 'Picerija sa picom na drva — meni i porudžbina na dva klika.',
     href: 'https://www.pizzdarija.rs/',
     cover: '/media/radovi/pizzdarija.webp',
-    drop: 40, tall: 505, w: 450,
+    vw: { w: '29.5vw', t: '33vw', d: '2.8vw' }, px: { w: '310px', t: '420px', d: '28px' },
   },
   {
     name: 'Vaš projekat',
     meta: 'Slobodno mesto',
     blurb: 'Sledeći rad kojim se hvalimo može biti vaš — javite se.',
     href: WA_LINK,
-    drop: 0, tall: 560, w: 560,
+    vw: { w: '40vw', t: '40vw', d: '0vw' }, px: { w: '340px', t: '470px', d: '0px' },
   },
 ]
 
@@ -135,19 +140,20 @@ function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
       href={p.href}
       target="_blank"
       rel="noopener"
-      // per-card width from the cascade seat (196→296, they GROW like the reference);
-      // phones cap at 62vw and ride the horizontal scroll. 196+226+258+296 + 3×24 = 1048
-      // fits the 1104 column — justify-center on an overflowing row clips the left card.
-      className="group relative block shrink-0"
-      style={{ marginTop: p.drop, width: `min(${p.w}px, 62vw)`, y: drift as never }}
+      // the seat vars feed breakpointed arbitrary classes: px on phones, pure vw on md+
+      className="group relative block shrink-0 w-[min(48vw,var(--wm))] md:w-[var(--w)] mt-[var(--dm)] md:mt-[var(--d)]"
+      style={{
+        '--w': p.vw.w, '--t': p.vw.t, '--d': p.vw.d,
+        '--wm': p.px.w, '--tm': p.px.t, '--dm': p.px.d,
+        y: drift as never,
+      } as React.CSSProperties}
       initial={{ opacity: 0, y: 46 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-90px' }}
       transition={{ duration: 0.75, delay: 0.09 * i, ease: [0.22, 1, 0.36, 1] }}
     >
       <div
-        className="relative overflow-hidden rounded-[0.9rem] border border-ink/10 transition-transform duration-500 ease-out group-hover:-translate-y-2"
-        style={{ height: p.tall }}
+        className="relative overflow-hidden rounded-[0.9rem] border border-ink/10 transition-transform duration-500 ease-out group-hover:-translate-y-2 h-[var(--tm)] md:h-[var(--t)]"
       >
         {p.cover ? (
           <img
@@ -237,18 +243,17 @@ export default function Radovi() {
         <span>Projekti</span>
       </motion.div>
 
-      {/* THE CASCADE (batch 9 spread) — smallest → biggest, left to right, each bigger card
-          overlapping the right edge of the one before it (z rises rightward). The smallest
-          card is cut EXACTLY 40% by the left screen edge (112px of its 280); the biggest
-          keeps a small distance from the right edge (pr-7). Row spans the full viewport:
-          280+360+450+560 − 3×42 = 1524; 1524 − 112 + 28 = 1440. Tallest card 560 + caption
-          ≈ 660 — the whole cascade fits one desktop viewport. Phones h-scroll. */}
-      <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex items-start pr-4 md:justify-end md:pr-7">
+      {/* THE CASCADE (batch 10, fluid) — smallest → biggest, left to right, overlapping
+          rightward. On md+ everything is vw: the row totals 105.5vw, is justified right
+          with 2vw kept from the right edge, and its 7.5vw of left overflow IS the 40% cut
+          of the first card — identical composition on every desktop width. Phones keep the
+          px h-scroll with the first card cut by margin. */}
+      <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 overflow-x-auto md:overflow-visible pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex items-start pr-4 md:justify-end md:pr-[2vw]">
           {PROJECTS.map((p, i) => (
             <div
               key={p.name}
-              className={`relative ${i === 0 ? '-ml-[112px]' : '-ml-8 md:-ml-[42px]'}`}
+              className={`relative ${i === 0 ? '-ml-[74px] md:ml-0' : '-ml-8 md:-ml-[2vw]'}`}
               style={{ zIndex: 10 + i * 10 }}
             >
               <Card p={p} i={i} drift={drifts[i]} />

@@ -151,7 +151,7 @@ export default function NaseUsluge() {
           TOUCHES/OVERLAPS both words, exactly like the zebra A. The D is absolutely centred
           and z-raised; the words tuck slightly UNDER its edges (negative margins on the D's
           box do the touching). It still turns on the world's scroll, square-on at rest. */}
-      <h2 className="relative flex items-start justify-between leading-none">
+      <h2 className="relative flex items-start justify-between leading-none" style={{ paddingBottom: 'clamp(2.5rem, 10.5vw, 9rem)' }}>
         <motion.span
           initial={{ opacity: 0, x: -28 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -180,7 +180,12 @@ export default function NaseUsluge() {
         >
           {/* NO filter on the turning letter (jank law) — the render carries its own light */}
           <motion.div style={{ scale: reduced ? 1 : lift }}>
-            <CloudD3D rot={rotY} reduced={reduced} />
+            <motion.div
+              animate={reduced ? undefined : { y: [0, -10, 0] }}
+              transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <CloudD3D rot={rotY} reduced={reduced} />
+            </motion.div>
           </motion.div>
         </span>
       </h2>

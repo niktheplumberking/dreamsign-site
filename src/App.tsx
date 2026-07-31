@@ -61,7 +61,9 @@ export default function App() {
   // Lenis drives the whole site — one smoothing law for every layer (touch stays native).
   useEffect(() => {
     if (reduced) return
-    const lenis = new Lenis({ lerp: 0.1 })
+    // batch 10: lerp eased 0.1 → 0.085 — a touch more glide without going floaty; wheel
+    // smoothing stays on. Lenis remains the ONLY scroll driver on the site.
+    const lenis = new Lenis({ lerp: 0.085, smoothWheel: true })
     lenisRef.current = lenis
     let id: number
     const raf = (time: number) => { lenis.raf(time); id = requestAnimationFrame(raf) }
@@ -137,6 +139,14 @@ export default function App() {
                     box="-top-[6vh] -bottom-[10vh]"
                     imgClass="absolute right-[-14%] top-[46%] w-[44%] h-auto max-w-none scale-x-[-1]"
                     y={['0%', '-8%']} base={0.45}
+                  />
+                  {/* batch 10 — the storybook cloud Nick red-circled into the empty left
+                      field beside rows 03/04 */}
+                  <WorldLayer
+                    src="/media/hero-cloud-foreground.webp"
+                    box="-top-[4vh] -bottom-[6vh]"
+                    imgClass="absolute left-[-7%] top-[56%] w-[36%] h-auto max-w-none"
+                    y={['0%', '-11%']} base={0.92}
                   />
                 </>
               }>
