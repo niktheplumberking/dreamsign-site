@@ -50,9 +50,10 @@ export function usePageMeta(m: PageMeta) {
     setMeta('meta[name="twitter:description"]', 'content', ogDesc)
     setMeta('meta[name="twitter:image"]', 'content', ogImage)
 
-    // robots: only the 404 page opts out
+    // robots: the 404 page and every /edit surface opt out
+    const isEdit = window.location.pathname.startsWith('/edit')
     let robots = document.head.querySelector('meta[name="robots"]') as HTMLMetaElement | null
-    if (m.noindex) {
+    if (m.noindex || isEdit) {
       if (!robots) {
         robots = document.createElement('meta')
         robots.name = 'robots'

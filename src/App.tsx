@@ -13,6 +13,9 @@ import UslugePage from './pages/UslugePage'
 import KontaktPage from './pages/KontaktPage'
 import NotFound from './pages/NotFound'
 import { sessionOnce, useReducedMotionSafe } from './lib/hooks'
+import { OK_ENABLED, SITE_SLUG, SUPABASE_URL, SUPABASE_ANON_KEY } from './lib/content'
+import { OwnersKeyProvider, OwnersKeyLogin, OwnersKeyBar } from './ok/OwnersKey'
+import './ok/owners-key.css'
 
 declare global {
   interface Window { __ready?: boolean }
@@ -69,18 +72,48 @@ export default function App() {
     }
   }, [playEntrance])
 
+  const routes = (
+    <Routes>
+      <Route path="/" element={<Pocetna />} />
+      <Route path="/radovi" element={<RadoviPage />} />
+      <Route path="/usluge" element={<UslugePage />} />
+      <Route path="/kontakt" element={<KontaktPage />} />
+      {/* the Owner's Key: each page has its edit twin — same components, edit affordances.
+          The site IS the panel (owners-key-sop). Never prerendered as indexable: usePageMeta
+          stamps noindex on every /edit path, and robots.txt disallows it. */}
+      <Route path="/edit" element={<Pocetna />} />
+      <Route path="/edit/radovi" element={<RadoviPage />} />
+      <Route path="/edit/usluge" element={<UslugePage />} />
+      <Route path="/edit/kontakt" element={<KontaktPage />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  )
+
+  const isEdit = window.location.pathname.startsWith('/edit')
+
   return (
     <BrowserRouter>
       <Entrance play={playEntrance && !reduced} onDone={() => {}} />
       <Nav />
       <ScrollReset lenis={lenisRef} />
-      <Routes>
-        <Route path="/" element={<Pocetna />} />
-        <Route path="/radovi" element={<RadoviPage />} />
-        <Route path="/usluge" element={<UslugePage />} />
-        <Route path="/kontakt" element={<KontaktPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      {OK_ENABLED ? (
+        <OwnersKeyProvider slug={SITE_SLUG} supabaseUrl={SUPABASE_URL} supabaseAnonKey={SUPABASE_ANON_KEY}>
+          <OwnersKeyLogin />
+          <OwnersKeyBar />
+          {routes}
+        </OwnersKeyProvider>
+      ) : (
+        <>
+          {/* editing is wired but the anon key has not landed in the factory .env yet —
+              the baked words render either way; only the editing surface waits */}
+          {isEdit && (
+            <div className="fixed bottom-4 left-1/2 z-[90] -translate-x-1/2 rounded-full bg-ink/90 px-5 py-2 text-[13px] font-medium text-white shadow-lg">
+              Uređivanje još nije uključeno — sajt prikazuje sačuvani sadržaj.
+            </div>
+          )}
+          {routes}
+        </>
+      )}
     </BrowserRouter>
   )
 }

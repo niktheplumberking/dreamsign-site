@@ -12,6 +12,7 @@ import { MASK } from '../lib/masks'
 import { WA_LINK } from '../lib/hooks'
 import { LEGAL, SIGNATURE_STROKE, SIGNATURE_SWEEP, SIGNATURE_VIEWBOX } from '../lib/marks'
 import { usePageMeta } from '../lib/meta'
+import { bk } from '../lib/content'
 import { PAGE_SCHEMA } from '../lib/schema'
 
 const fadeUp = (i: number) => ({
@@ -165,7 +166,7 @@ function KontaktBody() {
   const { reduced } = useWorld()
   return (
     <>
-      <HeroMini compact scriptAbove="Dobar dan." title="Dva klika i razgovaramo." />
+      <HeroMini compact scriptAbove="Dobar dan." title={bk('kontakt-naslov', 'Dva klika i razgovaramo.')} titleK="kontakt-naslov" />
 
       <div className="relative z-20 -mt-[14vh]">
         {/* the junction rides the sampled seam colour, homepage grammar */}
@@ -182,12 +183,15 @@ function KontaktBody() {
             <CircledPill reduced={reduced} />
             <motion.p {...fadeUp(1)} className="mt-10 text-[15px] font-medium text-ink/60">
               ili pozovite{' '}
-              <a href={LEGAL.phoneHref} className="text-accent/80 hover:text-accent font-semibold">
-                {LEGAL.phone}
+              <a
+                href={'tel:' + bk('kontakt-telefon', LEGAL.phone).replace(/[^+\d]/g, '')}
+                className="text-accent/80 hover:text-accent font-semibold"
+              >
+                {bk('kontakt-telefon', LEGAL.phone)}
               </a>
             </motion.p>
             <motion.p {...fadeUp(2)} className="mt-2 text-[14px] text-ink/55">
-              {LEGAL.seat}
+              {bk('kontakt-adresa', LEGAL.seat)}
             </motion.p>
           </div>
         </Beat>

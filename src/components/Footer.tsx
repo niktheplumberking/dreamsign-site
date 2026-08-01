@@ -19,6 +19,8 @@ import { WA_LINK } from '../lib/hooks'
 import { LEGAL } from '../lib/marks'
 import { SIGNATURE_STROKE, SIGNATURE_VIEWBOX } from '../lib/marks'
 import Lockup from './Lockup'
+import { bk } from '../lib/content'
+import { EditableText } from '../ok/OwnersKey'
 
 const GLOW = { textShadow: '0 1px 18px rgba(255,255,255,0.95), 0 0 6px rgba(255,255,255,0.85)' }
 
@@ -83,10 +85,15 @@ export default function Footer() {
           </nav>
 
           <div className="text-[15px] space-y-2.5" style={GLOW}>
-            <p className="text-ink/75">{LEGAL.seat}</p>
+            <p className="text-ink/75">
+              <EditableText k="kontakt-adresa">{bk('kontakt-adresa', LEGAL.seat)}</EditableText>
+            </p>
             <p>
-              <a href={LEGAL.phoneHref} className="text-ink/75 hover:text-ink transition-colors">
-                {LEGAL.phone}
+              <a
+                href={'tel:' + bk('kontakt-telefon', LEGAL.phone).replace(/[^+\d]/g, '')}
+                className="text-ink/75 hover:text-ink transition-colors"
+              >
+                <EditableText k="kontakt-telefon">{bk('kontakt-telefon', LEGAL.phone)}</EditableText>
               </a>
             </p>
             <p>

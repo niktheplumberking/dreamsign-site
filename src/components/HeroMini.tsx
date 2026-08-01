@@ -4,6 +4,7 @@
 // The page's single h1 lives here.
 import { motion, useTransform } from 'motion/react'
 import { useWorld } from './World'
+import { EditableText } from '../ok/OwnersKey'
 
 /** the copy carries its own legibility over the sky — no panel, no scrim (hero grammar) */
 export const GLOW = { textShadow: '0 2px 26px rgba(245,249,253,0.95), 0 0 10px rgba(245,249,253,0.85)' }
@@ -14,6 +15,7 @@ export default function HeroMini({
   scriptAbove,
   sub,
   compact = false,
+  titleK,
 }: {
   /** the h1 — gradient-clipped Inter Tight 600 */
   title: string
@@ -25,6 +27,8 @@ export default function HeroMini({
   sub?: string
   /** Kontakt: a slightly shorter stage — the page below is one beat */
   compact?: boolean
+  /** Owner's Key zone for the title */
+  titleK?: string
 }) {
   const { p, reduced, vh } = useWorld()
   const skyY = useTransform(p, [0, vh], ['0%', '8%'])
@@ -63,7 +67,7 @@ export default function HeroMini({
               margin: '-0.25em -0.1em',
             }}
           >
-            {title}
+            {titleK ? <EditableText k={titleK}>{title}</EditableText> : title}
           </span>
           {script && (
             <span

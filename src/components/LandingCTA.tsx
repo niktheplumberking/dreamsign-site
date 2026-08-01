@@ -7,6 +7,7 @@ import { WA_LINK } from '../lib/hooks'
 import { GlossyPill } from './Nav'
 import { useWorld, useWorldRange } from './World'
 import { SIGNATURE_STROKE, SIGNATURE_SWEEP, SIGNATURE_VIEWBOX } from '../lib/marks'
+import { EditableText } from '../ok/OwnersKey'
 
 const fadeUp = (i: number) => ({
   initial: { opacity: 0, y: 30 },
@@ -19,6 +20,8 @@ export default function LandingCTA({
   script,
   lead,
   clipId,
+  scriptK,
+  leadK,
 }: {
   /** the Great Vibes closing line (short — the script never carries a paragraph) */
   script: string
@@ -26,6 +29,9 @@ export default function LandingCTA({
   lead?: string
   /** unique clip-path id per page (SVG ids are document-global) */
   clipId: string
+  /** Owner's Key zones for the two lines */
+  scriptK?: string
+  leadK?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const { p, reduced } = useWorld()
@@ -42,7 +48,7 @@ export default function LandingCTA({
           className="mx-auto max-w-[38ch] text-balance font-medium text-ink/80
                      text-[clamp(1.05rem,2vw,1.4rem)] leading-relaxed"
         >
-          {lead}
+          {leadK ? <EditableText k={leadK}>{lead}</EditableText> : lead}
         </motion.p>
       )}
 
@@ -52,7 +58,7 @@ export default function LandingCTA({
         className={`font-script text-accent leading-tight text-[clamp(2.4rem,5.5vw,3.8rem)] ${lead ? 'mt-3' : ''}`}
         style={{ textShadow: '0 1px 0 currentColor' }}
       >
-        {script}
+        {scriptK ? <EditableText k={scriptK}>{script}</EditableText> : script}
       </motion.p>
 
       <svg

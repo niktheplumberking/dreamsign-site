@@ -7,6 +7,8 @@
 import { motion } from 'motion/react'
 import { useReducedMotionSafe, WA_LINK } from '../../lib/hooks'
 import { GlossyPill } from '../Nav'
+import { bk } from '../../lib/content'
+import { EditableText } from '../../ok/OwnersKey'
 
 export default function Opis() {
   const reduced = useReducedMotionSafe()
@@ -33,8 +35,9 @@ export default function Opis() {
           style={{ textShadow: '2px 4px 26px rgba(245, 249, 253, 0.9)' }}
           {...float(7, 6.5)}
         >
-          Pravimo sajtove koji pretvaraju posetioce u kupce — jasan dogovor, fiksan rok
-          i sajt koji radi za vas svaki dan.
+          <EditableText k="opis-tekst">
+            {bk('opis-tekst', 'Pravimo sajtove koji pretvaraju posetioce u kupce — jasan dogovor, fiksan rok i sajt koji radi za vas svaki dan.')}
+          </EditableText>
         </motion.p>
       </motion.div>
 

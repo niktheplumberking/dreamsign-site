@@ -23,6 +23,10 @@ export function sessionOnce(key: string): boolean {
   }
 }
 
+import { bk } from './content'
+
+// The opener is an Owner's Key zone: the baked value feeds the link at build time.
+// (A runtime edit reaches the link on the next publish — the link is a module constant.)
 export const WA_LINK =
   'https://wa.me/381637736963?text=' +
-  encodeURIComponent('Dobar dan, zanima me više informacija u vezi vaše ponude')
+  encodeURIComponent(bk('whatsapp-opener', 'Dobar dan, zanima me više informacija u vezi vaše ponude'))

@@ -1,0 +1,24 @@
+{
+  "slug": "dreamsign",
+  "siteId": "2026de3a-9f52-4e8a-a944-082582a01017",
+  "bakedAt": "2026-08-01T10:45:52.139Z",
+  "blocks": {
+    "hero-naslov": "Izrada sajtova",
+    "hero-naslov-script": "koji prodaju",
+    "hero-podnaslov": "Moderni sajtovi za firme širom Balkana — sa ugovorom, jasnim rokom i bez skrivenih troškova.",
+    "opis-tekst": "Pravimo sajtove koji pretvaraju posetioce u kupce — jasan dogovor, fiksan rok i sajt koji radi za vas svaki dan.",
+    "obecanja-tekst": "Ugovor, garancije i potpuna transparentnost — svaki sajt biramo da donese rezultat, ne samo da postoji. Nijedan klijent ne ostaje nezadovoljan.",
+    "cta-naslov": "Imate projekat na umu?",
+    "whatsapp-opener": "Dobar dan, zanima me više informacija u vezi vaše ponude",
+    "kontakt-adresa": "Dušana Jerkovića 42, 22400 Ruma, Srbija",
+    "kontakt-telefon": "+381 63 773 6963",
+    "radovi-uvod": "Svaki sajt ovde je nekome doneo kupce.",
+    "radovi-cta": "Sledeći rezultat može biti vaš.",
+    "usluge-uvod": "Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.",
+    "garancije-tekst": "Ugovor pre početka. Garancije u pisanom obliku. Nikad skriveni troškovi.",
+    "usluge-cta": "Svaki projekat je jedinstven — ponuda stiže posle prvog razgovora.",
+    "kontakt-naslov": "Dva klika i razgovaramo."
+  },
+  "supabaseUrl": "https://coefcklxoeangqowzgif.supabase.co",
+  "supabaseAnonKey": ""
+}

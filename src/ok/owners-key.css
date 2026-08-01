@@ -1,0 +1,191 @@
+/* ============================================================================
+   THE OWNER'S KEY — the only stylesheet a client site needs for edit mode.
+   Import it once, beside the components:  import 'rig/owners-key/owners-key.css'
+   ============================================================================
+
+   WHY THIS FILE EXISTS: the components shipped without one, so editable zones
+   rendered invisible on a client site — the client would open /edit and see no
+   sign that anything could be clicked. Components without their styles are half
+   a feature.
+
+   THREE RULES IT OBEYS:
+
+   1. NOTHING LEAKS TO A VISITOR. Every rule below is scoped under a class that
+      only exists in edit mode. A logged-out visitor's DOM has none of these, so
+      the client's real design is untouched — no reset, no inherited spacing, no
+      stray outline. The Owner's Key must never be visible in the product.
+
+   2. IT BORROWS THE CLIENT'S TYPE, NOT ITS OWN. Editable zones inherit font,
+      size, weight and colour from whatever they sit inside. An editable
+      headline must look EXACTLY like the headline; the only difference is the
+      affordance around it. Anything else and the client edits one thing and
+      publishes another.
+
+   3. IT IS OVERRIDABLE. Every colour is a custom property with a fallback, so a
+      dark site can retint the affordances without forking this file.
+   ============================================================================ */
+
+:root {
+  --ok-accent: #2F5D43;
+  --ok-accent-soft: rgba(47, 93, 67, 0.10);
+  --ok-ink: #20251E;
+  --ok-paper: #FBF9F2;
+  --ok-danger: #A64B27;
+  --ok-radius: 8px;
+}
+
+/* ---------------------------------------------------------------- editable zones */
+/* Inherit everything typographic. The dashed edge is the ONLY difference between an
+   editable headline and the headline. */
+.ok-editable {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  outline: 1px dashed var(--ok-accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+  cursor: text;
+  transition: outline-color 0.15s, background 0.15s;
+  /* an empty zone still has to be clickable, or the client cannot fill it back in */
+  min-width: 2ch;
+  min-height: 1em;
+  display: inline-block;
+}
+.ok-editable:hover { background: var(--ok-accent-soft); }
+.ok-editable:focus {
+  outline: 2px solid var(--ok-accent);
+  outline-offset: 3px;
+  background: var(--ok-accent-soft);
+}
+/* the browser's own focus ring would sit on top of ours and double the border */
+.ok-editable:focus-visible { outline: 2px solid var(--ok-accent); }
+
+/* a zone the client has emptied — tell them it is empty rather than showing nothing */
+.ok-editable:empty::before {
+  content: 'Click to add text';
+  opacity: 0.45;
+  font-style: italic;
+}
+
+/* ---------------------------------------------------------------- editable images */
+.ok-image {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: 1px dashed var(--ok-accent);
+  outline-offset: 3px;
+  border-radius: var(--ok-radius);
+  /* the image keeps whatever size the design gave it — we never resize the client's layout */
+  max-width: 100%;
+}
+.ok-image img { display: block; max-width: 100%; height: auto; }
+.ok-image:hover { outline-width: 2px; }
+.ok-image .ok-badge {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  background: var(--ok-accent);
+  color: #fff;
+  font: 500 12px/1 ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  padding: 7px 12px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  pointer-events: none;      /* the label owns the click, not the badge */
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+/* the badge appears on hover on a mouse, and is ALWAYS visible on touch, where
+   there is no hover and an invisible affordance is no affordance */
+.ok-image:hover .ok-badge, .ok-image:focus-within .ok-badge { opacity: 1; }
+@media (hover: none) {
+  .ok-image .ok-badge { opacity: 1; }
+}
+
+/* ---------------------------------------------------------------- the edit bar */
+.ok-bar {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--ok-accent);
+  color: #fff;
+  font: 400 14px/1.45 ui-sans-serif, system-ui, sans-serif;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+}
+.ok-bar b { font-weight: 640; }
+.ok-bar button {
+  margin-left: auto;
+  min-height: 44px;                     /* thumb-reachable — the client is on a phone */
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-weight: 560;
+  cursor: pointer;
+}
+.ok-bar button:hover { background: rgba(255, 255, 255, 0.14); }
+
+/* ---------------------------------------------------------------- the sign-in */
+.ok-login {
+  max-width: 420px;
+  margin: 12vh auto;
+  padding: 28px 26px;
+  background: var(--ok-paper);
+  color: var(--ok-ink);
+  border-radius: 14px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.14);
+  font: 400 15px/1.55 ui-sans-serif, system-ui, sans-serif;
+  text-align: left;
+}
+.ok-login h2 { margin: 0 0 6px; font-size: 22px; font-weight: 640; }
+.ok-login p { margin: 0 0 16px; opacity: 0.75; }
+.ok-login input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 16px;                       /* 16px or iOS zooms the page on focus */
+  border: 1px solid rgba(32, 37, 30, 0.22);
+  border-radius: var(--ok-radius);
+  background: #fff;
+  color: inherit;
+  margin-bottom: 12px;
+}
+.ok-login input:focus { outline: none; border-color: var(--ok-accent); box-shadow: 0 0 0 3px var(--ok-accent-soft); }
+.ok-login button {
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: var(--ok-radius);
+  background: var(--ok-accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 580;
+  cursor: pointer;
+}
+.ok-login button:hover { filter: brightness(1.08); }
+.ok-msg { margin: 12px 0 0; font-size: 14px; color: var(--ok-accent); }
+
+/* ---------------------------------------------------------------- errors */
+/* A save that failed must say so where the client is looking, not in a console. */
+.ok-err {
+  display: block;
+  margin-top: 4px;
+  font: 400 12px/1.4 ui-sans-serif, system-ui, sans-serif;
+  font-style: normal;
+  color: var(--ok-danger);
+}
+
+/* ---------------------------------------------------------------- reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ok-editable, .ok-image .ok-badge { transition: none; }
+}

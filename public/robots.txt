@@ -4,5 +4,6 @@
 User-agent: *
 Allow: /
 Disallow: /404
+Disallow: /edit
 
 Sitemap: https://dreamsign-preview.vercel.app/sitemap.xml

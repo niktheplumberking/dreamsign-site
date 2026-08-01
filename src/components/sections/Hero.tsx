@@ -9,6 +9,8 @@
 // md, and said nothing concrete; their job is done by one centred line nobody can miss.
 import { motion, useTransform } from 'motion/react'
 import { useWorld } from '../World'
+import { bk } from '../../lib/content'
+import { EditableText } from '../../ok/OwnersKey'
 
 /** the copy carries its own legibility over the sky — no panel, no scrim */
 const GLOW = { textShadow: '0 2px 26px rgba(245,249,253,0.95), 0 0 10px rgba(245,249,253,0.85)' }
@@ -48,7 +50,7 @@ export default function Hero() {
               margin: '-0.25em -0.1em',
             }}
           >
-            Izrada sajtova
+            <EditableText k="hero-naslov">{bk('hero-naslov', 'Izrada sajtova')}</EditableText>
           </span>
           <span
             aria-hidden={false}
@@ -57,7 +59,7 @@ export default function Hero() {
                        text-[clamp(2.5rem,7vw,5.6rem)] mt-[0.04em]"
             style={GLOW}
           >
-            koji prodaju
+            <EditableText k="hero-naslov-script">{bk('hero-naslov-script', 'koji prodaju')}</EditableText>
           </span>
         </h1>
         <p
@@ -65,7 +67,9 @@ export default function Hero() {
                      text-[clamp(1rem,1.9vw,1.35rem)] leading-relaxed"
           style={GLOW}
         >
-          Moderni sajtovi za firme širom Balkana — sa ugovorom, jasnim rokom i bez skrivenih troškova.
+          <EditableText k="hero-podnaslov">
+            {bk('hero-podnaslov', 'Moderni sajtovi za firme širom Balkana — sa ugovorom, jasnim rokom i bez skrivenih troškova.')}
+          </EditableText>
         </p>
       </div>
 

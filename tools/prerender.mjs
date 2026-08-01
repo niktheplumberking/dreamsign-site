@@ -23,6 +23,12 @@ const ROUTES = [
   { path: '/kontakt', out: 'kontakt/index.html' },
   // any unknown path renders the router's catch-all — snapshot it as the host's 404 page
   { path: '/ova-stranica-ne-postoji', out: '404.html' },
+  // the Owner's Key edit twins: static hosting must serve these URLs; noindexed by the
+  // meta hook, disallowed in robots.txt
+  { path: '/edit', out: 'edit/index.html' },
+  { path: '/edit/radovi', out: 'edit/radovi/index.html' },
+  { path: '/edit/usluge', out: 'edit/usluge/index.html' },
+  { path: '/edit/kontakt', out: 'edit/kontakt/index.html' },
 ]
 
 /** every prerendered page must contain these strings or the run fails — copy in the HTML
@@ -33,6 +39,10 @@ const PROOF = {
   '/usluge': 'jedan tim, jedan potpis',
   '/kontakt': 'Dva klika i razgovaramo',
   '/ova-stranica-ne-postoji': 'Stranica nije pronađena',
+  '/edit': 'Izrada sajtova',
+  '/edit/radovi': 'Svaki sajt ovde je nekome doneo kupce',
+  '/edit/usluge': 'jedan tim, jedan potpis',
+  '/edit/kontakt': 'Dva klika i razgovaramo',
 }
 
 const MIME = {

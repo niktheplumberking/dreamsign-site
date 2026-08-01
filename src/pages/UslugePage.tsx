@@ -13,6 +13,7 @@ import Ground from '../components/Ground'
 import Usluge from '../components/sections/Usluge'
 import { MASK } from '../lib/masks'
 import { usePageMeta } from '../lib/meta'
+import { bk } from '../lib/content'
 import { PAGE_SCHEMA } from '../lib/schema'
 
 /** the four steps, verbatim from the story map — the customer's real sequence */
@@ -120,7 +121,8 @@ export default function UslugePage() {
             <div className="mx-auto max-w-4xl px-5 sm:px-6 pt-[24vh] pb-10 md:pb-14 text-center">
               <CharRise
                 as="h2"
-                text="Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis."
+                k="usluge-uvod"
+                text={bk('usluge-uvod', 'Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.')}
                 className="font-semibold tracking-tight text-ink text-[clamp(1.7rem,3.8vw,2.9rem)] leading-[1.15]"
               />
             </div>
@@ -161,7 +163,8 @@ export default function UslugePage() {
           }>
             <div className="pt-16 md:pt-24">
               <CharFill
-                text="Ugovor pre početka. Garancije u pisanom obliku. Nikad skriveni troškovi."
+                k="garancije-tekst"
+                text={bk('garancije-tekst', 'Ugovor pre početka. Garancije u pisanom obliku. Nikad skriveni troškovi.')}
                 accentWord="Garancije"
               />
             </div>
@@ -171,7 +174,8 @@ export default function UslugePage() {
             <Beat name="finale">
               <div className="pt-[26vh]">
                 <LandingCTA
-                  lead="Svaki projekat je jedinstven — ponuda stiže posle prvog razgovora."
+                  lead={bk('usluge-cta', 'Svaki projekat je jedinstven — ponuda stiže posle prvog razgovora.')}
+                  leadK="usluge-cta"
                   script="Potpišite svoj san"
                   clipId="ds-sign-usluge"
                 />

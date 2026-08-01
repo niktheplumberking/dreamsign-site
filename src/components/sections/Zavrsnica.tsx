@@ -10,6 +10,8 @@ import { WA_LINK } from '../../lib/hooks'
 import { GlossyPill } from '../Nav'
 import { useWorld, useWorldRange } from '../World'
 import { SIGNATURE_STROKE, SIGNATURE_SWEEP, SIGNATURE_VIEWBOX } from '../../lib/marks'
+import { bk } from '../../lib/content'
+import { EditableText } from '../../ok/OwnersKey'
 
 const fadeUp = (i: number) => ({
   initial: { opacity: 0, y: 30 },
@@ -34,7 +36,7 @@ export default function Zavrsnica() {
         className="font-script text-accent leading-tight text-[clamp(2.4rem,5.5vw,3.8rem)]"
         style={{ textShadow: '0 1px 0 currentColor' }}
       >
-        Imate projekat na umu?
+        <EditableText k="cta-naslov">{bk('cta-naslov', 'Imate projekat na umu?')}</EditableText>
       </motion.p>
 
       <svg

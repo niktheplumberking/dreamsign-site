@@ -14,6 +14,7 @@ import Ground from '../components/Ground'
 import { MASK } from '../lib/masks'
 import { WA_LINK } from '../lib/hooks'
 import { usePageMeta } from '../lib/meta'
+import { bk } from '../lib/content'
 import { PAGE_SCHEMA } from '../lib/schema'
 
 type Projekat = {
@@ -194,7 +195,8 @@ export default function RadoviPage() {
             <div className="mx-auto max-w-4xl px-5 sm:px-6 pt-[24vh] pb-16 md:pb-24 text-center">
               <CharRise
                 as="h2"
-                text="Svaki sajt ovde je nekome doneo kupce."
+                k="radovi-uvod"
+                text={bk('radovi-uvod', 'Svaki sajt ovde je nekome doneo kupce.')}
                 className="font-semibold tracking-tight text-ink text-[clamp(1.7rem,3.8vw,2.9rem)] leading-[1.15]"
               />
             </div>
@@ -222,7 +224,7 @@ export default function RadoviPage() {
           <Ground>
             <Beat name="finale">
               <div className="pt-[26vh]">
-                <LandingCTA script="Sledeći rezultat može biti vaš." clipId="ds-sign-radovi" />
+                <LandingCTA script={bk('radovi-cta', 'Sledeći rezultat može biti vaš.')} scriptK="radovi-cta" clipId="ds-sign-radovi" />
               </div>
             </Beat>
           </Ground>
