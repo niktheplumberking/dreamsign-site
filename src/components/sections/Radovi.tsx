@@ -229,7 +229,7 @@ export default function Radovi() {
         </motion.h2>
         <motion.p
           {...fadeUp(1)}
-          className="max-w-[34ch] text-[13.5px] leading-relaxed text-ink/60 md:justify-self-end md:pb-3"
+          className="max-w-[34ch] text-[13.5px] leading-relaxed text-ink/60 md:justify-self-end md:pb-[1.6rem]"
         >
           Svaki sajt gradimo sa jednim zadatkom — da posetioca pretvori u upit. Otvorite bilo
           koji i vidite sami.

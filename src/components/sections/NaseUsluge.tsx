@@ -151,7 +151,7 @@ export default function NaseUsluge() {
           TOUCHES/OVERLAPS both words, exactly like the zebra A. The D is absolutely centred
           and z-raised; the words tuck slightly UNDER its edges (negative margins on the D's
           box do the touching). It still turns on the world's scroll, square-on at rest. */}
-      <h2 className="relative flex items-center justify-between leading-none">
+      <h2 className="relative flex items-baseline justify-between leading-none">
         <motion.span
           initial={{ opacity: 0, x: -28 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -175,7 +175,7 @@ export default function NaseUsluge() {
         {/* the D, above the words, centred — its box is wider than the gap so it touches */}
         <span
           aria-hidden
-          className="absolute left-[46.5%] top-1/2 z-10 block -translate-x-1/2 -translate-y-1/2"
+          className="absolute left-1/2 top-1/2 z-10 block -translate-x-1/2 -translate-y-1/2"
           style={{ perspective: 1100, width: 'clamp(10rem,27vw,21.5rem)' }}
         >
           {/* NO filter on the turning letter (jank law) — the render carries its own light */}
@@ -192,11 +192,11 @@ export default function NaseUsluge() {
 
       {/* the D hangs below the centred word-line; this spacer is its overhang, so the
           band still starts under the red line */}
-      <div aria-hidden style={{ height: 'clamp(3rem, 11vw, 9.5rem)' }} />
+      <div aria-hidden style={{ height: 'clamp(1.6rem, 5.2vw, 4.4rem)' }} />
 
       {/* the staircase subtext (batch 8, measured off the reference): one word · two words
           pushed right with a wider gap · one plain full line — set at display size */}
-      <div className="mt-16 md:mt-24 flex flex-wrap items-end justify-between gap-8">
+      <div className="mt-6 md:mt-8 flex flex-wrap items-end justify-between gap-8">
         <motion.p
           initial={{ opacity: 0, y: 22 }}
           whileInView={{ opacity: 1, y: 0 }}
