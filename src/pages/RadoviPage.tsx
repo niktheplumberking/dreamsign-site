@@ -118,8 +118,12 @@ function Plate({ p, i }: { p: Projekat; i: number }) {
                   src="/media/brand/cloud-d.webp" alt="" aria-hidden
                   className="w-[38%] max-w-[240px] opacity-95 drop-shadow-[0_14px_40px_rgba(22,50,79,0.25)]"
                 />
-                <span className="liquid-glass absolute bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-5 py-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-ink/80">
-                  Slobodno mesto
+                {/* positioning lives on the wrapper: .liquid-glass sets position:relative in
+                    unlayered CSS, which beats the layered Tailwind .absolute utility */}
+                <span className="absolute bottom-6 left-1/2 -translate-x-1/2">
+                  <span className="liquid-glass block whitespace-nowrap rounded-full px-5 py-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-ink/80">
+                    Slobodno mesto
+                  </span>
                 </span>
               </div>
             )}
