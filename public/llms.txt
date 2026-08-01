@@ -1,0 +1,24 @@
+# DreamSign
+
+> DreamSign pravi sajtove koji prodaju — dizajn, izrada, SEO i održavanje za firme u
+> Srbiji. Registrovana delatnost (Ruma, Srbija), ugovor za svaki projekat, bez skrivenih
+> troškova. Svaki projekat je jedinstven: ponuda stiže posle prvog razgovora, zato na
+> sajtu nema cenovnika. Kontakt ide preko WhatsApp-a (+381 63 773 6963) ili telefonom.
+
+## Stranice
+
+- [Početna](https://dreamsign-preview.vercel.app/): šta radimo i zašto — sajtovi koji
+  posetioce pretvaraju u kupce; ugovor, garancije, transparentnost.
+- [Radovi](https://dreamsign-preview.vercel.app/radovi): izabrani projekti sa živim
+  sajtovima (Bennett & Co, Metal Kolor, Pizzdarija) i šta je svaki doneo.
+- [Usluge](https://dreamsign-preview.vercel.app/usluge): izrada premium sajtova, redizajn,
+  brendiranje, održavanje sa samostalnim uređivanjem; proces u četiri koraka.
+- [Kontakt](https://dreamsign-preview.vercel.app/kontakt): dva klika do razgovora —
+  WhatsApp, telefon, adresa.
+
+## Činjenice
+
+- Vlasnik: Nikola Šukunda, preduzetnik (APR matični broj 68643627, PIB 115798587)
+- Sedište: Dušana Jerkovića 42, 22400 Ruma, Srbija
+- Jezik sajta: srpski (engleska verzija stiže)
+- Cene se ne objavljuju — ponuda posle prvog razgovora

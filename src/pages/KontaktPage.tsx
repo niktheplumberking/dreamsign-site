@@ -148,6 +148,7 @@ export default function KontaktPage() {
     description:
       'Javite nam se jednim klikom na WhatsApp (+381 63 773 6963) ili telefonom. DreamSign, Ruma — sajtovi koji prodaju; ponuda posle prvog razgovora.',
     path: '/kontakt',
+    ogImage: '/media/og-kontakt.jpg',
     schema: PAGE_SCHEMA('Kontakt', '/kontakt'),
   })
   return (

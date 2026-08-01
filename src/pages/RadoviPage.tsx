@@ -170,6 +170,7 @@ export default function RadoviPage() {
     description:
       'Izabrani projekti: sajtovi koje smo dizajnirali i izgradili — i rezultati koje su doneli. Pogledajte radove, pa nam pišite na WhatsApp za vaš.',
     path: '/radovi',
+    ogImage: '/media/og-radovi.jpg',
     schema: PAGE_SCHEMA('Radovi', '/radovi'),
   })
 

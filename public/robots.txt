@@ -1,0 +1,8 @@
+# DreamSign — robots.txt
+# LAUNCH SWAP (Stage 8): the Sitemap host becomes https://dreamsign.rs the day the domain
+# is live. tools/checks.mjs asserts the sitemap resolves, so a stale host fails loudly.
+User-agent: *
+Allow: /
+Disallow: /404
+
+Sitemap: https://dreamsign-preview.vercel.app/sitemap.xml

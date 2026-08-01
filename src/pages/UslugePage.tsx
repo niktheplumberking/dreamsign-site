@@ -97,6 +97,7 @@ export default function UslugePage() {
     description:
       'Izrada premium sajtova, redizajn, brendiranje i održavanje — uz ugovor i garancije. Svaki projekat je jedinstven: ponuda posle prvog razgovora.',
     path: '/usluge',
+    ogImage: '/media/og-usluge.jpg',
     schema: PAGE_SCHEMA('Usluge', '/usluge'),
   })
 
