@@ -4,16 +4,18 @@
 //
 //   node tools/eyes-junctions.mjs
 //   TAG=r2 BASE=https://dreamsign-preview.vercel.app node tools/eyes-junctions.mjs
+//   ROUTE=/radovi node tools/eyes-junctions.mjs        (Stage 6: grade any page)
 import fs from 'node:fs'
 import { launch, openPage, ready, beats, fullWidthStep, verdict, bandHex, jank, BASE, OUT, DEVICES } from './lib.mjs'
 
-const TAG = process.env.TAG || 'r1'
+const ROUTE = process.env.ROUTE || '/'
+const TAG = process.env.TAG || (ROUTE === '/' ? 'r1' : ROUTE.replace(/[^a-z]+/gi, '') )
 const browser = await launch()
 const report = []
 
 for (const dev of DEVICES) {
   const page = await openPage(browser, dev.w, dev.h, dev.mobile)
-  await page.goto(`${BASE}/?jump=0`, { waitUntil: 'networkidle0' })
+  await page.goto(`${BASE}${ROUTE}?jump=0`, { waitUntil: 'networkidle0' })
   await ready(page)
 
   const b = await beats(page)
@@ -32,7 +34,7 @@ for (const dev of DEVICES) {
 
   for (const j of junctions) {
     const target = Math.max(0, Math.round(j.y - dev.h / 2))
-    await page.goto(`${BASE}/?jump=${target}`, { waitUntil: 'networkidle0' })
+    await page.goto(`${BASE}${ROUTE}?jump=${target}`, { waitUntil: 'networkidle0' })
     await ready(page)
     const buf = await page.screenshot()
     const file = `${OUT}/${TAG}-${dev.id}-${j.name.replace(/[^a-z]+/gi, '-')}.png`
@@ -45,7 +47,7 @@ for (const dev of DEVICES) {
     console.log(`   ${j.name.padEnd(20)} y=${String(j.y).padStart(5)}  fullWidthStep ${String(scan.delta).padStart(5)}  ${v}`)
   }
 
-  await page.goto(`${BASE}/?jump=0`, { waitUntil: 'networkidle0' })
+  await page.goto(`${BASE}${ROUTE}?jump=0`, { waitUntil: 'networkidle0' })
   await ready(page)
   await page.screenshot({ path: `${OUT}/${TAG}-${dev.id}-fullpage.png`, fullPage: true })
   await page.close()
@@ -56,7 +58,7 @@ for (const dev of DEVICES) {
   const errors = []
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()) })
   page.on('pageerror', e => errors.push('pageerror: ' + e.message))
-  await page.goto(`${BASE}/?jump=0`, { waitUntil: 'networkidle0' })
+  await page.goto(`${BASE}${ROUTE}?jump=0`, { waitUntil: 'networkidle0' })
   await ready(page)
   const j = await jank(page)
   console.log(`\n=== jank: p95 ${j.p95}ms · max ${j.max}ms · ${j.verdict} (law <50ms) ===`)

@@ -14,6 +14,7 @@
 //
 // No rules or dividers anywhere: a hairline across the content column reads as a section line
 // to the junction rig (measured 21–23 against a limit of 8) and breaks the one-descent law.
+import { Link } from 'react-router-dom'
 import { WA_LINK } from '../lib/hooks'
 import { LEGAL } from '../lib/marks'
 import { SIGNATURE_STROKE, SIGNATURE_VIEWBOX } from '../lib/marks'
@@ -75,9 +76,9 @@ export default function Footer() {
 
           <nav className="flex flex-col gap-2.5 text-[15px]" aria-label="Stranice" style={GLOW}>
             {PAGES.map(p => (
-              <a key={p.href} href={p.href} className="text-ink/75 hover:text-ink transition-colors w-fit">
+              <Link key={p.href} to={p.href} className="text-ink/75 hover:text-ink transition-colors w-fit">
                 {p.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
