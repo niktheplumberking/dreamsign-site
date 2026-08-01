@@ -1,5 +1,6 @@
-// Scene 3 — Usluge teaser. M4 hover-accordion cloud cards; entrances = Galaxy fade-up
-// (useInView once, margin -100px, y30→0, 0.6s, stagger 0.15). Custom-drawn glyphs, no icon sets.
+// The /usluge accordion (Stage 6 — this file was the Stage-3 seed kept for exactly this
+// page). M4 hover-accordion cloud cards; entrances = Galaxy fade-up (useInView once,
+// margin -100px, y30→0, 0.6s, stagger 0.15). Custom-drawn glyphs, no icon sets.
 import { motion } from 'motion/react'
 
 const SERVICES = [
@@ -61,17 +62,22 @@ const fadeUp = (i: number) => ({
 export default function Usluge() {
   return (
     <div className="mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-24">
-      <motion.h2 {...fadeUp(0)} className="text-center font-semibold tracking-tight text-ink text-2xl md:text-[40px] md:leading-[44px]">
-        Od prvog razgovora do lansiranja — sve gradimo mi.
-      </motion.h2>
-      {/* M4 accordion on md+; stacked cards on mobile */}
-      <div className="mt-10 md:mt-14 flex flex-col md:flex-row gap-4 md:h-[320px] group">
+      {/* M4 accordion on md+; stacked cards on mobile (spec mobile decision) */}
+      <div className="flex flex-col md:flex-row gap-4 md:h-[320px] group">
         {SERVICES.map((s, i) => (
           <motion.article
             key={s.id}
             {...fadeUp(i + 1)}
-            className="usluga-card relative overflow-hidden rounded-[1.75rem] bg-tint/70 border border-mist/60 p-6 md:p-7 flex flex-col justify-between md:basis-0"
-            style={{ flexGrow: i === 0 ? 2.5 : 1, transition: 'flex-grow 0.7s cubic-bezier(0.23,1,0.32,1)' }}
+            // no border, no flat fill: a bordered tint box over the sky is a full-width razor
+            // to the junction rig (11-18 across three junctions) — the batch-5 ink-slab scar.
+            // The card is a gradient plate that MELTS into the sky at both ends instead.
+            className="usluga-card relative overflow-hidden rounded-[1.75rem] p-6 md:p-7 flex flex-col justify-between md:basis-0"
+            style={{
+              flexGrow: i === 0 ? 2.5 : 1,
+              transition: 'flex-grow 0.7s cubic-bezier(0.23,1,0.32,1)',
+              background:
+                'linear-gradient(to bottom, rgba(220,235,248,0) 0%, rgba(220,235,248,0.72) 24%, rgba(220,235,248,0.72) 76%, rgba(220,235,248,0) 100%)',
+            }}
             onMouseEnter={(e) => {
               const row = e.currentTarget.parentElement!
               row.querySelectorAll<HTMLElement>('.usluga-card').forEach((el) => { el.style.flexGrow = '1'; el.style.opacity = '0.85' })
@@ -94,9 +100,6 @@ export default function Usluge() {
           </motion.article>
         ))}
       </div>
-      <motion.p {...fadeUp(2)} className="mt-8 text-center">
-        <a href="/usluge" className="text-accent font-medium text-[15px] underline-offset-4 hover:underline">Sve usluge →</a>
-      </motion.p>
     </div>
   )
 }
