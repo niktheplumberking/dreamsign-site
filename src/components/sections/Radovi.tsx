@@ -11,7 +11,7 @@
 // sky (the page's no-straight-lines law), so the work floats rather than sits in a box.
 import { useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react'
-import { WA_LINK } from '../../lib/hooks'
+
 import { useWorld, useWorldRange } from '../World'
 
 type Project = {
@@ -58,10 +58,13 @@ const PROJECTS: Project[] = [
     vw: { w: '29.5vw', t: '33vw', d: '2.8vw' }, px: { w: '310px', t: '420px', d: '28px' },
   },
   {
-    name: 'Vaš projekat',
-    meta: 'Slobodno mesto',
-    blurb: 'Sledeći rad kojim se hvalimo može biti vaš — javite se.',
-    href: WA_LINK,
+    // batch 15 (owner): Court Hub takes the biggest seat — his own past project, credited
+    // per his written statement (D64); the open-slot invitation moved into the blurb's job
+    name: 'Court Hub',
+    meta: 'E-commerce + brend · UAE',
+    blurb: 'Padel brend iz Dubaija — prodavnica, tereni i turniri na jednom mestu.',
+    href: 'https://courthub.ae/',
+    cover: '/media/radovi/courthub.jpg',
     vw: { w: '40vw', t: '40vw', d: '0vw' }, px: { w: '340px', t: '470px', d: '0px' },
   },
 ]
@@ -222,10 +225,12 @@ export default function Radovi() {
       <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-end">
         <motion.h2
           {...fadeUp(0)}
-          className="font-semibold tracking-tight text-ink leading-[1.02] text-[clamp(3rem,9.6vw,7.8rem)]"
+          className="font-semibold tracking-tight text-ink leading-[1.02] text-[clamp(2.6rem,7.4vw,6rem)]"
         >
-          Radovi
-          <span className="block">koji{' '}<span className="font-script font-normal text-accent text-[1.28em] leading-[0.95]">govore.</span></span>
+          {/* batch 15 (owner): „Radovi koji" one row, „govore." underneath grown to the
+              upper row's width */}
+          <span className="block whitespace-nowrap">Radovi koji</span>
+          <span className="block font-script font-normal text-accent text-[1.62em] leading-[0.9]">govore.</span>
         </motion.h2>
         <motion.p
           {...fadeUp(1)}

@@ -167,7 +167,8 @@ export default function NaseUsluge() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="font-script font-normal text-accent text-[clamp(3.9rem,16.5vw,13.4rem)]"
+          // batch 15: nudged 3px right on the owner's note
+          className="ml-[3px] font-script font-normal text-accent text-[clamp(3.9rem,16.5vw,13.4rem)]"
         >
           Usluge
         </motion.span>

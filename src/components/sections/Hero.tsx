@@ -11,6 +11,17 @@ import { motion, useTransform } from 'motion/react'
 import { useWorld } from '../World'
 import { bk } from '../../lib/content'
 import { EditableText } from '../../ok/OwnersKey'
+import { WA_LINK } from '../../lib/hooks'
+import CloudButton from '../CloudButton'
+
+/** batch 15 (owner): the hero's one job is TRUST — the four contract facts stand right
+    under the promise, small and calm, every one of them true */
+const TRUST_ROW = [
+  'APR registrovana delatnost',
+  'Ugovor pre početka',
+  'Sajt u vašem vlasništvu',
+  'Direktno sa vlasnikom',
+]
 
 /** the copy carries its own legibility over the sky — no panel, no scrim */
 const GLOW = { textShadow: '0 2px 26px rgba(245,249,253,0.95), 0 0 10px rgba(245,249,253,0.85)' }
@@ -54,9 +65,9 @@ export default function Hero() {
           </span>
           <span
             aria-hidden={false}
-            // batch 6: +30% (5.4vw → 7vw, 4.3rem → 5.6rem cap)
+            // batch 15: grown to fill the primary line's width (owner's note), from 7vw
             className="block font-script font-normal text-accent
-                       text-[clamp(2.5rem,7vw,5.6rem)] mt-[0.04em]"
+                       text-[clamp(3.1rem,10.6vw,8.4rem)] mt-[0.02em] leading-[0.95]"
             style={GLOW}
           >
             <EditableText k="hero-naslov-script">{bk('hero-naslov-script', 'koji prodaju')}</EditableText>
@@ -71,6 +82,26 @@ export default function Hero() {
             {bk('hero-podnaslov', 'Moderni sajtovi za firme širom Balkana — sa ugovorom, jasnim rokom i bez skrivenih troškova.')}
           </EditableText>
         </p>
+
+        {/* batch 15 — the trust anchor: the cloud CTA with the four true facts under it */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="mt-3 flex flex-col items-center sm:mt-4"
+        >
+          <CloudButton label="Započnite razgovor" href={WA_LINK} reduced={reduced} />
+          <ul className="-mt-1 flex max-w-[54rem] flex-wrap items-center justify-center gap-x-5 gap-y-1.5 px-2 sm:gap-x-7" style={GLOW}>
+            {TRUST_ROW.map((t) => (
+              <li key={t} className="flex items-center gap-1.5 text-[11.5px] font-semibold uppercase tracking-[0.1em] text-ink/70 sm:text-[12.5px]">
+                <svg viewBox="0 0 12 12" className="h-3 w-3 shrink-0 text-accent" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M2 6.5 4.8 9.2 10 3.4" />
+                </svg>
+                {t}
+              </li>
+            ))}
+          </ul>
+        </motion.div>
       </div>
 
       {/* Layer 3 (z-30) — the cloud bank, our "building". Top alpha ramp baked into the asset:

@@ -21,6 +21,19 @@ import { PAGE_SCHEMA } from '../lib/schema'
 
 /* ---------------------------------------------------------------- shared pieces */
 
+/** batch 15 — the Metal Kolor plate's edges as irregular blurred cloud-lines, top AND
+    bottom (the homepage warm-zone craft): ±40px undulations, 18px gaussian, stretched
+    across any viewport. A mask, not a generation. */
+const MASK_WAVY_BOTH = `url("data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 800' preserveAspectRatio='none'>` +
+  `<filter id='b' x='-10%' y='-10%' width='120%' height='120%'><feGaussianBlur stdDeviation='18'/></filter>` +
+  `<path filter='url(%23b)' fill='white' d='M0,96 C110,58 210,120 340,92 C470,66 540,128 660,112 ` +
+  `C780,98 850,54 970,74 C1090,94 1170,44 1290,62 C1360,72 1410,50 1440,58 ` +
+  `L1440,724 C1350,758 1250,706 1130,732 C1010,756 930,702 810,718 C690,732 620,768 500,750 ` +
+  `C380,732 300,764 190,742 C100,724 40,752 0,738 Z'/>` +
+  `</svg>`,
+)}")`
+
 /** the tilted script word floating up-left above a giant headline (reference geometry) */
 function TiltScript({ word }: { word: string }) {
   return (
@@ -93,31 +106,76 @@ const fadeUp = (i: number) => ({
   transition: { duration: 0.7, delay: 0.12 * i },
 })
 
-/** the paragraph + meta/link line each project carries (the live-links law) */
-function ProjectCopy({ text, meta, href, label, align = 'center' }: {
+/** the paragraph + meta/link line each project carries (the live-links law); batch 15:
+    an optional „Pročitaj više" expander — the case story (problem → rešenje → efekat)
+    grows downward, and because the text column is vertically centred, the giant title
+    above visibly RISES to make room, exactly the push the owner described */
+function ProjectCopy({ text, meta, href, label, align = 'center', more }: {
   text: string; meta: string; href: string; label: string; align?: 'center' | 'left'
+  more?: { problem: string; fix: string; effect: string }
 }) {
+  const [openMore, setOpenMore] = useState(false)
+  const alignCls = align === 'left' ? 'text-center lg:text-left' : 'text-center'
   return (
     <>
       <motion.p
         {...fadeUp(2)}
-        className={`max-w-lg text-[16px] font-medium leading-relaxed text-ink/75 sm:text-lg lg:text-xl ${
-          align === 'left' ? 'text-center lg:text-left' : 'text-center'
-        }`}
+        className={`max-w-lg text-[16px] font-medium leading-relaxed text-ink/75 sm:text-lg lg:text-xl ${alignCls}`}
       >
         {text}
       </motion.p>
       <motion.p
         {...fadeUp(3)}
-        className={`mt-5 text-[12.5px] font-semibold uppercase tracking-[0.16em] text-ink/55 ${
-          align === 'left' ? 'text-center lg:text-left' : 'text-center'
-        }`}
+        className={`mt-5 text-[12.5px] font-semibold uppercase tracking-[0.16em] text-ink/55 ${alignCls}`}
       >
         {meta} ·{' '}
         <a href={href} target="_blank" rel="noopener" className="text-accent transition-colors hover:text-ink">
           {label} ↗
         </a>
       </motion.p>
+      {more && (
+        <>
+          <motion.button
+            {...fadeUp(4)}
+            type="button"
+            onClick={() => setOpenMore(!openMore)}
+            aria-expanded={openMore}
+            className="group/m mt-5 inline-flex cursor-pointer items-center gap-2 rounded-full border border-accent/40
+                       px-5 py-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-accent
+                       transition-colors duration-300 hover:border-accent hover:bg-white/50"
+          >
+            {openMore ? 'Zatvori' : 'Pročitaj više'}
+            <span aria-hidden className={`transition-transform duration-300 ${openMore ? 'rotate-45' : ''}`}>+</span>
+          </motion.button>
+          <AnimatePresence initial={false}>
+            {openMore && (
+              <motion.div
+                key="story"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full overflow-hidden"
+              >
+                <dl className={`max-w-lg space-y-3 pt-5 text-[14px] leading-relaxed text-ink/75 ${align === 'left' ? 'text-left' : 'text-left'}`}>
+                  <div>
+                    <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/50">Problem</dt>
+                    <dd className="mt-0.5">{more.problem}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/50">Rešenje</dt>
+                    <dd className="mt-0.5">{more.fix}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent/80">Efekat</dt>
+                    <dd className="mt-0.5">{more.effect}</dd>
+                  </div>
+                </dl>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
     </>
   )
 }
@@ -138,6 +196,11 @@ function ProjekatPrvi() {
               text="Premium padel brend iz Dubaija — prodavnica opreme, izgradnja terena i turniri, sve pod jednim digitalnim krovom, građeno za publiku koja traži vrhunsko."
               meta="Court Hub — e-commerce + brend · UAE"
               href="https://courthub.ae/" label="courthub.ae"
+              more={{
+                problem: 'Tri linije posla — prodavnica, izgradnja terena i turniri — živele su razdvojeno, bez jednog mesta koje priča celu priču brenda.',
+                fix: 'Jedan sajt spaja sve tri: e-commerce prodavnica u AED, konfigurator terena sa upitom za ponudu i turnirska zajednica, dvojezično za publiku Emirata.',
+                effect: 'Svaki kanal sada vodi ka istom digitalnom domu — kupac, investitor i igrač stižu do svog cilja u par klikova, a brend nastupa kao jedna celina.',
+              }}
             />
           </div>
         </div>
@@ -199,13 +262,18 @@ function ProjekatDrugi() {
         </div>
       </div>
 
-      {/* BOTTOM: the full-bleed strip, three wide cards edge to edge. Batch 14: the dark
-          plate became WEATHER — a sky-gradient ground with two of our own soft clouds
-          drifting behind the cards (no dark blue, per the owner's note). */}
+      {/* BOTTOM: the full-bleed strip, three wide cards edge to edge. Batch 15: the plate's
+          TOP AND BOTTOM edges are IRREGULAR CLOUD-LINES now (the owner circled the straight
+          horizontal edges — a designer's plate never ends in a ruler line). Same blurred
+          wavy-mask craft as the homepage's warm zone; no generation needed, it's a mask. */}
       <div className="w-full">
         <div
-          className="relative grid min-h-[300px] w-full transform-gpu grid-cols-1 gap-3 overflow-hidden p-3 shadow-xl sm:min-h-[360px] sm:gap-4 sm:p-4 md:grid-cols-3 lg:h-[440px] lg:p-5"
-          style={{ background: 'linear-gradient(160deg, #6FA5D8 0%, #8FBBE6 34%, #A8CEF0 62%, #DCEBF8 100%)' }}
+          className="relative grid min-h-[340px] w-full transform-gpu grid-cols-1 gap-3 overflow-hidden px-3 py-14 sm:min-h-[400px] sm:gap-4 sm:px-4 md:grid-cols-3 lg:h-[520px] lg:px-5 lg:py-16"
+          style={{
+            background: 'linear-gradient(160deg, #6FA5D8 0%, #8FBBE6 34%, #A8CEF0 62%, #DCEBF8 100%)',
+            WebkitMaskImage: MASK_WAVY_BOTH,
+            maskImage: MASK_WAVY_BOTH,
+          }}
         >
           <img src="/media/bank-soft.webp" alt="" aria-hidden
                className="pointer-events-none absolute -left-[12%] -top-[18%] w-[52%] max-w-none select-none opacity-70" />
@@ -264,6 +332,11 @@ function ProjekatTreci() {
               text="Picerija sa picom na drva iz Novog Sada — meni, priča i porudžbina na dva klika, u duhu lokala koji miriše na vatru."
               meta="Pizzdarija — web sajt · Novi Sad"
               href="https://www.pizzdarija.rs/" label="pizzdarija.rs"
+              more={{
+                problem: 'Priča o testu od 72h i pici na drva nije imala digitalni dom — meni je živeo po slikama, a porudžbina je tražila telefonski poziv.',
+                fix: 'Sajt u duhu lokala: meni sa cenama, priča o vatri i fermentaciji, i porudžbina svedena na dva klika — sa telefona, gde gosti i jesu.',
+                effect: 'Gost od prvog dodira do porudžbine stiže bez zvanja i čekanja, a lokal ima izlog koji radi i kad je pećnica ugašena.',
+              }}
             />
           </div>
         </div>
@@ -397,9 +470,10 @@ function FaqSekcija() {
       {/* LEFT: the big duet heading + the booking card (batch 14: eyebrow deleted, title
           grown, „pitanja" answers in the quill — the site's own primary/script duet) */}
       <div className="flex h-full flex-col justify-between lg:col-span-5">
-        <h2 className="mb-8 leading-[0.95] tracking-tight text-ink">
-          <span className="block text-[clamp(2.6rem,4.6vw,4.2rem)] font-bold">Česta</span>
-          <span className="block font-script font-normal text-accent text-[clamp(2.9rem,5.2vw,4.8rem)]">
+        {/* batch 15: one row, much bigger — the duet on a single baseline */}
+        <h2 className="mb-8 flex flex-wrap items-baseline gap-x-4 leading-[0.95] tracking-tight text-ink">
+          <span className="text-[clamp(3rem,6.2vw,5.6rem)] font-bold">Česta</span>
+          <span className="font-script font-normal text-accent text-[clamp(3.4rem,7vw,6.4rem)]">
             pitanja
           </span>
         </h2>
@@ -465,7 +539,7 @@ function FaqSekcija() {
               key={f.q}
               style={{ borderRadius: cloudEdge }}
               className={`relative overflow-hidden transition-all duration-300 will-change-transform
-                          hover:z-20 hover:scale-[1.2] hover:shadow-[0_18px_50px_rgba(22,50,79,0.14)] ${
+                          hover:z-20 hover:scale-[1.03] hover:shadow-[0_14px_40px_rgba(22,50,79,0.10)] ${
                 isOpen ? 'bg-white shadow-[0_8px_30px_rgba(22,50,79,0.06)]' : 'bg-white/70 hover:bg-white/95'
               }`}
             >
@@ -522,6 +596,7 @@ export default function RadoviPage() {
     <main>
       <World>
         <PageHero
+          flip
           script="Naši"
           title="Radovi"
           more={{ label: 'Pogledajte više', targetId: 'prvi-projekat' }}
