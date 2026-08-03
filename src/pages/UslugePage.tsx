@@ -18,7 +18,7 @@ import { EditableText } from '../ok/OwnersKey'
 import { usePageMeta } from '../lib/meta'
 import { PAGE_SCHEMA } from '../lib/schema'
 
-const SkyGap = () => <div aria-hidden style={{ height: 'max(44vh, 500px)' }} />
+const SkyGap = () => <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
 
 /* ------------------------------------------------------------------ hero (his block) */
 
@@ -425,12 +425,12 @@ export default function UslugePage() {
             />
           }>
             <ServicesStack />
-            <SkyGap />
+            <div aria-hidden style={{ height: 'max(30vh, 340px)' }} />
           </Beat>
 
           <Ground>
             <Beat name="finale">
-              <div className="pt-[24vh]">
+              <div className="pt-[10vh]">
                 <LandingCTA
                   lead={bk('usluge-cta', 'Svaki projekat je jedinstven — ponuda stiže posle prvog razgovora.')}
                   leadK="usluge-cta"

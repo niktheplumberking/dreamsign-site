@@ -15,7 +15,7 @@ import { LEGAL, SIGNATURE_STROKE, SIGNATURE_SWEEP, SIGNATURE_VIEWBOX } from '../
 import { usePageMeta } from '../lib/meta'
 import { PAGE_SCHEMA } from '../lib/schema'
 
-const SkyGap = () => <div aria-hidden style={{ height: 'max(44vh, 500px)' }} />
+const SkyGap = () => <div aria-hidden style={{ height: 'max(38vh, 466px)' }} />
 
 const fadeUp = (i: number) => ({
   initial: { opacity: 0, y: 20 },
@@ -228,12 +228,12 @@ function KontaktBody() {
         }>
           <SkyGap />
           <KontaktBento reduced={reduced} />
-          <SkyGap />
+          <div aria-hidden style={{ height: 'max(30vh, 340px)' }} />
         </Beat>
 
         <Ground>
           <Beat name="finale">
-            <div className="pt-[22vh]">
+            <div className="pt-[10vh]">
               <MiniFinale />
             </div>
           </Beat>

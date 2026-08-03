@@ -13,7 +13,6 @@ import { World, WorldLayer, SeamBridge, Beat } from '../components/World'
 import PageHero from '../components/PageHero'
 import LandingCTA from '../components/LandingCTA'
 import Ground from '../components/Ground'
-import { GlossyPill } from '../components/Nav'
 import { MASK } from '../lib/masks'
 import { WA_LINK } from '../lib/hooks'
 import { bk } from '../lib/content'
@@ -21,9 +20,6 @@ import { usePageMeta } from '../lib/meta'
 import { PAGE_SCHEMA } from '../lib/schema'
 
 /* ---------------------------------------------------------------- shared pieces */
-
-/** the breathing sky each beat boundary demands (≥320px on both sides of a seam) */
-const SkyGap = () => <div aria-hidden style={{ height: 'max(44vh, 500px)' }} />
 
 /** the tilted script word floating up-left above a giant headline (reference geometry) */
 function TiltScript({ word }: { word: string }) {
@@ -126,7 +122,8 @@ function ProjectCopy({ text, meta, href, label, align = 'center' }: {
   )
 }
 
-/* ------------------------------------------------- project 1 · Bennett (5/7 bento) */
+/* ------------------------------------------- project 1 · Court Hub (5/7 bento) —
+   batch 14: Nick's own past project ("we legally can take credits for it", 2026-08-03) */
 
 function ProjekatPrvi() {
   return (
@@ -138,9 +135,9 @@ function ProjekatPrvi() {
           <GiantH2>Projekat</GiantH2>
           <div className="mt-6">
             <ProjectCopy
-              text="Kompletan identitet i korporativni sajt za studio za web dizajn — od logotipa do lansiranja, građen da osvaja poverenje na prvi pogled."
-              meta="Bennett & Co — brend + sajt · SAD"
-              href="https://www.bennettndco.com" label="bennettndco.com"
+              text="Premium padel brend iz Dubaija — prodavnica opreme, izgradnja terena i turniri, sve pod jednim digitalnim krovom, građeno za publiku koja traži vrhunsko."
+              meta="Court Hub — e-commerce + brend · UAE"
+              href="https://courthub.ae/" label="courthub.ae"
             />
           </div>
         </div>
@@ -150,22 +147,26 @@ function ProjekatPrvi() {
       <div className="flex items-center p-4 sm:p-6 lg:col-span-7 lg:p-8 lg:pl-0">
         <div className="grid h-[560px] w-full transform-gpu grid-cols-2 gap-3 overflow-hidden rounded-3xl bg-ink p-3 shadow-xl sm:h-[640px] sm:gap-4 sm:p-4 lg:h-[700px] lg:p-5">
           <div className="flex h-full flex-col gap-3 sm:gap-4">
-            <Tile src="/media/radovi/bento/bennett-1.jpg" alt="Bennett & Co — vrh sajta" href="https://www.bennettndco.com" className="h-[22%]" />
-            <Tile src="/media/radovi/bento/bennett-2.jpg" alt="Bennett & Co — uvodna poruka" href="https://www.bennettndco.com" className="h-[50%]" delay={0.1} />
-            {/* the accent tile: the client's own mark on our ink ground (reference: accent block) */}
+            <Tile src="/media/radovi/bento/courthub-1.jpg" alt="Court Hub — vrh sajta" href="https://courthub.ae/" className="h-[22%]" />
+            <Tile src="/media/radovi/bento/courthub-2.jpg" alt="Court Hub — brojke i usluge" href="https://courthub.ae/" className="h-[50%]" delay={0.1} />
+            {/* the accent tile: the project's name on our ink ground (reference: accent block) */}
             <motion.a
               {...fadeUp(2)}
-              href="https://www.bennettndco.com" target="_blank" rel="noopener"
-              className="group relative flex h-[28%] items-center justify-center overflow-hidden rounded-2xl border border-white/30 shadow-md"
+              href="https://courthub.ae/" target="_blank" rel="noopener"
+              className="group relative flex h-[28%] flex-col items-center justify-center gap-1.5 overflow-hidden rounded-2xl border border-white/30 shadow-md"
               style={{ background: 'linear-gradient(135deg, #22385A 0%, #16324F 100%)' }}
             >
-              <img src="/media/radovi/bennett-lockup.svg" alt="Bennett & Co logotip"
-                   className="w-[62%] max-w-[240px] opacity-95 transition-transform duration-300 group-hover:scale-105 brightness-0 invert" />
+              <span className="text-2xl font-bold uppercase tracking-[0.18em] text-white/95 transition-transform duration-300 group-hover:scale-105 sm:text-3xl">
+                Court&nbsp;Hub
+              </span>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/60">
+                Dubai · UAE
+              </span>
             </motion.a>
           </div>
           <div className="flex h-full flex-col gap-3 sm:gap-4">
-            <Tile src="/media/radovi/bento/bennett-3.jpg" alt="Bennett & Co — usluge" href="https://www.bennettndco.com" className="h-[48%]" delay={0.15} />
-            <Tile src="/media/radovi/bento/bennett-4.jpg" alt="Bennett & Co — radovi" href="https://www.bennettndco.com" className="h-[52%]" delay={0.25} />
+            <Tile src="/media/radovi/bento/courthub-3.jpg" alt="Court Hub — izgradnja terena" href="https://courthub.ae/" className="h-[48%]" delay={0.15} />
+            <Tile src="/media/radovi/bento/courthub-4.jpg" alt="Court Hub — prodavnica" href="https://courthub.ae/" className="h-[52%]" delay={0.25} />
           </div>
         </div>
       </div>
@@ -177,7 +178,7 @@ function ProjekatPrvi() {
 
 function ProjekatDrugi() {
   return (
-    <div className="flex w-full flex-col gap-10 sm:gap-14">
+    <div className="flex w-full flex-col gap-5 sm:gap-7">
       {/* TOP: title left / paragraph right (6/6, reference geometry) */}
       <div className="mx-auto w-full max-w-[1400px] px-6 sm:px-10 lg:px-14">
         <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-12">
@@ -198,14 +199,21 @@ function ProjekatDrugi() {
         </div>
       </div>
 
-      {/* BOTTOM: the full-bleed ink strip, three wide cards edge to edge (no rounding).
-          The extra air above it keeps the strip's top edge out of the junction scan band. */}
-      <div aria-hidden style={{ height: 'max(8vh, 110px)' }} />
+      {/* BOTTOM: the full-bleed strip, three wide cards edge to edge. Batch 14: the dark
+          plate became WEATHER — a sky-gradient ground with two of our own soft clouds
+          drifting behind the cards (no dark blue, per the owner's note). */}
       <div className="w-full">
-        <div className="grid min-h-[300px] w-full transform-gpu grid-cols-1 gap-3 bg-ink p-3 shadow-xl sm:min-h-[360px] sm:gap-4 sm:p-4 md:grid-cols-3 lg:h-[440px] lg:p-5">
-          <Tile src="/media/radovi/bento/metalkolor-1.jpg" alt="Metal Kolor — vrh sajta" href="https://metal-kolor.rs/" className="h-[320px] md:h-full" />
-          <Tile src="/media/radovi/bento/metalkolor-2.jpg" alt="Metal Kolor — katalog" href="https://metal-kolor.rs/" className="h-[320px] md:h-full" delay={0.15} />
-          <Tile src="/media/radovi/bento/metalkolor-3.jpg" alt="Metal Kolor — galerija" href="https://metal-kolor.rs/" className="h-[320px] md:h-full" delay={0.3} />
+        <div
+          className="relative grid min-h-[300px] w-full transform-gpu grid-cols-1 gap-3 overflow-hidden p-3 shadow-xl sm:min-h-[360px] sm:gap-4 sm:p-4 md:grid-cols-3 lg:h-[440px] lg:p-5"
+          style={{ background: 'linear-gradient(160deg, #6FA5D8 0%, #8FBBE6 34%, #A8CEF0 62%, #DCEBF8 100%)' }}
+        >
+          <img src="/media/bank-soft.webp" alt="" aria-hidden
+               className="pointer-events-none absolute -left-[12%] -top-[18%] w-[52%] max-w-none select-none opacity-70" />
+          <img src="/media/bank-soft.webp" alt="" aria-hidden
+               className="pointer-events-none absolute -bottom-[22%] -right-[10%] w-[46%] max-w-none select-none opacity-60 scale-x-[-1]" />
+          <Tile src="/media/radovi/bento/metalkolor-1.jpg" alt="Metal Kolor — vrh sajta" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-full" />
+          <Tile src="/media/radovi/bento/metalkolor-2.jpg" alt="Metal Kolor — katalog" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-full" delay={0.15} />
+          <Tile src="/media/radovi/bento/metalkolor-3.jpg" alt="Metal Kolor — galerija" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-full" delay={0.3} />
         </div>
       </div>
     </div>
@@ -220,8 +228,9 @@ function EdgeColumn({ side, shots }: { side: 'left' | 'right'; shots: [string, s
   const x = side === 'left' ? -20 : 20
   return (
     <div className={`flex h-full min-h-[420px] w-full items-center lg:col-span-3 lg:min-h-[640px]`}>
+      {/* fixed tile heights below lg: an unconstrained h-full chain resolves from the IMAGE
+          intrinsic size — lazy tiles measured 240px short and every beat below drifted 498px */}
       <div className={`flex h-full max-h-[780px] w-full transform-gpu flex-col justify-between gap-3 overflow-hidden bg-ink p-3 py-3 shadow-xl sm:gap-4 sm:p-4 ${frame}`}>
-        // fixed tile heights below lg: an unconstrained h-full chain resolves from the IMAGE intrinsic size — lazy tiles measured 240px short and every beat below drifted 498px (rig scar)
         {shots.map((src, i) => (
           <motion.a
             key={src}
@@ -288,7 +297,7 @@ function SveONama() {
         transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         className="pointer-events-none absolute z-10 block -translate-y-1/2 font-bold uppercase leading-none tracking-tight text-ink
                    top-[28%] right-[14%] text-[5.25rem] sm:top-[32%] sm:right-[18%] sm:text-[7.75rem]
-                   md:right-[22%] md:text-[9.75rem] lg:top-[35%] lg:right-[25%] lg:text-[11.75rem] xl:text-[13.25rem]"
+                   md:right-[22%] md:text-[min(9.75rem,10.4vw)] lg:top-[35%] lg:right-[25%] lg:text-[min(11.75rem,9.6vw)] xl:text-[min(13.25rem,10.2vw)]"
         aria-hidden
       >
         O
@@ -333,7 +342,7 @@ function SveONama() {
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="block w-full pl-10 text-left font-bold uppercase leading-[0.8] tracking-tight text-ink
-                     text-[4.5rem] sm:pl-24 sm:text-[7rem] md:pl-36 md:text-[9rem] lg:pl-48 lg:text-[11rem] xl:text-[13rem]"
+                     text-[4.5rem] sm:pl-24 sm:text-[7rem] md:pl-36 md:text-[min(9rem,9.6vw)] lg:pl-48 lg:text-[min(11rem,9vw)] xl:text-[min(13rem,10vw)]"
         >
           SVE
         </motion.span>
@@ -343,7 +352,7 @@ function SveONama() {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="-mt-4 block w-full pl-16 text-left font-bold uppercase leading-[0.8] tracking-tight text-ink
-                     text-[4.5rem] sm:-mt-6 sm:pl-36 sm:text-[7rem] md:pl-52 md:text-[9rem] lg:-mt-8 lg:pl-64 lg:text-[11rem] xl:text-[13rem]"
+                     text-[4.5rem] sm:-mt-6 sm:pl-36 sm:text-[7rem] md:pl-52 md:text-[min(9rem,9.6vw)] lg:-mt-8 lg:pl-64 lg:text-[min(11rem,9vw)] xl:text-[min(13rem,10vw)]"
         >
           NAMA
         </motion.span>
@@ -385,42 +394,79 @@ function FaqSekcija() {
   const [open, setOpen] = useState<number | null>(0)
   return (
     <div className="mx-auto grid w-full max-w-[1500px] grid-cols-1 items-start gap-12 px-6 sm:px-10 lg:grid-cols-12 lg:gap-16 lg:px-14">
-      {/* LEFT: eyebrow, heading, the conversation card (reference's booking card, our skin) */}
+      {/* LEFT: the big duet heading + the booking card (batch 14: eyebrow deleted, title
+          grown, „pitanja" answers in the quill — the site's own primary/script duet) */}
       <div className="flex h-full flex-col justify-between lg:col-span-5">
-        <div>
-          <div className="mb-3 flex items-center gap-2">
-            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-accent" aria-hidden />
-            <span className="text-sm font-semibold uppercase tracking-wide text-ink/70">Pitanja</span>
-          </div>
-          <h2 className="mb-8 text-3xl font-bold leading-[1.15] tracking-tight text-ink sm:text-4xl lg:text-5xl">
-            Česta pitanja
-          </h2>
-        </div>
+        <h2 className="mb-8 leading-[0.95] tracking-tight text-ink">
+          <span className="block text-[clamp(2.6rem,4.6vw,4.2rem)] font-bold">Česta</span>
+          <span className="block font-script font-normal text-accent text-[clamp(2.9rem,5.2vw,4.8rem)]">
+            pitanja
+          </span>
+        </h2>
 
         <motion.div
           {...fadeUp(1)}
           className="relative mt-4 overflow-hidden rounded-3xl border border-white/80 bg-white/85 p-6 shadow-[0_10px_35px_rgba(22,50,79,0.06)] sm:p-8 lg:mt-12"
         >
           <img src="/media/brand/cloud-d.webp" alt="" aria-hidden className="mb-5 w-16 sm:w-20 drop-shadow-md" />
-          <h3 className="mb-2 text-xl font-bold text-ink sm:text-2xl">Niste sigurni odakle da počnete?</h3>
-          <p className="mb-6 text-sm leading-relaxed text-ink/70 sm:text-base">
-            Dva klika i razgovaramo — bez obaveza. Odgovorićemo na svako pitanje pre nego što bilo šta potpišete.
+          <h3 className="mb-2 text-xl font-bold text-ink sm:text-2xl">Zakažite razgovor</h3>
+          <p className="mb-5 text-sm leading-relaxed text-ink/70 sm:text-base">
+            Izaberite termin koji vam odgovara — 15 minuta, bez obaveza.
           </p>
-          <GlossyPill href={WA_LINK} className="block w-full px-6 py-3.5 text-center text-[15px] font-semibold">
-            Započnite razgovor
-          </GlossyPill>
+          {/* BOOKING EMBED SLOT (batch 14): Nick's Calendly / cal.com lands here the moment
+              he sends the link — until then a self-hosted placeholder holds the seat
+              (no third-party script ships before the real account exists). */}
+          <div id="booking-embed-slot" className="rounded-2xl border border-mist/70 bg-bg p-4">
+            <div className="mb-3 flex items-center justify-between text-[12px] font-semibold uppercase tracking-[0.14em] text-ink/60">
+              <span>Avgust 2026</span>
+              <span aria-hidden>‹ ›</span>
+            </div>
+            <div className="grid grid-cols-7 gap-1 text-center text-[12px] font-medium text-ink/70">
+              {['P', 'U', 'S', 'Č', 'P', 'S', 'N'].map((d, i) => (
+                <span key={i} className="py-1 text-[10px] font-semibold uppercase text-ink/40">{d}</span>
+              ))}
+              {Array.from({ length: 14 }, (_, i) => (
+                <span
+                  key={i}
+                  className={`rounded-full py-1 ${i === 9 ? 'bg-accent font-semibold text-white' : 'text-ink/60'}`}
+                >
+                  {i + 3}
+                </span>
+              ))}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {['10:00', '12:30', '15:00'].map((t) => (
+                <span key={t} className="rounded-full border border-mist/80 bg-white px-3.5 py-1.5 text-[12px] font-semibold text-ink/45">
+                  {t}
+                </span>
+              ))}
+            </div>
+            <p className="mt-4 text-[12px] leading-relaxed text-ink/55">
+              Onlajn zakazivanje stiže uskoro — do tada,{' '}
+              <a href={WA_LINK} target="_blank" rel="noopener" className="font-semibold text-accent hover:text-ink">
+                dva klika i razgovaramo ↗
+              </a>
+            </p>
+          </div>
         </motion.div>
       </div>
 
-      {/* RIGHT: the accordion */}
+      {/* RIGHT: the accordion — every card wears a CLOUD EDGE (batch 14: uneven, organic
+          border radii, alternating per card; sizes untouched) and grows 20% under the
+          cursor (his emphasis effect — origin centre, raised above its neighbours) */}
       <div className="flex flex-col gap-4 lg:col-span-7">
         {FAQ.map((f, i) => {
           const isOpen = open === i
+          const cloudEdge = i % 2 === 0
+            ? '2.5rem 3.6rem 2.75rem 3.9rem / 3.6rem 2.5rem 3.9rem 2.75rem'
+            : '3.9rem 2.5rem 3.6rem 2.75rem / 2.75rem 3.9rem 2.5rem 3.6rem'
           return (
             <div
               key={f.q}
-              className={`overflow-hidden rounded-2xl transition-all duration-200 ${
-                isOpen ? 'bg-white shadow-[0_8px_30px_rgba(22,50,79,0.06)]' : 'bg-white/70 hover:bg-white/90'
+              style={{ borderRadius: cloudEdge }}
+              className={`relative overflow-hidden transition-all duration-300 will-change-transform
+                          hover:z-20 hover:scale-[1.2] hover:shadow-[0_18px_50px_rgba(22,50,79,0.14)] ${
+                isOpen ? 'bg-white shadow-[0_8px_30px_rgba(22,50,79,0.06)]' : 'bg-white/70 hover:bg-white/95'
               }`}
             >
               <button
@@ -478,49 +524,46 @@ export default function RadoviPage() {
         <PageHero
           script="Naši"
           title="Radovi"
-          left="Nikola Šukunda"
-          right="Osnivač · DreamSign"
+          more={{ label: 'Pogledajte više', targetId: 'prvi-projekat' }}
         />
 
         <div className="relative z-20 -mt-[18vh]">
           <SeamBridge className="top-0 h-[62vh]" />
 
-          <Beat name="projekat-1" layers={
-            <WorldLayer
-              src="/media/B3-square-sky.webp" eager
-              box="-top-[30vh] -bottom-[30vh]"
-              imgClass="absolute inset-0 h-[126%] w-full object-cover object-center"
-              y={['0%', '-9%']} base={0.85} mask={MASK.sky}
-            />
+          {/* batch 14: the three projects are ONE story beat — no internal seams to guard,
+              so the air between projects shrinks to a breath (his note: gaps too big).
+              Only the beat's outer boundaries keep the ≥300px sky the junction law needs. */}
+          <Beat name="projekti" layers={
+            <>
+              <WorldLayer
+                src="/media/B3-square-sky.webp" eager
+                box="-top-[30vh] -bottom-[30vh]"
+                imgClass="absolute inset-0 h-[126%] w-full object-cover object-center"
+                y={['0%', '-9%']} base={0.85} mask={MASK.sky}
+              />
+              <WorldLayer
+                src="/media/bank-soft.webp"
+                box="-top-[6vh] -bottom-[8vh]"
+                imgClass="absolute left-[-16%] top-[34%] w-[46%] h-auto max-w-none"
+                y={['0%', '-10%']} base={0.5} float={{ px: 9, sec: 10 }}
+              />
+              <WorldLayer
+                src="/media/bank-soft.webp"
+                box="-top-[6vh] -bottom-[8vh]"
+                imgClass="absolute right-[-14%] top-[64%] w-[44%] h-auto max-w-none scale-x-[-1]"
+                y={['0%', '-8%']} base={0.45} float={{ px: 7, sec: 11, delay: 1.4 }}
+              />
+            </>
           }>
-            <SkyGap />
-            <ProjekatPrvi />
-            <SkyGap />
-          </Beat>
-
-          <Beat name="projekat-2" layers={
-            <WorldLayer
-              src="/media/bank-soft.webp"
-              box="-top-[6vh] -bottom-[8vh]"
-              imgClass="absolute left-[-16%] top-[4%] w-[46%] h-auto max-w-none"
-              y={['0%', '-10%']} base={0.5} float={{ px: 9, sec: 10 }}
-            />
-          }>
+            <div aria-hidden style={{ height: 'max(38vh, 466px)' }} />
+            <div id="prvi-projekat">
+              <ProjekatPrvi />
+            </div>
+            <div aria-hidden style={{ height: 'max(12vh, 140px)' }} />
             <ProjekatDrugi />
-            <SkyGap />
-          </Beat>
-
-          <Beat name="projekat-3" layers={
-            <WorldLayer
-              src="/media/bank-soft.webp"
-              box="-top-[6vh] -bottom-[8vh]"
-              imgClass="absolute right-[-14%] top-[10%] w-[44%] h-auto max-w-none scale-x-[-1]"
-              y={['0%', '-8%']} base={0.45} float={{ px: 7, sec: 11, delay: 1.4 }}
-            />
-          }>
-            <SkyGap />
+            <div aria-hidden style={{ height: 'max(12vh, 140px)' }} />
             <ProjekatTreci />
-            <SkyGap />
+            <div aria-hidden style={{ height: 'max(30vh, 340px)' }} />
           </Beat>
 
           <Beat name="o-nama" layers={
@@ -535,14 +578,14 @@ export default function RadoviPage() {
           </Beat>
 
           <Beat name="faq">
-            <SkyGap />
+            <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
             <FaqSekcija />
-            <SkyGap />
+            <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
           </Beat>
 
           <Ground>
             <Beat name="finale">
-              <div className="pt-[24vh]">
+              <div className="pt-[10vh]">
                 <LandingCTA
                   script={bk('radovi-cta', 'Sledeći rezultat može biti vaš.')}
                   scriptK="radovi-cta"

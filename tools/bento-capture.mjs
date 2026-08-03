@@ -11,22 +11,22 @@ const OUT = path.resolve(import.meta.dirname, '../public/media/radovi/bento')
 fs.mkdirSync(OUT, { recursive: true })
 
 const SHOTS = [
-  // Bennett & Co — 2-col bento (short / tall + two mediums)
-  { url: 'https://www.bennettndco.com', out: 'bennett-1.jpg', w: 1100, h: 460, y: 0 },
-  { url: 'https://www.bennettndco.com', out: 'bennett-2.jpg', w: 800, h: 950, y: 1900 },
-  { url: 'https://www.bennettndco.com', out: 'bennett-3.jpg', w: 800, h: 900, y: 3400 },
-  { url: 'https://www.bennettndco.com', out: 'bennett-4.jpg', w: 800, h: 950, y: 5200 },
+  // Court Hub — 2-col bento (short / tall + two mediums); batch 14: Nick's own past project
+  { url: 'https://courthub.ae/', out: 'courthub-1.jpg', w: 1100, h: 460, y: 0 },
+  { url: 'https://courthub.ae/', out: 'courthub-2.jpg', w: 800, h: 950, y: 1150 },
+  { url: 'https://courthub.ae/', out: 'courthub-3.jpg', w: 800, h: 900, y: 2350 },
+  { url: 'https://courthub.ae/', out: 'courthub-4.jpg', w: 800, h: 950, y: 3500 },
   // Metal Kolor — 3 wide cards
   { url: 'https://metal-kolor.rs/', out: 'metalkolor-1.jpg', w: 980, h: 880, y: 0 },
   { url: 'https://metal-kolor.rs/', out: 'metalkolor-2.jpg', w: 980, h: 880, y: 950 },
   { url: 'https://metal-kolor.rs/', out: 'metalkolor-3.jpg', w: 980, h: 880, y: 2000 },
   // Pizzdarija — two edge columns of small/big/small
-  { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-1.jpg', w: 980, h: 460, y: 0 },
+  { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-1.jpg', w: 980, h: 460, y: 60 },
   { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-2.jpg', w: 800, h: 950, y: 700 },
-  { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-3.jpg', w: 980, h: 460, y: 1700 },
-  { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-4.jpg', w: 980, h: 460, y: 400 },
-  { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-5.jpg', w: 800, h: 950, y: 2000 },
-  { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-6.jpg', w: 980, h: 460, y: 2700 },
+  { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-3.jpg', w: 980, h: 460, y: 2050 },
+  { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-4.jpg', w: 980, h: 460, y: 760 },
+  { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-5.jpg', w: 800, h: 950, y: 2350 },
+  { url: 'https://www.pizzdarija.rs/', out: 'pizzdarija-6.jpg', w: 980, h: 460, y: 3050 },
 ]
 
 const browser = await launch()
