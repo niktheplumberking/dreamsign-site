@@ -35,12 +35,12 @@ const ROUTES = [
     is the entire point. One distinctive sentence per route, from the story map. */
 const PROOF = {
   '/': 'Izrada sajtova',
-  '/radovi': 'Svaki sajt ovde je nekome doneo kupce',
+  '/radovi': 'Kompletan identitet i korporativni sajt',
   '/usluge': 'jedan tim, jedan potpis',
   '/kontakt': 'Dva klika i razgovaramo',
   '/ova-stranica-ne-postoji': 'Stranica nije pronađena',
   '/edit': 'Izrada sajtova',
-  '/edit/radovi': 'Svaki sajt ovde je nekome doneo kupce',
+  '/edit/radovi': 'Kompletan identitet i korporativni sajt',
   '/edit/usluge': 'jedan tim, jedan potpis',
   '/edit/kontakt': 'Dva klika i razgovaramo',
 }

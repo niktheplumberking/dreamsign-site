@@ -37,7 +37,7 @@ for (const dev of DEVICES) {
     await page.goto(`${BASE}${ROUTE}?jump=${target}`, { waitUntil: 'networkidle0' })
     await ready(page)
     const buf = await page.screenshot()
-    const file = `${OUT}/${TAG}-${dev.id}-${j.name.replace(/[^a-z]+/gi, '-')}.png`
+    const file = `${OUT}/${TAG}-${dev.id}-${j.name.replace(/[^a-z0-9]+/gi, '-')}.png`
     fs.writeFileSync(file, buf)
     // the 25vh hero overlap means the seam's effects reach well past the centre line
     const mid = Math.round(dev.h / 2)
