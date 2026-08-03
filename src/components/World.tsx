@@ -57,7 +57,10 @@ export function World({ children }: { children: React.ReactNode }) {
 
   return (
     <WorldCtx.Provider value={{ p: scrollYProgress, reduced, vh: Math.max(vh, 0.001) }}>
-      <div ref={ref} className="relative overflow-hidden">
+      {/* overflow-CLIP, not hidden: clip cuts the same pixels but does NOT create a scroll
+          container, so position:sticky keeps working on descendants — the physics that had
+          disarmed every pinned scene inside the world (batch-13 unlock, Nick's stack). */}
+      <div ref={ref} className="relative overflow-clip">
         <div className="absolute inset-0 z-0 pointer-events-none" style={{ background: SKY }} />
         {children}
       </div>
