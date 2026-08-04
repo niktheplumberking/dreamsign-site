@@ -78,23 +78,34 @@ export default function PageHero({
 
   return (
     <section data-beat="hero" className={`relative w-full overflow-hidden z-10 ${flip ? 'h-screen' : 'flex h-screen flex-col'}`}>
-      {/* flip mode (batch 19): both hero images DISSOLVE before the section's overflow
+      {/* flip mode (batch 19/20): both hero images DISSOLVE before the section's overflow
           edge, revealing the world's own sky beneath — the hard cut at exactly 100vh was
-          Nick's visible break line between hero and first beat. The fade stops are set in
-          image-box space so they land ~12vh above the section bottom. */}
-      <motion.img
-        src="/media/hero-sky-still.webp" alt=""
-        className="absolute inset-0 h-[120%] w-full object-cover z-0"
-        style={{
-          ...(reduced ? {} : { y: skyY }),
-          ...(flip
-            ? {
-                WebkitMaskImage: 'linear-gradient(to bottom, black 69%, transparent 83%)',
-                maskImage: 'linear-gradient(to bottom, black 69%, transparent 83%)',
-              }
-            : {}),
-        }}
-      />
+          Nick's visible break line between hero and first beat. Batch 20: the masks live
+          on STATIC wrappers, in section space — on the images themselves they rode the
+          parallax translate, the fade band slid below the edge and the cut came back at
+          ~65% opacity the moment the page scrolled. */}
+      {flip ? (
+        <div
+          aria-hidden
+          className="absolute inset-0 z-0 overflow-hidden"
+          style={{
+            WebkitMaskImage: 'linear-gradient(to bottom, black 76%, transparent 98%)',
+            maskImage: 'linear-gradient(to bottom, black 76%, transparent 98%)',
+          }}
+        >
+          <motion.img
+            src="/media/hero-sky-still.webp" alt=""
+            className="absolute inset-0 h-[120%] w-full object-cover"
+            style={reduced ? undefined : { y: skyY }}
+          />
+        </div>
+      ) : (
+        <motion.img
+          src="/media/hero-sky-still.webp" alt=""
+          className="absolute inset-0 h-[120%] w-full object-cover z-0"
+          style={reduced ? undefined : { y: skyY }}
+        />
+      )}
 
       {flip ? (
         /* THE HOMEPAGE TWIN — identical seat, sizes and rhythm */
@@ -214,22 +225,31 @@ export default function PageHero({
         </motion.ul>
       )}
 
-      {/* the bank closes the stage (homepage geometry in flip mode) */}
-      <motion.img
-        src="/media/hero-bank-fade.webp" alt=""
-        className={`absolute left-0 right-0 z-30 w-full select-none object-cover pointer-events-none ${
-          flip ? '-top-[8%] h-[126%] object-bottom' : 'bottom-[-2%] h-[74%] object-bottom'
-        }`}
-        style={{
-          ...(reduced ? {} : { y: fgY }),
-          ...(flip
-            ? {
-                WebkitMaskImage: 'linear-gradient(to bottom, black 71%, transparent 85.5%)',
-                maskImage: 'linear-gradient(to bottom, black 71%, transparent 85.5%)',
-              }
-            : {}),
-        }}
-      />
+      {/* the bank closes the stage (homepage geometry in flip mode). The flip-mode mask
+          sits on the static wrapper: the section edge lands at 85.7% of this box, so the
+          dissolve is complete before the overflow cut AT EVERY SCROLL POSITION. */}
+      {flip ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -top-[8%] z-30 h-[126%] select-none overflow-hidden"
+          style={{
+            WebkitMaskImage: 'linear-gradient(to bottom, black 66%, transparent 84.5%)',
+            maskImage: 'linear-gradient(to bottom, black 66%, transparent 84.5%)',
+          }}
+        >
+          <motion.img
+            src="/media/hero-bank-fade.webp" alt=""
+            className="absolute inset-0 h-full w-full object-cover object-bottom"
+            style={reduced ? undefined : { y: fgY }}
+          />
+        </div>
+      ) : (
+        <motion.img
+          src="/media/hero-bank-fade.webp" alt=""
+          className="absolute left-0 right-0 bottom-[-2%] z-30 h-[74%] w-full select-none object-cover object-bottom pointer-events-none"
+          style={reduced ? undefined : { y: fgY }}
+        />
+      )}
     </section>
   )
 }

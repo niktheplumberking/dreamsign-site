@@ -9,6 +9,7 @@
 // with ≥320px of open sky on each side (SkyGap), so the seams the rig scans stay seams.
 import { useRef, useState } from 'react'
 import { motion, AnimatePresence, useTransform } from 'motion/react'
+import type { MotionValue } from 'motion/react'
 import { World, WorldLayer, SeamBridge, Beat, useWorld, useWorldRange } from '../components/World'
 import PageHero from '../components/PageHero'
 import CloudButton from '../components/CloudButton'
@@ -365,19 +366,24 @@ function EdgeColumn({ side, shots }: { side: 'left' | 'right'; shots: [string, s
   const x = side === 'left' ? -20 : 20
   return (
     <div className="relative flex h-full min-h-[420px] w-full items-center lg:col-span-3 lg:min-h-[640px]">
-      {/* batch 19 (owner, screenshot 2): the corner clouds ride the TOP layer now — full
-          opacity, overlapping the frame corners exactly where he marked red, tilted so
-          neither reads as a placed sticker (left +45°, right −30°, his numbers) */}
-      <CornerCloud
-        className={
-          side === 'left'
-            ? '-top-[6%] right-[-10%] z-20 w-[52%] rotate-45'
-            : '-top-[6%] left-[-10%] z-20 w-[52%] scale-x-[-1] rotate-[-30deg]'
-        }
-      />
-      {/* fixed tile heights below lg: an unconstrained h-full chain resolves from the IMAGE
-          intrinsic size — lazy tiles measured 240px short and every beat below drifted 498px */}
-      <div className={`relative z-10 flex h-full max-h-[780px] w-full transform-gpu flex-col justify-between gap-3 overflow-hidden bg-ink p-3 py-3 shadow-xl sm:gap-4 sm:p-4 ${frame}`}>
+      {/* the anchor box wears the FRAME's exact height (max-h cap included) so the corner
+          cloud centres on the frame's real corner — anchored to the full-height column it
+          floated ~60px above the ink (the frame centres inside the column) */}
+      <div className="relative my-auto h-full max-h-[780px] w-full">
+        {/* batch 19/20 (owner, screenshots): the corner clouds ride the TOP layer at full
+            opacity, seated EXACTLY — the frame's corner point sits behind the middle of
+            the cloud (translate-half centering on the corner itself). Left rotated 25°
+            (his correction from 45°), right keeps −30°. */}
+        <CornerCloud
+          className={
+            side === 'left'
+              ? 'right-0 top-0 z-20 w-[52%] translate-x-1/2 -translate-y-1/2 rotate-[25deg]'
+              : 'left-0 top-0 z-20 w-[52%] -translate-x-1/2 -translate-y-1/2 scale-x-[-1] rotate-[-30deg]'
+          }
+        />
+        {/* fixed tile heights below lg: an unconstrained h-full chain resolves from the IMAGE
+            intrinsic size — lazy tiles measured 240px short and every beat below drifted 498px */}
+        <div className={`relative z-10 flex h-full w-full transform-gpu flex-col justify-between gap-3 overflow-hidden bg-ink p-3 py-3 shadow-xl sm:gap-4 sm:p-4 ${frame}`}>
         {shots.map((src, i) => (
           <motion.a
             key={src}
@@ -392,37 +398,175 @@ function EdgeColumn({ side, shots }: { side: 'left' | 'right'; shots: [string, s
                  className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105" />
           </motion.a>
         ))}
+        </div>
       </div>
     </div>
+  )
+}
+
+const TRECI_SHOTS = {
+  left: ['/media/radovi/bento/pizzdarija-1.jpg', '/media/radovi/bento/pizzdarija-2.jpg', '/media/radovi/bento/pizzdarija-3.jpg'] as [string, string, string],
+  right: ['/media/radovi/bento/pizzdarija-4.jpg', '/media/radovi/bento/pizzdarija-5.jpg', '/media/radovi/bento/pizzdarija-6.jpg'] as [string, string, string],
+}
+
+/** the centre column's content — shared by the plain flow and the pinned scene */
+function TreciSadrzaj() {
+  return (
+    <Drift amp={18} className="relative flex w-full max-w-lg flex-col items-center justify-center">
+      <TiltScript word="Treći" />
+      <GiantH2>Projekat</GiantH2>
+      <div className="mt-6">
+        <ProjectCopy
+          text="Picerija sa picom na drva iz Novog Sada — meni, priča i porudžbina na dva klika, u duhu lokala koji miriše na vatru."
+          meta="Pizzdarija — web sajt · Novi Sad"
+          href="https://www.pizzdarija.rs/" label="pizzdarija.rs"
+          more={{
+            problem: 'Priča o testu od 72h i pici na drva nije imala digitalni dom — meni je živeo po slikama, a porudžbina je tražila telefonski poziv.',
+            fix: 'Sajt u duhu lokala: meni sa cenama, priča o vatri i fermentaciji, i porudžbina svedena na dva klika — sa telefona, gde gosti i jesu.',
+            effect: 'Gost od prvog dodira do porudžbine stiže bez zvanja i čekanja, a lokal ima izlog koji radi i kad je pećnica ugašena.',
+          }}
+        />
+      </div>
+    </Drift>
   )
 }
 
 function ProjekatTreci() {
   return (
     <div className="grid w-full grid-cols-1 items-stretch lg:grid-cols-12">
-      <EdgeColumn side="left" shots={['/media/radovi/bento/pizzdarija-1.jpg', '/media/radovi/bento/pizzdarija-2.jpg', '/media/radovi/bento/pizzdarija-3.jpg']} />
+      <EdgeColumn side="left" shots={TRECI_SHOTS.left} />
 
       <div className="relative z-10 my-auto flex flex-col items-center justify-center px-6 py-12 text-center sm:px-10 lg:col-span-6 lg:px-14">
-        <Drift amp={18} className="relative flex w-full max-w-lg flex-col items-center justify-center">
-          <TiltScript word="Treći" />
-          <GiantH2>Projekat</GiantH2>
-          <div className="mt-6">
-            <ProjectCopy
-              text="Picerija sa picom na drva iz Novog Sada — meni, priča i porudžbina na dva klika, u duhu lokala koji miriše na vatru."
-              meta="Pizzdarija — web sajt · Novi Sad"
-              href="https://www.pizzdarija.rs/" label="pizzdarija.rs"
-              more={{
-                problem: 'Priča o testu od 72h i pici na drva nije imala digitalni dom — meni je živeo po slikama, a porudžbina je tražila telefonski poziv.',
-                fix: 'Sajt u duhu lokala: meni sa cenama, priča o vatri i fermentaciji, i porudžbina svedena na dva klika — sa telefona, gde gosti i jesu.',
-                effect: 'Gost od prvog dodira do porudžbine stiže bez zvanja i čekanja, a lokal ima izlog koji radi i kad je pećnica ugašena.',
-              }}
-            />
-          </div>
-        </Drift>
+        <TreciSadrzaj />
       </div>
 
-      <EdgeColumn side="right" shots={['/media/radovi/bento/pizzdarija-4.jpg', '/media/radovi/bento/pizzdarija-5.jpg', '/media/radovi/bento/pizzdarija-6.jpg']} />
+      <EdgeColumn side="right" shots={TRECI_SHOTS.right} />
     </div>
+  )
+}
+
+/* ------------------------------------------- THE SWAP (batch 20, owner's big goal):
+   Treći Projekat pins for 180vh of scroll. As the visitor scrolls, the invitation rises
+   from below and pushes the project's text out the top; the Pizzdarija frames slide off
+   to their sides and OUR baby-blue panels take their exact seats — „this can be your
+   next success". Local useScroll READS the pin's slice (the TextFill / blanket-stack
+   precedent — never a second driver). Reduced motion and <lg keep the plain flow. */
+
+/** a brand panel wearing the EdgeColumn's exact geometry, on the baby blues */
+function BrandPanel({ side, textOpacity }: { side: 'left' | 'right'; textOpacity: MotionValue<number> }) {
+  const frame = side === 'left' ? 'rounded-r-3xl' : 'rounded-l-3xl'
+  return (
+    <div className="relative flex h-full min-h-[420px] w-full items-center lg:min-h-[640px]">
+      <div
+        className={`flex h-full max-h-[780px] w-full flex-col items-center justify-center gap-5 overflow-hidden
+                    border border-white/70 px-5 text-center shadow-xl ${frame}`}
+        style={{ background: 'linear-gradient(180deg, #A8CEF0 0%, #C9DFF4 55%, #DCEBF8 100%)' }}
+      >
+        {side === 'left' ? (
+          <img src="/media/brand/cloud-d.webp" alt="" aria-hidden
+               className="h-20 w-auto drop-shadow-[0_8px_18px_rgba(22,50,79,0.25)] lg:h-24" />
+        ) : (
+          <p aria-hidden className="leading-none">
+            <span className="align-baseline font-semibold tracking-tight text-ink text-3xl lg:text-4xl">Dream</span>
+            <span className="align-baseline font-script font-normal text-accent text-4xl lg:text-5xl">Sign</span>
+          </p>
+        )}
+        <motion.div style={{ opacity: textOpacity }} className="flex flex-col items-center gap-2">
+          <span
+            className="font-script font-normal leading-tight text-accent text-[clamp(1.9rem,2.4vw,2.6rem)]"
+            style={{ textShadow: '0 2px 14px rgba(245,249,253,0.8)' }}
+          >
+            {side === 'left' ? 'Ovo može biti' : 'Vi ste'}
+          </span>
+          <span className="ink-gradient font-semibold uppercase tracking-[0.14em] text-[clamp(0.95rem,1.3vw,1.25rem)]">
+            {side === 'left' ? 'vaš sledeći uspeh' : 'naš sledeći rezultat'}
+          </span>
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
+/** the pin's runway, in viewports — the scene scrubs over (RUNWAY_VH − 100)vh of scroll */
+const RUNWAY_VH = 280
+
+function TreciScena() {
+  const ref = useRef<HTMLDivElement>(null)
+  // driven by the WORLD's one progress value, not a local useScroll: the target-based
+  // scroll reader went NON-MONOTONIC over this runway's tail (t rose to ~0.86 at 4550px
+  // then fell back to 0.62 by the release point — measured, reproducible on fresh loads),
+  // so the panel text faded back out exactly when it mattered. useWorldRange slices the
+  // proven driver instead: enter = runway top at viewport top, exit = runway consumed.
+  const { p: world } = useWorld()
+  const [enter, exit] = useWorldRange(ref, 0, -(RUNWAY_VH / 100 - 1))
+  const t = useTransform(world, [enter, exit], [0, 1], { clamp: true })
+
+  // the choreography: project out ↑ and frames out ↔ first; the invitation rides up
+  // through the vacated centre; our panels arrive and are SEATED before the CTA lands
+  const oldY = useTransform(t, [0.06, 0.62], ['0vh', '-118vh'])
+  const oldLeftX = useTransform(t, [0.08, 0.56], ['0%', '-140%'])
+  const oldRightX = useTransform(t, [0.08, 0.56], ['0%', '140%'])
+  const ctaY = useTransform(t, [0.14, 0.78], ['114vh', '0vh'])
+  const inLeftX = useTransform(t, [0.34, 0.74], ['-140%', '0%'])
+  const inRightX = useTransform(t, [0.34, 0.74], ['140%', '0%'])
+  const inText = useTransform(t, [0.62, 0.9], [0, 1])
+
+  return (
+    <div ref={ref} className="relative w-full" style={{ height: `${RUNWAY_VH}vh` }}>
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <div className="grid h-full w-full grid-cols-12 items-stretch">
+          {/* the outgoing act */}
+          <motion.div style={{ x: oldLeftX }} className="col-span-3 col-start-1 row-start-1 h-full transform-gpu">
+            <EdgeColumn side="left" shots={TRECI_SHOTS.left} />
+          </motion.div>
+          <motion.div
+            style={{ y: oldY }}
+            className="col-span-6 col-start-4 row-start-1 flex transform-gpu flex-col items-center justify-center px-6 text-center lg:px-14"
+          >
+            <TreciSadrzaj />
+          </motion.div>
+          <motion.div style={{ x: oldRightX }} className="col-span-3 col-start-10 row-start-1 h-full transform-gpu">
+            <EdgeColumn side="right" shots={TRECI_SHOTS.right} />
+          </motion.div>
+
+          {/* the incoming act */}
+          <motion.div style={{ x: inLeftX }} className="z-10 col-span-3 col-start-1 row-start-1 h-full transform-gpu">
+            <BrandPanel side="left" textOpacity={inText} />
+          </motion.div>
+          <motion.div
+            style={{ y: ctaY }}
+            className="z-10 col-span-6 col-start-4 row-start-1 flex transform-gpu items-center justify-center"
+          >
+            <MiniCTA />
+          </motion.div>
+          <motion.div style={{ x: inRightX }} className="z-10 col-span-3 col-start-10 row-start-1 h-full transform-gpu">
+            <BrandPanel side="right" textOpacity={inText} />
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** the chooser: the pinned swap on lg with motion; the plain flow on phones and under
+    reduced motion (the ServicesStack rule) */
+function TreciBlok() {
+  const { reduced } = useWorld()
+  const flow = (
+    <>
+      <ProjekatTreci />
+      <div aria-hidden style={{ height: 'max(10vh, 110px)' }} />
+      <MiniCTA />
+    </>
+  )
+  if (reduced) return <>{flow}</>
+  return (
+    <>
+      <div className="lg:hidden">{flow}</div>
+      <div className="hidden lg:block">
+        <TreciScena />
+      </div>
+    </>
   )
 }
 
@@ -700,6 +844,19 @@ export default function RadoviPage() {
               the hero's true bottom edge — same pixels, honest hitboxes. */}
           <div aria-hidden style={{ height: '18vh' }} />
 
+          {/* batch 20 (owner's red line) — transitional cloud texture ACROSS the seam:
+              two quiet banks straddle the hero's bottom edge (18vh in wrapper space) so
+              the eye crosses on cloud, never on a tone step. Static on purpose — the
+              b18 jank scar was seven floating layers. Seated below the trust row. */}
+          <img
+            src="/media/bank-soft.webp" alt="" aria-hidden
+            className="pointer-events-none absolute left-[-14%] top-[14.5vh] z-10 w-[44%] max-w-none select-none opacity-70"
+          />
+          <img
+            src="/media/bank-soft.webp" alt="" aria-hidden
+            className="pointer-events-none absolute right-[-12%] top-[17.5vh] z-10 w-[38%] max-w-none select-none opacity-60 scale-x-[-1]"
+          />
+
           {/* batch 14: the three projects are ONE story beat — no internal seams to guard,
               so the air between projects shrinks to a breath (his note: gaps too big).
               Only the beat's outer boundaries keep the ≥300px sky the junction law needs. */}
@@ -749,11 +906,10 @@ export default function RadoviPage() {
             <div aria-hidden style={{ height: 'max(12vh, 140px)' }} />
             <ProjekatDrugi />
             <div aria-hidden style={{ height: 'max(12vh, 140px)' }} />
-            <ProjekatTreci />
-            {/* batch 19: the blank breath before SVE O NAMA now carries the invitation —
-                compact, centred; the beat boundary keeps its ≥300px of sky below it */}
-            <div aria-hidden style={{ height: 'max(10vh, 110px)' }} />
-            <MiniCTA />
+            {/* batch 20: Treći + the invitation became THE SWAP — a pinned scene on lg
+                (flow preserved on phones/reduced); the beat boundary keeps its ≥300px
+                of sky below it */}
+            <TreciBlok />
             <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
           </Beat>
 
