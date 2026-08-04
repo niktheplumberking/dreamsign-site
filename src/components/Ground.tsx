@@ -31,7 +31,7 @@ export default function Ground({ children }: { children: React.ReactNode }) {
         y={['0%', '-6%']} mask={MASK.plain}
         opacity={{ range: [0.50, 0.70, 1], values: [0, 1, 1] }}
       />
-      <div className="relative z-10">
+      <div className="pointer-events-auto relative z-10">
         {children}
         <Footer />
       </div>

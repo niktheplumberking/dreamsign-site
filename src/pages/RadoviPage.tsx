@@ -7,9 +7,9 @@
 //
 // JUNCTION LAW: the ink frames are content plates mid-beat. Every beat boundary is padded
 // with ≥320px of open sky on each side (SkyGap), so the seams the rig scans stay seams.
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { World, WorldLayer, SeamBridge, Beat } from '../components/World'
+import { useRef, useState } from 'react'
+import { motion, AnimatePresence, useTransform } from 'motion/react'
+import { World, WorldLayer, SeamBridge, Beat, useWorld, useWorldRange } from '../components/World'
 import PageHero from '../components/PageHero'
 import LandingCTA from '../components/LandingCTA'
 import Ground from '../components/Ground'
@@ -21,18 +21,56 @@ import { PAGE_SCHEMA } from '../lib/schema'
 
 /* ---------------------------------------------------------------- shared pieces */
 
-/** batch 15 — the Metal Kolor plate's edges as irregular blurred cloud-lines, top AND
-    bottom (the homepage warm-zone craft): ±40px undulations, 18px gaussian, stretched
-    across any viewport. A mask, not a generation. */
-const MASK_WAVY_BOTH = `url("data:image/svg+xml,${encodeURIComponent(
-  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 800' preserveAspectRatio='none'>` +
-  `<filter id='b' x='-10%' y='-10%' width='120%' height='120%'><feGaussianBlur stdDeviation='18'/></filter>` +
-  `<path filter='url(%23b)' fill='white' d='M0,96 C110,58 210,120 340,92 C470,66 540,128 660,112 ` +
-  `C780,98 850,54 970,74 C1090,94 1170,44 1290,62 C1360,72 1410,50 1440,58 ` +
-  `L1440,724 C1350,758 1250,706 1130,732 C1010,756 930,702 810,718 C690,732 620,768 500,750 ` +
-  `C380,732 300,764 190,742 C100,724 40,752 0,738 Z'/>` +
-  `</svg>`,
-)}")`
+/** batch 18 — text columns drift gently against the scroll (M5 whisper parallax on the
+    world's one progress value; still transforms only, off under reduced motion) */
+function Drift({ children, amp = 16, className = '' }: { children: React.ReactNode; amp?: number; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const { p: world, reduced } = useWorld()
+  const [enter, exit] = useWorldRange(ref, 1.0, 0.1)
+  const y = useTransform(world, [enter, exit], [amp, -amp])
+  return (
+    <motion.div ref={ref} style={reduced ? undefined : { y }} className={className}>
+      {children}
+    </motion.div>
+  )
+}
+
+/** batch 18 — a peeking cloud breaking a frame's straight edge (never a bare ruler line) */
+function CornerCloud({ className }: { className: string }) {
+  return (
+    <img
+      src="/media/bank-soft.webp" alt="" aria-hidden
+      className={`pointer-events-none absolute z-0 max-w-none select-none ${className}`}
+    />
+  )
+}
+
+/** batch 18 — the shelf of clouds the Metal Kolor cards stand on: pure sky behind, big
+    soft banks drifting between the world and the cards */
+function CloudShelf({ children }: { children: React.ReactNode }) {
+  const { reduced } = useWorld()
+  const float = (sec: number, delay = 0) =>
+    reduced ? {} : { animate: { y: [0, -10, 0] }, transition: { duration: sec, repeat: Infinity, ease: 'easeInOut' as const, delay } }
+  return (
+    <div className="relative w-full px-3 sm:px-4 lg:px-6">
+      <img
+        src="/media/hero-cloud-foreground.webp" alt="" aria-hidden
+        className="pointer-events-none absolute left-1/2 top-1/2 w-[115%] max-w-none -translate-x-1/2 -translate-y-[42%] select-none opacity-95"
+      />
+      <motion.img
+        src="/media/bank-soft.webp" alt="" aria-hidden {...float(9, 0.6)}
+        className="pointer-events-none absolute -left-[10%] -top-[16%] w-[46%] max-w-none select-none opacity-80"
+      />
+      <motion.img
+        src="/media/bank-soft.webp" alt="" aria-hidden {...float(10, 1.4)}
+        className="pointer-events-none absolute -bottom-[18%] -right-[8%] w-[42%] max-w-none select-none opacity-75 scale-x-[-1]"
+      />
+      <div className="relative grid grid-cols-1 gap-4 py-8 md:grid-cols-3 sm:gap-5 lg:py-10">
+        {children}
+      </div>
+    </div>
+  )
+}
 
 /** the tilted script word floating up-left above a giant headline (reference geometry) */
 function TiltScript({ word }: { word: string }) {
@@ -188,7 +226,7 @@ function ProjekatPrvi() {
     <div className="grid w-full grid-cols-1 items-center lg:grid-cols-12">
       {/* LEFT 5: centred text block, tilted script above the giant word */}
       <div className="relative z-10 flex flex-col items-center justify-center px-6 py-12 text-center sm:px-10 lg:col-span-5 lg:px-14">
-        <div className="relative flex w-full max-w-lg flex-col items-center justify-center">
+        <Drift amp={18} className="relative flex w-full max-w-lg flex-col items-center justify-center">
           <TiltScript word="Prvi" />
           <GiantH2>Projekat</GiantH2>
           <div className="mt-6">
@@ -203,12 +241,14 @@ function ProjekatPrvi() {
               }}
             />
           </div>
-        </div>
+        </Drift>
       </div>
 
       {/* RIGHT 7: the ink-framed bento — 2 columns (22/50/28 + 48/52), reference geometry */}
-      <div className="flex items-center p-4 sm:p-6 lg:col-span-7 lg:p-8 lg:pl-0">
-        <div className="grid h-[560px] w-full transform-gpu grid-cols-2 gap-3 overflow-hidden rounded-3xl bg-ink p-3 shadow-xl sm:h-[640px] sm:gap-4 sm:p-4 lg:h-[700px] lg:p-5">
+      <div className="relative flex items-center p-4 sm:p-6 lg:col-span-7 lg:p-8 lg:pl-0">
+        <CornerCloud className="-right-[6%] -top-[4%] w-[38%] opacity-90" />
+        <CornerCloud className="-bottom-[6%] left-[2%] w-[30%] opacity-80 scale-x-[-1]" />
+        <div className="relative z-10 grid h-[560px] w-full transform-gpu grid-cols-2 gap-3 overflow-hidden rounded-3xl bg-ink p-3 shadow-xl sm:h-[640px] sm:gap-4 sm:p-4 lg:h-[700px] lg:p-5">
           <div className="flex h-full flex-col gap-3 sm:gap-4">
             <Tile src="/media/radovi/bento/courthub-1.jpg" alt="Court Hub — vrh sajta" href="https://courthub.ae/" className="h-[22%]" />
             <Tile src="/media/radovi/bento/courthub-2.jpg" alt="Court Hub — brojke i usluge" href="https://courthub.ae/" className="h-[50%]" delay={0.1} />
@@ -246,44 +286,31 @@ function ProjekatDrugi() {
       <div className="mx-auto w-full max-w-[1400px] px-6 sm:px-10 lg:px-14">
         <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-12">
           <div className="relative flex flex-col items-center text-center lg:col-span-6 lg:items-start lg:text-left">
-            <div className="relative flex w-full max-w-lg flex-col items-center lg:items-start">
+            <Drift amp={18} className="relative flex w-full max-w-lg flex-col items-center lg:items-start lg:pl-14">
               <TiltScript word="Drugi" />
               <GiantH2 align="left">Projekat</GiantH2>
-            </div>
+            </Drift>
           </div>
-          <div className="flex flex-col items-center lg:col-span-6 lg:items-start lg:justify-self-end">
+          <Drift amp={10} className="flex flex-col items-center lg:col-span-6 lg:items-start lg:justify-self-end">
             <ProjectCopy
               align="left"
               text="Farbara koja snabdeva majstore širom Srema — katalog, galerija i kontakt, posloženi da mušterija za dva klika nađe ono po šta je došla."
               meta="Metal Kolor — web sajt · Srem"
               href="https://metal-kolor.rs/" label="metal-kolor.rs"
             />
-          </div>
+          </Drift>
         </div>
       </div>
 
-      {/* BOTTOM: the full-bleed strip, three wide cards edge to edge. Batch 15: the plate's
-          TOP AND BOTTOM edges are IRREGULAR CLOUD-LINES now (the owner circled the straight
-          horizontal edges — a designer's plate never ends in a ruler line). Same blurred
-          wavy-mask craft as the homepage's warm zone; no generation needed, it's a mask. */}
-      <div className="w-full">
-        <div
-          className="relative grid min-h-[340px] w-full transform-gpu grid-cols-1 gap-3 overflow-hidden px-3 py-14 sm:min-h-[400px] sm:gap-4 sm:px-4 md:grid-cols-3 lg:h-[520px] lg:px-5 lg:py-16"
-          style={{
-            background: 'linear-gradient(160deg, #6FA5D8 0%, #8FBBE6 34%, #A8CEF0 62%, #DCEBF8 100%)',
-            WebkitMaskImage: MASK_WAVY_BOTH,
-            maskImage: MASK_WAVY_BOTH,
-          }}
-        >
-          <img src="/media/bank-soft.webp" alt="" aria-hidden
-               className="pointer-events-none absolute -left-[12%] -top-[18%] w-[52%] max-w-none select-none opacity-70" />
-          <img src="/media/bank-soft.webp" alt="" aria-hidden
-               className="pointer-events-none absolute -bottom-[22%] -right-[10%] w-[46%] max-w-none select-none opacity-60 scale-x-[-1]" />
-          <Tile src="/media/radovi/bento/metalkolor-1.jpg" alt="Metal Kolor — vrh sajta" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-full" />
-          <Tile src="/media/radovi/bento/metalkolor-2.jpg" alt="Metal Kolor — katalog" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-full" delay={0.15} />
-          <Tile src="/media/radovi/bento/metalkolor-3.jpg" alt="Metal Kolor — galerija" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-full" delay={0.3} />
-        </div>
-      </div>
+      {/* BOTTOM (batch 18, owner): NO plate at all — the three cards float ON the world's
+          own sky, with big soft clouds drifting behind them. There is nothing to clash
+          with the one-world background and no plate edge that could ever read as a line —
+          the fix that ALWAYS holds, because the background here IS the background. */}
+      <CloudShelf>
+        <Tile src="/media/radovi/bento/metalkolor-1.jpg" alt="Metal Kolor — vrh sajta" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-[380px] lg:h-[430px]" />
+        <Tile src="/media/radovi/bento/metalkolor-2.jpg" alt="Metal Kolor — katalog" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-[380px] lg:h-[430px]" delay={0.15} />
+        <Tile src="/media/radovi/bento/metalkolor-3.jpg" alt="Metal Kolor — galerija" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-[380px] lg:h-[430px]" delay={0.3} />
+      </CloudShelf>
     </div>
   )
 }
@@ -295,10 +322,11 @@ function EdgeColumn({ side, shots }: { side: 'left' | 'right'; shots: [string, s
   const frame = side === 'left' ? 'lg:rounded-r-3xl pr-3 lg:pr-4 pl-0' : 'lg:rounded-l-3xl pl-3 lg:pl-4 pr-0'
   const x = side === 'left' ? -20 : 20
   return (
-    <div className={`flex h-full min-h-[420px] w-full items-center lg:col-span-3 lg:min-h-[640px]`}>
+    <div className="relative flex h-full min-h-[420px] w-full items-center lg:col-span-3 lg:min-h-[640px]">
+      <CornerCloud className={side === 'left' ? '-top-[5%] right-[-8%] w-[52%] opacity-85' : '-top-[5%] left-[-8%] w-[52%] opacity-85 scale-x-[-1]'} />
       {/* fixed tile heights below lg: an unconstrained h-full chain resolves from the IMAGE
           intrinsic size — lazy tiles measured 240px short and every beat below drifted 498px */}
-      <div className={`flex h-full max-h-[780px] w-full transform-gpu flex-col justify-between gap-3 overflow-hidden bg-ink p-3 py-3 shadow-xl sm:gap-4 sm:p-4 ${frame}`}>
+      <div className={`relative z-10 flex h-full max-h-[780px] w-full transform-gpu flex-col justify-between gap-3 overflow-hidden bg-ink p-3 py-3 shadow-xl sm:gap-4 sm:p-4 ${frame}`}>
         {shots.map((src, i) => (
           <motion.a
             key={src}
@@ -324,7 +352,7 @@ function ProjekatTreci() {
       <EdgeColumn side="left" shots={['/media/radovi/bento/pizzdarija-1.jpg', '/media/radovi/bento/pizzdarija-2.jpg', '/media/radovi/bento/pizzdarija-3.jpg']} />
 
       <div className="relative z-10 my-auto flex flex-col items-center justify-center px-6 py-12 text-center sm:px-10 lg:col-span-6 lg:px-14">
-        <div className="relative flex w-full max-w-lg flex-col items-center justify-center">
+        <Drift amp={18} className="relative flex w-full max-w-lg flex-col items-center justify-center">
           <TiltScript word="Treći" />
           <GiantH2>Projekat</GiantH2>
           <div className="mt-6">
@@ -339,7 +367,7 @@ function ProjekatTreci() {
               }}
             />
           </div>
-        </div>
+        </Drift>
       </div>
 
       <EdgeColumn side="right" shots={['/media/radovi/bento/pizzdarija-4.jpg', '/media/radovi/bento/pizzdarija-5.jpg', '/media/radovi/bento/pizzdarija-6.jpg']} />
@@ -597,12 +625,14 @@ export default function RadoviPage() {
       <World>
         <PageHero
           flip
+          trust
           script="Naši"
           title="Radovi"
+          sub="Izabrani projekti koje smo dizajnirali i izgradili — otvorite bilo koji i vidite sami."
           more={{ label: 'Pogledajte više', targetId: 'prvi-projekat' }}
         />
 
-        <div className="relative z-20 -mt-[18vh]">
+        <div className="pointer-events-none relative z-20 -mt-[18vh]">
           <SeamBridge className="top-0 h-[62vh]" />
 
           {/* batch 14: the three projects are ONE story beat — no internal seams to guard,

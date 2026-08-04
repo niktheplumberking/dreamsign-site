@@ -13,9 +13,9 @@ fs.mkdirSync(OUT, { recursive: true })
 const SHOTS = [
   // Court Hub — 2-col bento (short / tall + two mediums); batch 14: Nick's own past project
   { url: 'https://courthub.ae/', out: 'courthub-1.jpg', w: 1100, h: 460, y: 0 },
-  { url: 'https://courthub.ae/', out: 'courthub-2.jpg', w: 800, h: 950, y: 1150 },
-  { url: 'https://courthub.ae/', out: 'courthub-3.jpg', w: 800, h: 900, y: 2350 },
-  { url: 'https://courthub.ae/', out: 'courthub-4.jpg', w: 800, h: 950, y: 3500 },
+  { url: 'https://courthub.ae/', out: 'courthub-2.jpg', w: 900, h: 1000, y: 1600 },
+  { url: 'https://courthub.ae/', out: 'courthub-3.jpg', w: 900, h: 950, y: 2450 },
+  { url: 'https://courthub.ae/', out: 'courthub-4.jpg', w: 900, h: 1000, y: 3300 },
   // Metal Kolor — 3 wide cards
   { url: 'https://metal-kolor.rs/', out: 'metalkolor-1.jpg', w: 980, h: 880, y: 0 },
   { url: 'https://metal-kolor.rs/', out: 'metalkolor-2.jpg', w: 980, h: 880, y: 950 },

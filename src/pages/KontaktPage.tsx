@@ -215,7 +215,7 @@ function KontaktBody() {
         right={bk('kontakt-telefon', LEGAL.phone)}
       />
 
-      <div className="relative z-20 -mt-[18vh]">
+      <div className="pointer-events-none relative z-20 -mt-[18vh]">
         <SeamBridge className="top-0 h-[62vh]" />
 
         <Beat name="kontakt" layers={

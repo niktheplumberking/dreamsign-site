@@ -14,14 +14,7 @@ import { EditableText } from '../../ok/OwnersKey'
 import { WA_LINK } from '../../lib/hooks'
 import CloudButton from '../CloudButton'
 
-/** batch 15 (owner): the hero's one job is TRUST — the four contract facts stand right
-    under the promise, small and calm, every one of them true */
-const TRUST_ROW = [
-  'APR registrovana delatnost',
-  'Ugovor pre početka',
-  'Sajt u vašem vlasništvu',
-  'Direktno sa vlasnikom',
-]
+import { TRUST_ROW } from '../../lib/trust'
 
 /** the copy carries its own legibility over the sky — no panel, no scrim */
 const GLOW = { textShadow: '0 2px 26px rgba(245,249,253,0.95), 0 0 10px rgba(245,249,253,0.85)' }
@@ -99,7 +92,7 @@ export default function Hero() {
           <ul className="mt-1 flex max-w-[20rem] flex-wrap items-center justify-center gap-x-3 gap-y-1 px-2 sm:hidden" style={GLOW}>
             {TRUST_ROW.map((t, i) => (
               <li key={t} className="flex items-center gap-x-3">
-                <span className="whitespace-nowrap text-[10.5px] font-semibold uppercase tracking-[0.1em] text-ink/85">{t}</span>
+                <span className="whitespace-nowrap text-[10.5px] font-semibold uppercase tracking-[0.1em] text-ink">{t}</span>
                 {i < TRUST_ROW.length - 1 && <span aria-hidden className="h-1 w-1 shrink-0 rounded-full bg-ink/40" />}
               </li>
             ))}
@@ -120,7 +113,7 @@ export default function Hero() {
         {TRUST_ROW.map((t, i) => (
           <li key={t} className="flex items-center gap-x-4 sm:gap-x-5">
             <span
-              className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.12em] text-ink/90 sm:text-[12.5px]"
+              className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.12em] text-ink sm:text-[12.5px]"
               style={{ textShadow: '0 1px 14px rgba(255,255,255,0.98), 0 0 5px rgba(255,255,255,0.9)' }}
             >
               {t}

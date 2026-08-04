@@ -61,7 +61,7 @@ export default function Pocetna() {
         <Hero />
 
         {/* THE DESCENT — overlaps the hero by 25vh; nothing below here paints its own ground. */}
-        <div className="relative z-20 -mt-[25vh]">
+        <div className="pointer-events-none relative z-20 -mt-[25vh]">
           {/* junction 1: the gradient bridge, starting on the hero's sampled bottom colour */}
           <SeamBridge className="top-[8vh] h-[86vh]" />
 
@@ -185,7 +185,7 @@ export default function Pocetna() {
               y={['0%', '-6%']} mask={MASK.plain}
               opacity={{ range: [0.64, 0.80, 1], values: [0, 1, 1] }}
             />
-            <div className="relative z-10">
+            <div className="pointer-events-auto relative z-10">
               <Beat name="finale"><Zavrsnica /></Beat>
               <Footer />
             </div>

@@ -183,7 +183,10 @@ export function Beat({ name, layers, children }: { name: string; layers?: React.
   return (
     <div className="relative" data-beat={name}>
       {layers}
-      <div className="relative z-10">{children}</div>
+      {/* pointer-events-auto: the descent wrappers are click-TRANSPARENT (their negative
+          margin overlapped the hero and swallowed the cloud CTA's lower half — batch 18);
+          every beat re-arms its own content */}
+      <div className="pointer-events-auto relative z-10">{children}</div>
     </div>
   )
 }
