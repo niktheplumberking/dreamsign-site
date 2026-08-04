@@ -23,9 +23,10 @@ export default function Stats() {
         <motion.h2
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }} transition={{ duration: 0.6 }}
-          className="text-2xl md:text-[40px] md:leading-[44px] font-medium text-ink text-center mb-10 sm:mb-16"
+          className="text-2xl md:text-[40px] md:leading-[44px] font-medium text-center mb-10 sm:mb-16"
         >
-          Jasna pravila,{' '}
+          {/* batch 19: the brand ramp, never flat ink (colour law) */}
+          <span className="ink-gradient">Jasna pravila,</span>{' '}
           {/* the hand comes in on the promise — same quill as the signature */}
           <span className="font-script font-normal text-accent text-[1.5em] leading-none">
             od prvog dana.
@@ -40,7 +41,9 @@ export default function Stats() {
                 transition={{ duration: 0.6, delay: 0.15 * i }}
                 className="text-center"
               >
-                <div className="text-4xl sm:text-5xl md:text-[64px] md:leading-[76px] font-semibold text-ink tabular-nums">{s.value}</div>
+                <div className="text-4xl sm:text-5xl md:text-[64px] md:leading-[76px] font-semibold tabular-nums">
+                  <span className="ink-gradient">{s.value}</span>
+                </div>
                 <div className="text-sm sm:text-base md:text-xl font-medium text-ink/70 text-center">{s.label}</div>
               </motion.div>
               {i < STATS.length - 1 && <div className="hidden md:block h-[80px] w-px bg-ink/20 mx-8 lg:mx-12" />}

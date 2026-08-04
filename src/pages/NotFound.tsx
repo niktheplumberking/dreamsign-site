@@ -34,8 +34,7 @@ export default function NotFound() {
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}
-          className="mt-2 font-semibold tracking-tight text-ink text-[clamp(1.6rem,3.6vw,2.6rem)]"
-          style={{ textShadow: '0 2px 26px rgba(245,249,253,0.95)' }}
+          className="ink-gradient mt-2 font-semibold tracking-tight text-[clamp(1.6rem,3.6vw,2.6rem)]"
         >
           Stranica nije pronađena
         </motion.h1>

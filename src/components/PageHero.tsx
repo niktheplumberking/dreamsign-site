@@ -20,6 +20,8 @@ export default function PageHero({
   more,
   flip = false,
   trust = false,
+  primarySize,
+  scriptSize,
 }: {
   /** the Great Vibes word; in flip mode this is the PRIMARY word on top */
   script: string
@@ -37,6 +39,10 @@ export default function PageHero({
   flip?: boolean
   /** the four contract facts on the hero's base line (homepage grammar) */
   trust?: boolean
+  /** batch 19: size overrides for LONG duets (the homepage clamps overflow past ~16
+      chars per row) — pass full text-[clamp(...)] classes */
+  primarySize?: string
+  scriptSize?: string
 }) {
   const { p, reduced, vh } = useWorld()
   const skyY = useTransform(p, [0, vh], ['0%', '8%'])
@@ -72,10 +78,22 @@ export default function PageHero({
 
   return (
     <section data-beat="hero" className={`relative w-full overflow-hidden z-10 ${flip ? 'h-screen' : 'flex h-screen flex-col'}`}>
+      {/* flip mode (batch 19): both hero images DISSOLVE before the section's overflow
+          edge, revealing the world's own sky beneath — the hard cut at exactly 100vh was
+          Nick's visible break line between hero and first beat. The fade stops are set in
+          image-box space so they land ~12vh above the section bottom. */}
       <motion.img
         src="/media/hero-sky-still.webp" alt=""
         className="absolute inset-0 h-[120%] w-full object-cover z-0"
-        style={reduced ? undefined : { y: skyY }}
+        style={{
+          ...(reduced ? {} : { y: skyY }),
+          ...(flip
+            ? {
+                WebkitMaskImage: 'linear-gradient(to bottom, black 69%, transparent 83%)',
+                maskImage: 'linear-gradient(to bottom, black 69%, transparent 83%)',
+              }
+            : {}),
+        }}
       />
 
       {flip ? (
@@ -88,8 +106,8 @@ export default function PageHero({
             className="leading-none"
           >
             <span
-              className="block whitespace-nowrap font-semibold tracking-tight
-                         text-[clamp(2.6rem,9vw,7.5rem)] bg-clip-text text-transparent"
+              className={`block whitespace-nowrap font-semibold tracking-tight
+                         ${primarySize ?? 'text-[clamp(2.6rem,9vw,7.5rem)]'} bg-clip-text text-transparent`}
               style={{
                 backgroundImage: 'linear-gradient(to bottom, #16324F 30%, #2E5F9E 100%)',
                 padding: '0.25em 0.1em',
@@ -99,8 +117,8 @@ export default function PageHero({
               {script}
             </span>
             <span
-              className="mt-[0.02em] block font-script font-normal leading-[0.95] text-accent
-                         text-[clamp(3.1rem,10.6vw,8.4rem)]"
+              className={`mt-[0.02em] block whitespace-nowrap font-script font-normal leading-[0.95] text-accent
+                         ${scriptSize ?? 'text-[clamp(3.1rem,10.6vw,8.4rem)]'}`}
               style={GLOW}
             >
               {titleK ? <EditableText k={titleK}>{title}</EditableText> : title}
@@ -169,13 +187,14 @@ export default function PageHero({
         </div>
       )}
 
-      {/* the four facts on the hero's base line (desktop) — homepage grammar */}
+      {/* the four facts on the hero's base line (desktop) — homepage grammar.
+          pointer-events-none (batch 19): the strip must never eat the cloud CTA's clicks. */}
       {trust && (
         <motion.ul
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.75 }}
-          className="absolute inset-x-0 bottom-[4.5vh] z-40 hidden flex-wrap items-center justify-center
+          className="pointer-events-none absolute inset-x-0 bottom-[4.5vh] z-40 hidden flex-wrap items-center justify-center
                      gap-x-4 gap-y-1.5 px-4 sm:flex sm:gap-x-5"
           style={GLOW}
         >
@@ -201,7 +220,15 @@ export default function PageHero({
         className={`absolute left-0 right-0 z-30 w-full select-none object-cover pointer-events-none ${
           flip ? '-top-[8%] h-[126%] object-bottom' : 'bottom-[-2%] h-[74%] object-bottom'
         }`}
-        style={reduced ? undefined : { y: fgY }}
+        style={{
+          ...(reduced ? {} : { y: fgY }),
+          ...(flip
+            ? {
+                WebkitMaskImage: 'linear-gradient(to bottom, black 71%, transparent 85.5%)',
+                maskImage: 'linear-gradient(to bottom, black 71%, transparent 85.5%)',
+              }
+            : {}),
+        }}
       />
     </section>
   )

@@ -101,12 +101,14 @@ export default function Hero() {
       </div>
 
       {/* batch 16 — the four true facts ride the hero's base line (Nick's two yellow
-          rules): one centred row, small quiet dots between them, homepage-slider style */}
+          rules): one centred row, small quiet dots between them, homepage-slider style.
+          pointer-events-none (batch 19): the full-width strip sat OVER the cloud CTA's
+          bottom row and ate its clicks — the facts are information, never a hitbox. */}
       <motion.ul
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.75 }}
-        className="absolute inset-x-0 bottom-[4.5vh] z-40 hidden flex-wrap items-center justify-center
+        className="pointer-events-none absolute inset-x-0 bottom-[4.5vh] z-40 hidden flex-wrap items-center justify-center
                    gap-x-4 gap-y-1.5 px-4 sm:flex sm:gap-x-5"
         style={GLOW}
       >

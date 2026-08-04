@@ -73,7 +73,8 @@ function KontaktBento({ reduced }: { reduced: boolean }) {
           <p aria-hidden className="font-script leading-none text-accent text-[clamp(2rem,4vw,3rem)]">
             Dobar dan.
           </p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-[34px] sm:leading-[1.1]">
+          {/* batch 19: the brand ramp, never flat ink (colour law) */}
+          <h2 className="ink-gradient mt-2 text-2xl font-semibold tracking-tight sm:text-[34px] sm:leading-[1.1]">
             {bk('kontakt-naslov', 'Dva klika i razgovaramo.')}
           </h2>
           <p className="mt-3 max-w-[34ch] text-[14.5px] leading-relaxed text-ink/65">

@@ -48,6 +48,24 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ---------- The colour law (batch 19, owner): display text never sits in flat ink —
+   it wears the brand ramp, the homepage h1's own gradient. The padding grows the painted
+   box so descenders survive bg-clip (the batch-2 hero scar); the margins hand it back.
+   Unlayered on purpose: it must beat layered text-* utilities wherever it lands. ---------- */
+.ink-gradient {
+  background-image: linear-gradient(to bottom, #16324F 30%, #2E5F9E 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding: 0.22em 0.12em;
+  margin: -0.22em -0.12em;
+  /* an inherited text-shadow paints its glyph-shaped halo OVER the clipped gradient
+     (text paints after background) and frosts the ramp silver — the /usluge hero found
+     this. `none` gets optimized away by the CSS pipeline as an initial value, so the
+     override is a transparent shadow; depth comes from filter: drop-shadow instead. */
+  text-shadow: 0 0 rgba(0, 0, 0, 0);
+}
+
 /* ---------- The house glass, tuned light (design-language §4) ---------- */
 .liquid-glass {
   background: rgba(255, 255, 255, 0.38);

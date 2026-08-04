@@ -144,7 +144,8 @@ function UslugeHero() {
   const { p, reduced, vh } = useWorld()
   const skyY = useTransform(p, [0, vh], ['0%', '8%'])
 
-  const row = 'block font-semibold uppercase leading-[0.88] tracking-tight text-ink'
+  // batch 19: the brand ramp, never flat ink (colour law)
+  const row = 'ink-gradient block font-semibold uppercase leading-[0.88] tracking-tight'
   return (
     // the reference composition fills the FIRST screen (justify-end inside an h-screen
     // block); the trailing sky lives inside this beat so the hero's own bottom edge —
@@ -160,8 +161,10 @@ function UslugeHero() {
       <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-col items-center justify-end">
         <CloudMap />
 
-        <h1 className="flex w-full flex-col items-start text-left"
-            style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
+        {/* batch 19: the glow moved OFF the h1 — inherited onto the gradient-clipped rows
+            it painted a glyph-shaped white halo OVER the ramp (text paints after
+            background) and frosted them silver. The script span carries its own glow. */}
+        <h1 className="flex w-full flex-col items-start text-left">
           <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                        className={`${row} text-[13vw] sm:text-[10.5vw] md:text-[9vw] xl:text-[8.2rem]`}>
@@ -177,10 +180,12 @@ function UslugeHero() {
                        className="mt-1 flex w-full flex-col items-start justify-between gap-6 sm:mt-2 lg:flex-row lg:items-end lg:gap-12">
             {/* the reference sets this row in a second face — ours is the quill */}
             <span className="block font-script font-normal normal-case leading-none tracking-normal text-accent
-                             text-[13vw] sm:text-[10.5vw] md:text-[9vw] xl:text-[8.2rem]">
+                             text-[13vw] sm:text-[10.5vw] md:text-[9vw] xl:text-[8.2rem]"
+                  style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
               agencija
             </span>
-            <span className="block max-w-xs pb-1 text-left text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-sm lg:pb-4 lg:text-base xl:max-w-md">
+            <span className="block max-w-xs pb-1 text-left text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-sm lg:pb-4 lg:text-base xl:max-w-md"
+                  style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
               <EditableText k="usluge-uvod">
                 {bk('usluge-uvod', 'Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.')}
               </EditableText>
@@ -285,7 +290,9 @@ function StackCard({ i, active, onOpen }: { i: number; active: boolean; onOpen: 
         </div>
         <div className="col-span-8 flex flex-col pt-1 sm:pt-3 lg:col-span-9">
           <button onClick={onOpen} className="group/title flex w-full cursor-pointer items-center justify-between text-left" aria-expanded={active}>
-            <h2 className="text-xl font-semibold uppercase tracking-tight text-ink transition-colors group-hover/title:text-ink/75 sm:text-3xl lg:text-5xl">
+            {/* batch 19: brand ramp (colour law) — the hover dim moved to opacity, since
+                a colour change would repaint solid ink over the clipped gradient */}
+            <h2 className="ink-gradient text-xl font-semibold uppercase tracking-tight transition-opacity group-hover/title:opacity-75 sm:text-3xl lg:text-5xl">
               {s.title}
             </h2>
             <span aria-hidden className={`ml-4 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-ink/30 text-lg transition-all sm:h-10 sm:w-10 ${active ? 'rotate-45' : ''}`}>

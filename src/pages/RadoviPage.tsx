@@ -11,6 +11,7 @@ import { useRef, useState } from 'react'
 import { motion, AnimatePresence, useTransform } from 'motion/react'
 import { World, WorldLayer, SeamBridge, Beat, useWorld, useWorldRange } from '../components/World'
 import PageHero from '../components/PageHero'
+import CloudButton from '../components/CloudButton'
 import LandingCTA from '../components/LandingCTA'
 import Ground from '../components/Ground'
 import { MASK } from '../lib/masks'
@@ -35,12 +36,13 @@ function Drift({ children, amp = 16, className = '' }: { children: React.ReactNo
   )
 }
 
-/** batch 18 — a peeking cloud breaking a frame's straight edge (never a bare ruler line) */
+/** batch 18 — a peeking cloud breaking a frame's straight edge (never a bare ruler line).
+    batch 19: the layer is the caller's choice (z-0 behind the frame, z-20 riding on top). */
 function CornerCloud({ className }: { className: string }) {
   return (
     <img
       src="/media/bank-soft.webp" alt="" aria-hidden
-      className={`pointer-events-none absolute z-0 max-w-none select-none ${className}`}
+      className={`pointer-events-none absolute max-w-none select-none ${className}`}
     />
   )
 }
@@ -53,9 +55,12 @@ function CloudShelf({ children }: { children: React.ReactNode }) {
     reduced ? {} : { animate: { y: [0, -10, 0] }, transition: { duration: sec, repeat: Infinity, ease: 'easeInOut' as const, delay } }
   return (
     <div className="relative w-full px-3 sm:px-4 lg:px-6">
+      {/* batch 19 (owner): lighter — the storybook cloud read too dark behind the cards;
+          lower opacity lets the world sky through, the brightness lift washes the shading */}
       <img
         src="/media/hero-cloud-foreground.webp" alt="" aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 w-[115%] max-w-none -translate-x-1/2 -translate-y-[42%] select-none opacity-95"
+        className="pointer-events-none absolute left-1/2 top-1/2 w-[115%] max-w-none -translate-x-1/2 -translate-y-[42%] select-none opacity-60"
+        style={{ filter: 'brightness(1.14)' }}
       />
       <motion.img
         src="/media/bank-soft.webp" alt="" aria-hidden {...float(9, 0.6)}
@@ -69,6 +74,29 @@ function CloudShelf({ children }: { children: React.ReactNode }) {
         {children}
       </div>
     </div>
+  )
+}
+
+/** batch 19 (owner) — the breath between Projekat 3 and SVE O NAMA carries a small
+    centred invitation: one script line and the cloud button, nothing more */
+function MiniCTA() {
+  const { reduced } = useWorld()
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="relative z-10 flex flex-col items-center px-5 text-center"
+    >
+      <p
+        className="font-script font-normal leading-tight text-accent text-[clamp(2.1rem,4.6vw,3.4rem)]"
+        style={{ textShadow: '0 2px 20px rgba(245,249,253,0.9)' }}
+      >
+        Postanite i vi deo našeg uspeha
+      </p>
+      <CloudButton label="Započnite razgovor" href={WA_LINK} reduced={reduced} className="mt-2" />
+    </motion.div>
   )
 }
 
@@ -148,8 +176,10 @@ const fadeUp = (i: number) => ({
     an optional „Pročitaj više" expander — the case story (problem → rešenje → efekat)
     grows downward, and because the text column is vertically centred, the giant title
     above visibly RISES to make room, exactly the push the owner described */
-function ProjectCopy({ text, meta, href, label, align = 'center', more }: {
+function ProjectCopy({ text, meta, href, label, href2, label2, align = 'center', more }: {
   text: string; meta: string; href: string; label: string; align?: 'center' | 'left'
+  /** batch 19: a project that shipped as TWO live sites carries both links */
+  href2?: string; label2?: string
   more?: { problem: string; fix: string; effect: string }
 }) {
   const [openMore, setOpenMore] = useState(false)
@@ -170,6 +200,14 @@ function ProjectCopy({ text, meta, href, label, align = 'center', more }: {
         <a href={href} target="_blank" rel="noopener" className="text-accent transition-colors hover:text-ink">
           {label} ↗
         </a>
+        {href2 && label2 && (
+          <>
+            {' '}·{' '}
+            <a href={href2} target="_blank" rel="noopener" className="text-accent transition-colors hover:text-ink">
+              {label2} ↗
+            </a>
+          </>
+        )}
       </motion.p>
       {more && (
         <>
@@ -246,8 +284,8 @@ function ProjekatPrvi() {
 
       {/* RIGHT 7: the ink-framed bento — 2 columns (22/50/28 + 48/52), reference geometry */}
       <div className="relative flex items-center p-4 sm:p-6 lg:col-span-7 lg:p-8 lg:pl-0">
-        <CornerCloud className="-right-[6%] -top-[4%] w-[38%] opacity-90" />
-        <CornerCloud className="-bottom-[6%] left-[2%] w-[30%] opacity-80 scale-x-[-1]" />
+        <CornerCloud className="z-0 -right-[6%] -top-[4%] w-[38%] opacity-90" />
+        <CornerCloud className="z-0 -bottom-[6%] left-[2%] w-[30%] opacity-80 scale-x-[-1]" />
         <div className="relative z-10 grid h-[560px] w-full transform-gpu grid-cols-2 gap-3 overflow-hidden rounded-3xl bg-ink p-3 shadow-xl sm:h-[640px] sm:gap-4 sm:p-4 lg:h-[700px] lg:p-5">
           <div className="flex h-full flex-col gap-3 sm:gap-4">
             <Tile src="/media/radovi/bento/courthub-1.jpg" alt="Court Hub — vrh sajta" href="https://courthub.ae/" className="h-[22%]" />
@@ -277,7 +315,10 @@ function ProjekatPrvi() {
   )
 }
 
-/* --------------------------------------- project 2 · Metal Kolor (full-bleed strip) */
+/* ------------------------------------ project 2 · MindxBridge (full-bleed strip) —
+   batch 19 (owner): his own project, two live sites (mindxbridge.com + .academy),
+   credited per his written statement 2026-08-04. Metal Kolor stays in the homepage
+   cascade; this seat now shows the research platform + its academy. */
 
 function ProjekatDrugi() {
   return (
@@ -294,9 +335,10 @@ function ProjekatDrugi() {
           <Drift amp={10} className="flex flex-col items-center lg:col-span-6 lg:items-start lg:justify-self-end">
             <ProjectCopy
               align="left"
-              text="Farbara koja snabdeva majstore širom Srema — katalog, galerija i kontakt, posloženi da mušterija za dva klika nađe ono po šta je došla."
-              meta="Metal Kolor — web sajt · Srem"
-              href="https://metal-kolor.rs/" label="metal-kolor.rs"
+              text="Istraživački inkubator za medicinu — platforma koja studente i lekare vodi od ideje do objavljenog naučnog rada, uz mentorstvo i jasan tok. Uz nju stoji i akademija: kursevi kliničkog istraživanja i primene veštačke inteligencije u medicini."
+              meta="MindxBridge — platforma + akademija"
+              href="https://mindxbridge.com/" label="mindxbridge.com"
+              href2="https://mindxbridge.academy/" label2="mindxbridge.academy"
             />
           </Drift>
         </div>
@@ -307,9 +349,9 @@ function ProjekatDrugi() {
           with the one-world background and no plate edge that could ever read as a line —
           the fix that ALWAYS holds, because the background here IS the background. */}
       <CloudShelf>
-        <Tile src="/media/radovi/bento/metalkolor-1.jpg" alt="Metal Kolor — vrh sajta" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-[380px] lg:h-[430px]" />
-        <Tile src="/media/radovi/bento/metalkolor-2.jpg" alt="Metal Kolor — katalog" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-[380px] lg:h-[430px]" delay={0.15} />
-        <Tile src="/media/radovi/bento/metalkolor-3.jpg" alt="Metal Kolor — galerija" href="https://metal-kolor.rs/" className="relative h-[320px] md:h-[380px] lg:h-[430px]" delay={0.3} />
+        <Tile src="/media/radovi/bento/mindxbridge-1.jpg" alt="MindxBridge — vrh platforme" href="https://mindxbridge.com/" className="relative h-[320px] md:h-[380px] lg:h-[430px]" />
+        <Tile src="/media/radovi/bento/mindxbridge-2.jpg" alt="MindxBridge — usluge i tok istraživanja" href="https://mindxbridge.com/" className="relative h-[320px] md:h-[380px] lg:h-[430px]" delay={0.15} />
+        <Tile src="/media/radovi/bento/mindxbridge-3.jpg" alt="MindxBridge Academy — kursevi" href="https://mindxbridge.academy/" className="relative h-[320px] md:h-[380px] lg:h-[430px]" delay={0.3} />
       </CloudShelf>
     </div>
   )
@@ -323,7 +365,16 @@ function EdgeColumn({ side, shots }: { side: 'left' | 'right'; shots: [string, s
   const x = side === 'left' ? -20 : 20
   return (
     <div className="relative flex h-full min-h-[420px] w-full items-center lg:col-span-3 lg:min-h-[640px]">
-      <CornerCloud className={side === 'left' ? '-top-[5%] right-[-8%] w-[52%] opacity-85' : '-top-[5%] left-[-8%] w-[52%] opacity-85 scale-x-[-1]'} />
+      {/* batch 19 (owner, screenshot 2): the corner clouds ride the TOP layer now — full
+          opacity, overlapping the frame corners exactly where he marked red, tilted so
+          neither reads as a placed sticker (left +45°, right −30°, his numbers) */}
+      <CornerCloud
+        className={
+          side === 'left'
+            ? '-top-[6%] right-[-10%] z-20 w-[52%] rotate-45'
+            : '-top-[6%] left-[-10%] z-20 w-[52%] scale-x-[-1] rotate-[-30deg]'
+        }
+      />
       {/* fixed tile heights below lg: an unconstrained h-full chain resolves from the IMAGE
           intrinsic size — lazy tiles measured 240px short and every beat below drifted 498px */}
       <div className={`relative z-10 flex h-full max-h-[780px] w-full transform-gpu flex-col justify-between gap-3 overflow-hidden bg-ink p-3 py-3 shadow-xl sm:gap-4 sm:p-4 ${frame}`}>
@@ -498,10 +549,12 @@ function FaqSekcija() {
       {/* LEFT: the big duet heading + the booking card (batch 14: eyebrow deleted, title
           grown, „pitanja" answers in the quill — the site's own primary/script duet) */}
       <div className="flex h-full flex-col justify-between lg:col-span-5">
-        {/* batch 15: one row, much bigger — the duet on a single baseline */}
-        <h2 className="mb-8 flex flex-wrap items-baseline gap-x-4 leading-[0.95] tracking-tight text-ink">
-          <span className="text-[clamp(3rem,6.2vw,5.6rem)] font-bold">Česta</span>
-          <span className="font-script font-normal text-accent text-[clamp(3.4rem,7vw,6.4rem)]">
+        {/* batch 15: one row, much bigger — the duet on a single baseline.
+            batch 19 (owner): „pitanja" steps down to „Česta"'s exact size, and „Česta"
+            trades flat ink for the brand ramp (the colour law). */}
+        <h2 className="mb-8 flex flex-wrap items-baseline gap-x-4 leading-[0.95] tracking-tight">
+          <span className="ink-gradient text-[clamp(3rem,6.2vw,5.6rem)] font-bold">Česta</span>
+          <span className="font-script font-normal text-accent text-[clamp(3rem,6.2vw,5.6rem)]">
             pitanja
           </span>
         </h2>
@@ -623,17 +676,29 @@ export default function RadoviPage() {
   return (
     <main>
       <World>
+        {/* batch 19 (owner): the duet reads „Pogledajte neke od / naših najboljih radova" —
+            row 1 primary, row 2 script. Long rows need their own clamps: the homepage
+            sizes overflow past ~16 characters (both rows are nowrap). */}
         <PageHero
           flip
           trust
-          script="Naši"
-          title="Radovi"
+          script="Pogledajte neke od"
+          title="naših najboljih radova"
+          primarySize="text-[clamp(1.9rem,6.6vw,5.4rem)]"
+          scriptSize="text-[clamp(2.2rem,8.2vw,6.8rem)]"
           sub="Izabrani projekti koje smo dizajnirali i izgradili — otvorite bilo koji i vidite sami."
           more={{ label: 'Pogledajte više', targetId: 'prvi-projekat' }}
         />
 
         <div className="pointer-events-none relative z-20 -mt-[18vh]">
           <SeamBridge className="top-0 h-[62vh]" />
+
+          {/* batch 19 — the hero-overlap band lives OUTSIDE the beat: the beat's content
+              box is pointer-events-auto, and when its leading sky spacer straddled the
+              hero it swallowed the cloud CTA's lower 70% (probed). This click-transparent
+              spacer is exactly the wrapper's negative margin, so the beat now begins at
+              the hero's true bottom edge — same pixels, honest hitboxes. */}
+          <div aria-hidden style={{ height: '18vh' }} />
 
           {/* batch 14: the three projects are ONE story beat — no internal seams to guard,
               so the air between projects shrinks to a breath (his note: gaps too big).
@@ -660,7 +725,24 @@ export default function RadoviPage() {
               />
             </>
           }>
-            <div aria-hidden style={{ height: 'max(38vh, 466px)' }} />
+            {/* the beat opens on a breath of sky (minus the 18vh that moved outside it) —
+                the portfolio line sits close under the hero, where Nick drew its box */}
+            <div aria-hidden style={{ height: 'calc(max(24vh, 300px) - 18vh)' }} />
+
+            {/* batch 19 (owner): „NAŠ PORTFOLIO" fills the blue-boxed air under the hero,
+                riding its own parallax — centred and stroke-thin per row, so the junction
+                rig's full-width median never sees it */}
+            <Drift amp={30} className="relative z-10 flex justify-center px-5">
+              <h2
+                className="ink-gradient whitespace-nowrap text-center font-semibold uppercase tracking-tight
+                           leading-none text-[clamp(2.6rem,8.6vw,7.6rem)]"
+                style={{ filter: 'drop-shadow(0 8px 22px rgba(22,50,79,0.16))' }}
+              >
+                Naš portfolio
+              </h2>
+            </Drift>
+            <div aria-hidden style={{ height: 'max(16vh, 190px)' }} />
+
             <div id="prvi-projekat">
               <ProjekatPrvi />
             </div>
@@ -668,7 +750,11 @@ export default function RadoviPage() {
             <ProjekatDrugi />
             <div aria-hidden style={{ height: 'max(12vh, 140px)' }} />
             <ProjekatTreci />
-            <div aria-hidden style={{ height: 'max(30vh, 340px)' }} />
+            {/* batch 19: the blank breath before SVE O NAMA now carries the invitation —
+                compact, centred; the beat boundary keeps its ≥300px of sky below it */}
+            <div aria-hidden style={{ height: 'max(10vh, 110px)' }} />
+            <MiniCTA />
+            <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
           </Beat>
 
           <Beat name="o-nama" layers={

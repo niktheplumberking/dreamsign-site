@@ -229,11 +229,11 @@ export default function Radovi() {
       <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-end">
         <motion.h2
           {...fadeUp(0)}
-          className="font-semibold tracking-tight text-ink leading-[1.02] text-[clamp(2.6rem,7.4vw,6rem)]"
+          className="font-semibold tracking-tight leading-[1.02] text-[clamp(2.6rem,7.4vw,6rem)]"
         >
           {/* batch 15 (owner): „Radovi koji" one row, „govore." underneath grown to the
-              upper row's width */}
-          <span className="block whitespace-nowrap">Radovi koji</span>
+              upper row's width. batch 19: the brand ramp, never flat ink (colour law). */}
+          <span className="ink-gradient block whitespace-nowrap">Radovi koji</span>
           <span className="block font-script font-normal text-accent text-[1.62em] leading-[0.9]">govore.</span>
         </motion.h2>
         <motion.p

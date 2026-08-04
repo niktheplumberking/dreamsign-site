@@ -157,7 +157,8 @@ export default function NaseUsluge() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="font-semibold tracking-tight text-ink text-[clamp(3.2rem,13.5vw,11rem)]"
+          // batch 19: the brand ramp, never flat ink (colour law)
+          className="ink-gradient font-semibold tracking-tight text-[clamp(3.2rem,13.5vw,11rem)]"
         >
           Naše
         </motion.span>
