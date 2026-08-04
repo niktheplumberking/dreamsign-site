@@ -167,8 +167,9 @@ export default function NaseUsluge() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          // batch 15/16: nudged right on the owner's note (3px, then a few more)
-          className="ml-[11px] font-script font-normal text-accent text-[clamp(3.9rem,16.5vw,13.4rem)]"
+          // batch 17: pulled PAST the container's right edge to Nick's blue line — in a
+          // justify-between row a left margin never moved it; a negative right margin does
+          className="md:-mr-[46px] font-script font-normal text-accent text-[clamp(3.9rem,16.5vw,13.4rem)]"
         >
           Usluge
         </motion.span>

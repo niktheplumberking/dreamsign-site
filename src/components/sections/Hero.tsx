@@ -90,7 +90,8 @@ export default function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="mt-0 flex flex-col items-center sm:mt-0.5"
+          // batch 17: seated lower into the bank, inside Nick's red box
+          className="mt-6 flex flex-col items-center sm:mt-9"
         >
           <CloudButton label="Započnite razgovor" href={WA_LINK} reduced={reduced} />
           {/* phones: the facts stay in flow under the cloud — at the hero's base they
