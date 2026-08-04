@@ -83,26 +83,53 @@ export default function Hero() {
           </EditableText>
         </p>
 
-        {/* batch 15 — the trust anchor: the cloud CTA with the four true facts under it */}
+        {/* batch 15/16 — the cloud CTA; its gap to the subtitle mirrors the subtitle's own
+            gap to „koji prodaju" (the puff carries ~26px of transparent air on top, so the
+            margin compensates to make the VISIBLE gaps read equal) */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="mt-3 flex flex-col items-center sm:mt-4"
+          className="mt-0 flex flex-col items-center sm:mt-0.5"
         >
           <CloudButton label="Započnite razgovor" href={WA_LINK} reduced={reduced} />
-          <ul className="-mt-1 flex max-w-[54rem] flex-wrap items-center justify-center gap-x-5 gap-y-1.5 px-2 sm:gap-x-7" style={GLOW}>
-            {TRUST_ROW.map((t) => (
-              <li key={t} className="flex items-center gap-1.5 text-[11.5px] font-semibold uppercase tracking-[0.1em] text-ink/70 sm:text-[12.5px]">
-                <svg viewBox="0 0 12 12" className="h-3 w-3 shrink-0 text-accent" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M2 6.5 4.8 9.2 10 3.4" />
-                </svg>
-                {t}
+          {/* phones: the facts stay in flow under the cloud — at the hero's base they
+              collided with the next beat's overlapping headline */}
+          <ul className="mt-1 flex max-w-[20rem] flex-wrap items-center justify-center gap-x-3 gap-y-1 px-2 sm:hidden" style={GLOW}>
+            {TRUST_ROW.map((t, i) => (
+              <li key={t} className="flex items-center gap-x-3">
+                <span className="whitespace-nowrap text-[10.5px] font-semibold uppercase tracking-[0.1em] text-ink/85">{t}</span>
+                {i < TRUST_ROW.length - 1 && <span aria-hidden className="h-1 w-1 shrink-0 rounded-full bg-ink/40" />}
               </li>
             ))}
           </ul>
         </motion.div>
       </div>
+
+      {/* batch 16 — the four true facts ride the hero's base line (Nick's two yellow
+          rules): one centred row, small quiet dots between them, homepage-slider style */}
+      <motion.ul
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.75 }}
+        className="absolute inset-x-0 bottom-[4.5vh] z-40 hidden flex-wrap items-center justify-center
+                   gap-x-4 gap-y-1.5 px-4 sm:flex sm:gap-x-5"
+        style={GLOW}
+      >
+        {TRUST_ROW.map((t, i) => (
+          <li key={t} className="flex items-center gap-x-4 sm:gap-x-5">
+            <span
+              className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.12em] text-ink/90 sm:text-[12.5px]"
+              style={{ textShadow: '0 1px 14px rgba(255,255,255,0.98), 0 0 5px rgba(255,255,255,0.9)' }}
+            >
+              {t}
+            </span>
+            {i < TRUST_ROW.length - 1 && (
+              <span aria-hidden className="h-1 w-1 shrink-0 rounded-full bg-ink/40" />
+            )}
+          </li>
+        ))}
+      </motion.ul>
 
       {/* Layer 3 (z-30) — the cloud bank, our "building". Top alpha ramp baked into the asset:
           at narrow crops its frame edge was a hard line. */}

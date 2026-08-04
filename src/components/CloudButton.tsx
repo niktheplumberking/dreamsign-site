@@ -28,8 +28,9 @@ export default function CloudButton({
         className="w-full select-none drop-shadow-[0_10px_26px_rgba(22,50,79,0.22)]
                    transition-transform duration-300 group-hover:scale-105"
       />
-      {/* the puff's dense body sits mid-low in the image — the label parks there */}
-      <span className="pointer-events-none absolute inset-0 flex items-center justify-center pt-[16%]">
+      {/* batch 16: the label sits dead-centre of the cloud's visible mass (the image has
+          a touch more transparent air above than below — pt-[4%] optically centres it) */}
+      <span className="pointer-events-none absolute inset-0 flex items-center justify-center pt-[4%]">
         <span className="max-w-[60%] text-center text-[11px] font-semibold uppercase leading-tight tracking-[0.1em] text-ink/85 sm:text-[12.5px]">
           {label}
         </span>

@@ -38,7 +38,7 @@ const PROJECTS: Project[] = [
     meta: 'Brend + sajt · SAD',
     blurb: 'Studio za web dizajn — kompletan identitet i korporativni sajt.',
     href: 'https://www.bennettndco.com',
-    cover: '/media/radovi/bennett.webp',
+    cover: '/media/radovi/posters/bennett-poster.png',
     vw: { w: '18.5vw', t: '25.2vw', d: '9vw' }, px: { w: '230px', t: '340px', d: '90px' },
   },
   {
@@ -46,7 +46,7 @@ const PROJECTS: Project[] = [
     meta: 'Web sajt · Srem',
     blurb: 'Farbara koja snabdeva majstore — katalog, galerija i kontakt.',
     href: 'https://metal-kolor.rs/',
-    cover: '/media/radovi/metalkolor.webp',
+    cover: '/media/radovi/posters/metalkolor-poster.png',
     vw: { w: '23.5vw', t: '28.7vw', d: '6vw' }, px: { w: '270px', t: '380px', d: '60px' },
   },
   {
@@ -54,7 +54,7 @@ const PROJECTS: Project[] = [
     meta: 'Web sajt · Novi Sad',
     blurb: 'Picerija sa picom na drva — meni i porudžbina na dva klika.',
     href: 'https://www.pizzdarija.rs/',
-    cover: '/media/radovi/pizzdarija.webp',
+    cover: '/media/radovi/posters/pizzdarija-poster.png',
     vw: { w: '29.5vw', t: '33vw', d: '2.8vw' }, px: { w: '310px', t: '420px', d: '28px' },
   },
   {
@@ -64,7 +64,7 @@ const PROJECTS: Project[] = [
     meta: 'E-commerce + brend · UAE',
     blurb: 'Padel brend iz Dubaija — prodavnica, tereni i turniri na jednom mestu.',
     href: 'https://courthub.ae/',
-    cover: '/media/radovi/courthub.jpg',
+    cover: '/media/radovi/posters/courthub-poster.png',
     vw: { w: '40vw', t: '40vw', d: '0vw' }, px: { w: '340px', t: '470px', d: '0px' },
   },
 ]
@@ -143,8 +143,12 @@ function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
       href={p.href}
       target="_blank"
       rel="noopener"
-      // the seat vars feed breakpointed arbitrary classes: px on phones, pure vw on md+
-      className="group relative block shrink-0 w-[min(48vw,var(--wm))] md:w-[var(--w)] mt-[var(--dm)] md:mt-[var(--d)]"
+      // the seat vars feed breakpointed arbitrary classes: px on phones, pure vw on md+.
+      // batch 16: phones tilt the cards ±1.15° (the /radovi plate vocabulary) — the dark
+      // posters' internal bands aligned across overlapped cards into a full-width step
+      // (kill-tested: in-flow content, not a layer)
+      className={`group relative block shrink-0 w-[min(48vw,var(--wm))] md:w-[var(--w)] mt-[var(--dm)] md:mt-[var(--d)]
+                  ${i % 2 ? 'rotate-[-1.15deg]' : 'rotate-[1.15deg]'} md:rotate-0`}
       style={{
         '--w': p.vw.w, '--t': p.vw.t, '--d': p.vw.d,
         '--wm': p.px.w, '--tm': p.px.t, '--dm': p.px.d,
@@ -166,7 +170,7 @@ function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
             // without this the decode lands on the main thread exactly as the card scrolls
             // into view — the worst frame went 11ms → 46ms when these three covers arrived
             decoding="async"
-            className="h-full w-full object-cover object-top transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
+            className="h-full w-full object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
           />
         ) : (
           // the reference's fourth card is its STRONGEST — a pale ghost vanishes against the
