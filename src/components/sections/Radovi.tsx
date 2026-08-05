@@ -32,22 +32,17 @@ type Project = {
   px: { w: string; t: string; d: string }
 }
 
+// batch 21 (owner): his order, right to left — Court Hub, MindxBridge & Academy,
+// Pizzdarija, Metal Kolor. Bennett & Co steps out of the cascade; MindxBridge joins
+// with a GENERATED brand poster like the rest (his instruction, Higgsfield).
 const PROJECTS: Project[] = [
-  {
-    name: 'Bennett & Co',
-    meta: 'Brend + sajt · SAD',
-    blurb: 'Studio za web dizajn — kompletan identitet i korporativni sajt.',
-    href: 'https://www.bennettndco.com',
-    cover: '/media/radovi/posters/bennett-poster.png',
-    vw: { w: '18.5vw', t: '25.2vw', d: '9vw' }, px: { w: '230px', t: '340px', d: '90px' },
-  },
   {
     name: 'Metal Kolor',
     meta: 'Web sajt · Srem',
     blurb: 'Farbara koja snabdeva majstore — katalog, galerija i kontakt.',
     href: 'https://metal-kolor.rs/',
     cover: '/media/radovi/posters/metalkolor-poster.png',
-    vw: { w: '23.5vw', t: '28.7vw', d: '6vw' }, px: { w: '270px', t: '380px', d: '60px' },
+    vw: { w: '18.5vw', t: '25.2vw', d: '9vw' }, px: { w: '230px', t: '340px', d: '90px' },
   },
   {
     name: 'Pizzdarija',
@@ -55,6 +50,15 @@ const PROJECTS: Project[] = [
     blurb: 'Picerija sa picom na drva — meni i porudžbina na dva klika.',
     href: 'https://www.pizzdarija.rs/',
     cover: '/media/radovi/posters/pizzdarija-poster.png',
+    vw: { w: '23.5vw', t: '28.7vw', d: '6vw' }, px: { w: '270px', t: '380px', d: '60px' },
+  },
+  {
+    // batch 21 (owner): his own project (D67) — platforma + akademija, two live sites
+    name: 'MindxBridge',
+    meta: 'Platforma + akademija',
+    blurb: 'Istraživački inkubator za medicinu — od ideje do objavljenog rada.',
+    href: 'https://mindxbridge.com/',
+    cover: '/media/radovi/posters/mindxbridge-poster.png',
     vw: { w: '29.5vw', t: '33vw', d: '2.8vw' }, px: { w: '310px', t: '420px', d: '28px' },
   },
   {

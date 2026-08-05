@@ -7,7 +7,7 @@
 //
 // JUNCTION LAW: the ink frames are content plates mid-beat. Every beat boundary is padded
 // with ≥320px of open sky on each side (SkyGap), so the seams the rig scans stay seams.
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useTransform } from 'motion/react'
 import type { MotionValue } from 'motion/react'
 import { World, WorldLayer, SeamBridge, Beat, useWorld, useWorldRange } from '../components/World'
@@ -38,11 +38,13 @@ function Drift({ children, amp = 16, className = '' }: { children: React.ReactNo
 }
 
 /** batch 18 — a peeking cloud breaking a frame's straight edge (never a bare ruler line).
-    batch 19: the layer is the caller's choice (z-0 behind the frame, z-20 riding on top). */
-function CornerCloud({ className }: { className: string }) {
+    batch 19: the layer is the caller's choice (z-0 behind the frame, z-20 riding on top).
+    batch 21: the asset is the caller's choice too — the corner clouds wear the two NEW
+    fluffy watercolour clouds (owner's variety note) while the old seats keep bank-soft. */
+function CornerCloud({ className, src = '/media/bank-soft.webp' }: { className: string; src?: string }) {
   return (
     <img
-      src="/media/bank-soft.webp" alt="" aria-hidden
+      src={src} alt="" aria-hidden decoding="async" loading="lazy"
       className={`pointer-events-none absolute max-w-none select-none ${className}`}
     />
   )
@@ -78,8 +80,71 @@ function CloudShelf({ children }: { children: React.ReactNode }) {
   )
 }
 
-/** batch 19 (owner) — the breath between Projekat 3 and SVE O NAMA carries a small
-    centred invitation: one script line and the cloud button, nothing more */
+/* batch 21 (owner) — the references that rotate under the invitation. REAL-CONTENT LAW:
+   these are TRUE one-line project references in our own words, attributed to the PROJECT,
+   never invented quotes from invented people (the D62 rule). The seats become client
+   quotes verbatim the day Nick sends real ones. */
+const REFERENCES = [
+  { t: 'Tri linije posla — prodavnica, tereni i turniri — pod jednim digitalnim krovom.', s: 'Court Hub · Dubai' },
+  { t: 'Meni, priča i porudžbina na dva klika — sajt u duhu lokala.', s: 'Pizzdarija · Novi Sad' },
+  { t: 'Katalog, galerija i kontakt — mušterija za dva klika nađe ono po šta je došla.', s: 'Metal Kolor · Srem' },
+  { t: 'Od ideje do objavljenog naučnog rada — platforma i akademija na jednom mestu.', s: 'MindxBridge · platforma + akademija' },
+]
+
+/** the auto-rotating reference line — crossfade + rise, ~4.5s per seat, still under
+    reduced motion (first reference only) */
+function ReferenceRotator() {
+  const { reduced } = useWorld()
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    if (reduced) return
+    const id = setInterval(() => setI((v) => (v + 1) % REFERENCES.length), 4500)
+    return () => clearInterval(id)
+  }, [reduced])
+  const r = REFERENCES[i]
+  return (
+    <div className="relative mt-7 flex h-[92px] w-full max-w-md flex-col items-center justify-start sm:h-[84px]">
+      <AnimatePresence mode="wait">
+        <motion.figure
+          key={i}
+          initial={reduced ? false : { opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={reduced ? undefined : { opacity: 0, y: -12 }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-center gap-1.5 text-center"
+        >
+          <blockquote
+            className="text-[14.5px] font-medium leading-relaxed text-ink/90 sm:text-[15.5px]"
+            style={{ textShadow: '0 1px 12px rgba(245,249,253,0.85)' }}
+          >
+            „{r.t}"
+          </blockquote>
+          <figcaption className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">
+            {r.s}
+          </figcaption>
+        </motion.figure>
+      </AnimatePresence>
+      {/* the seat dots — quiet, clickable */}
+      <div className="pointer-events-auto absolute -bottom-1 flex gap-2">
+        {REFERENCES.map((_, d) => (
+          <button
+            key={d}
+            type="button"
+            aria-label={`Referenca ${d + 1}`}
+            onClick={() => setI(d)}
+            className={`h-1.5 w-1.5 cursor-pointer rounded-full transition-colors duration-300 ${
+              d === i ? 'bg-accent' : 'bg-ink/20 hover:bg-ink/40'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** batch 19/21 (owner) — the invitation: the hero's own duet grammar („Postanite i vi" in
+    the primary, „deo našeg uspeha!" in the quill), the cloud button, and the rotating
+    references underneath */
 function MiniCTA() {
   const { reduced } = useWorld()
   return (
@@ -90,13 +155,19 @@ function MiniCTA() {
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="relative z-10 flex flex-col items-center px-5 text-center"
     >
-      <p
-        className="font-script font-normal leading-tight text-accent text-[clamp(2.1rem,4.6vw,3.4rem)]"
-        style={{ textShadow: '0 2px 20px rgba(245,249,253,0.9)' }}
-      >
-        Postanite i vi deo našeg uspeha
-      </p>
-      <CloudButton label="Započnite razgovor" href={WA_LINK} reduced={reduced} className="mt-2" />
+      <h2 className="leading-none">
+        <span className="ink-gradient block whitespace-nowrap font-semibold tracking-tight text-[clamp(2.1rem,4.4vw,4rem)]">
+          Postanite i vi
+        </span>
+        <span
+          className="mt-[0.04em] block whitespace-nowrap font-script font-normal leading-[0.95] text-accent text-[clamp(2.4rem,5.1vw,4.7rem)]"
+          style={{ textShadow: '0 2px 20px rgba(245,249,253,0.9)' }}
+        >
+          deo našeg uspeha!
+        </span>
+      </h2>
+      <CloudButton label="Započnite razgovor" href={WA_LINK} reduced={reduced} className="mt-3" />
+      <ReferenceRotator />
     </motion.div>
   )
 }
@@ -370,15 +441,16 @@ function EdgeColumn({ side, shots }: { side: 'left' | 'right'; shots: [string, s
           cloud centres on the frame's real corner — anchored to the full-height column it
           floated ~60px above the ink (the frame centres inside the column) */}
       <div className="relative my-auto h-full max-h-[780px] w-full">
-        {/* batch 19/20 (owner, screenshots): the corner clouds ride the TOP layer at full
-            opacity, seated EXACTLY — the frame's corner point sits behind the middle of
-            the cloud (translate-half centering on the corner itself). Left rotated 25°
-            (his correction from 45°), right keeps −30°. */}
+        {/* batch 19/20/21 (owner, screenshots): the corner clouds ride the TOP layer at
+            full opacity over the frame corners — batch 21 gives each side its OWN new
+            fluffy watercolour cloud and nudges both slightly up and onto their frame,
+            the direction of his arrows. Left 25°, right −30°. */}
         <CornerCloud
+          src={side === 'left' ? '/media/cloud-corner-l.webp' : '/media/cloud-corner-r.webp'}
           className={
             side === 'left'
-              ? 'right-0 top-0 z-20 w-[52%] translate-x-1/2 -translate-y-1/2 rotate-[25deg]'
-              : 'left-0 top-0 z-20 w-[52%] -translate-x-1/2 -translate-y-1/2 scale-x-[-1] rotate-[-30deg]'
+              ? 'right-0 top-0 z-20 w-[54%] translate-x-[38%] -translate-y-[60%] rotate-[25deg]'
+              : 'left-0 top-0 z-20 w-[48%] -translate-x-[38%] -translate-y-[60%] rotate-[-30deg]'
           }
         />
         {/* fixed tile heights below lg: an unconstrained h-full chain resolves from the IMAGE
@@ -452,36 +524,49 @@ function ProjekatTreci() {
    next success". Local useScroll READS the pin's slice (the TextFill / blanket-stack
    precedent — never a second driver). Reduced motion and <lg keep the plain flow. */
 
-/** a brand panel wearing the EdgeColumn's exact geometry, on the baby blues */
+/** a brand panel wearing the EdgeColumn's exact geometry, on the baby blues.
+    batch 21 (owner, blue lines): split into THIRDS by two quiet separator lines — six
+    boxes across the two panels, seats for future client images; the brand content keeps
+    the middle third. */
 function BrandPanel({ side, textOpacity }: { side: 'left' | 'right'; textOpacity: MotionValue<number> }) {
   const frame = side === 'left' ? 'rounded-r-3xl' : 'rounded-l-3xl'
+  const rule = <div aria-hidden className="mx-auto h-px w-[78%] shrink-0 bg-ink/20" />
   return (
     <div className="relative flex h-full min-h-[420px] w-full items-center lg:min-h-[640px]">
       <div
-        className={`flex h-full max-h-[780px] w-full flex-col items-center justify-center gap-5 overflow-hidden
-                    border border-white/70 px-5 text-center shadow-xl ${frame}`}
+        className={`flex h-full max-h-[780px] w-full flex-col overflow-hidden
+                    border border-white/70 text-center shadow-xl ${frame}`}
         style={{ background: 'linear-gradient(180deg, #A8CEF0 0%, #C9DFF4 55%, #DCEBF8 100%)' }}
       >
-        {side === 'left' ? (
-          <img src="/media/brand/cloud-d.webp" alt="" aria-hidden
-               className="h-20 w-auto drop-shadow-[0_8px_18px_rgba(22,50,79,0.25)] lg:h-24" />
-        ) : (
-          <p aria-hidden className="leading-none">
-            <span className="align-baseline font-semibold tracking-tight text-ink text-3xl lg:text-4xl">Dream</span>
-            <span className="align-baseline font-script font-normal text-accent text-4xl lg:text-5xl">Sign</span>
-          </p>
-        )}
-        <motion.div style={{ opacity: textOpacity }} className="flex flex-col items-center gap-2">
-          <span
-            className="font-script font-normal leading-tight text-accent text-[clamp(1.9rem,2.4vw,2.6rem)]"
-            style={{ textShadow: '0 2px 14px rgba(245,249,253,0.8)' }}
-          >
-            {side === 'left' ? 'Ovo može biti' : 'Vi ste'}
-          </span>
-          <span className="ink-gradient font-semibold uppercase tracking-[0.14em] text-[clamp(0.95rem,1.3vw,1.25rem)]">
-            {side === 'left' ? 'vaš sledeći uspeh' : 'naš sledeći rezultat'}
-          </span>
-        </motion.div>
+        {/* box 1 — a seat for a client image */}
+        <div className="flex-1" />
+        {rule}
+        {/* box 2 — the brand's own seat */}
+        <div className="flex flex-1 flex-col items-center justify-center gap-5 px-5">
+          {side === 'left' ? (
+            <img src="/media/brand/cloud-d.webp" alt="" aria-hidden
+                 className="h-16 w-auto drop-shadow-[0_8px_18px_rgba(22,50,79,0.25)] lg:h-20" />
+          ) : (
+            <p aria-hidden className="leading-none">
+              <span className="align-baseline font-semibold tracking-tight text-ink text-3xl lg:text-4xl">Dream</span>
+              <span className="align-baseline font-script font-normal text-accent text-4xl lg:text-5xl">Sign</span>
+            </p>
+          )}
+          <motion.div style={{ opacity: textOpacity }} className="flex flex-col items-center gap-2">
+            <span
+              className="font-script font-normal leading-tight text-accent text-[clamp(1.9rem,2.4vw,2.6rem)]"
+              style={{ textShadow: '0 2px 14px rgba(245,249,253,0.8)' }}
+            >
+              {side === 'left' ? 'Ovo može biti' : 'Vi ste'}
+            </span>
+            <span className="ink-gradient font-semibold uppercase tracking-[0.14em] text-[clamp(0.95rem,1.3vw,1.25rem)]">
+              {side === 'left' ? 'vaš sledeći uspeh' : 'naš sledeći rezultat'}
+            </span>
+          </motion.div>
+        </div>
+        {rule}
+        {/* box 3 — a seat for a client image */}
+        <div className="flex-1" />
       </div>
     </div>
   )
@@ -515,8 +600,11 @@ function TreciScena() {
     <div ref={ref} className="relative w-full" style={{ height: `${RUNWAY_VH}vh` }}>
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <div className="grid h-full w-full grid-cols-12 items-stretch">
-          {/* the outgoing act */}
-          <motion.div style={{ x: oldLeftX }} className="col-span-3 col-start-1 row-start-1 h-full transform-gpu">
+          {/* the outgoing act. The column wrappers carry padding + negative margins that
+              cancel in layout but GROW the composited layer's bounds — Safari rasterised
+              the moving layer at the column box and rectangular-clipped the corner cloud
+              overhang (Nick's MacBook, batch 21); Chrome never showed it. */}
+          <motion.div style={{ x: oldLeftX }} className="col-span-3 col-start-1 row-start-1 h-full transform-gpu -mt-24 -mr-28 pt-24 pr-28">
             <EdgeColumn side="left" shots={TRECI_SHOTS.left} />
           </motion.div>
           <motion.div
@@ -525,7 +613,7 @@ function TreciScena() {
           >
             <TreciSadrzaj />
           </motion.div>
-          <motion.div style={{ x: oldRightX }} className="col-span-3 col-start-10 row-start-1 h-full transform-gpu">
+          <motion.div style={{ x: oldRightX }} className="col-span-3 col-start-10 row-start-1 h-full transform-gpu -mt-24 -ml-28 pt-24 pl-28">
             <EdgeColumn side="right" shots={TRECI_SHOTS.right} />
           </motion.div>
 
@@ -693,12 +781,14 @@ function FaqSekcija() {
       {/* LEFT: the big duet heading + the booking card (batch 14: eyebrow deleted, title
           grown, „pitanja" answers in the quill — the site's own primary/script duet) */}
       <div className="flex h-full flex-col justify-between lg:col-span-5">
-        {/* batch 15: one row, much bigger — the duet on a single baseline.
-            batch 19 (owner): „pitanja" steps down to „Česta"'s exact size, and „Česta"
-            trades flat ink for the brand ramp (the colour law). */}
-        <h2 className="mb-8 flex flex-wrap items-baseline gap-x-4 leading-[0.95] tracking-tight">
-          <span className="ink-gradient text-[clamp(3rem,6.2vw,5.6rem)] font-bold">Česta</span>
-          <span className="font-script font-normal text-accent text-[clamp(3rem,6.2vw,5.6rem)]">
+        {/* batch 15/19/21: one row, the duet on a single baseline. „Same size" is OPTICAL,
+            not font-size: at equal font-size Great Vibes carries 86px of ink where Inter
+            Tight carries 100 (canvas-measured), so the quill wears a 1.163 factor — the
+            two words read as one height. flex-nowrap + nowrap: they may never split rows
+            (measured to fit the 5/12 column at every lg+ width). */}
+        <h2 className="mb-8 flex flex-nowrap items-baseline gap-x-4 leading-[0.95] tracking-tight">
+          <span className="ink-gradient whitespace-nowrap text-[clamp(3rem,6.2vw,5.6rem)] font-bold">Česta</span>
+          <span className="whitespace-nowrap font-script font-normal text-accent text-[clamp(3.5rem,7.2vw,6.5rem)]">
             pitanja
           </span>
         </h2>
