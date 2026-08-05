@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Lenis from 'lenis'
 import Entrance, { ENTRANCE_MS } from './components/Entrance'
 import Nav from './components/Nav'
+import PageVeil from './components/PageVeil'
 import Pocetna from './pages/Pocetna'
 import RadoviPage from './pages/RadoviPage'
 import UslugePage from './pages/UslugePage'
@@ -95,6 +96,8 @@ export default function App() {
     <BrowserRouter>
       <Entrance play={playEntrance && !reduced} onDone={() => {}} />
       <Nav />
+      {/* batch 22: every internal click crosses the sky — the cloud gust veil */}
+      <PageVeil />
       <ScrollReset lenis={lenisRef} />
       {OK_ENABLED ? (
         <OwnersKeyProvider slug={SITE_SLUG} supabaseUrl={SUPABASE_URL} supabaseAnonKey={SUPABASE_ANON_KEY}>

@@ -172,7 +172,9 @@ function MiniCTA() {
   )
 }
 
-/** the tilted script word floating up-left above a giant headline (reference geometry) */
+/** the tilted script word riding the giant headline's first letter — batch 22 (owner's
+    circles): it dips INTO the cap, hanging slightly left of the P, the SAME seat on all
+    three projects */
 function TiltScript({ word }: { word: string }) {
   return (
     <motion.span
@@ -181,7 +183,7 @@ function TiltScript({ word }: { word: string }) {
       whileInView={{ opacity: 1, scale: 1, rotate: -12, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="pointer-events-none absolute -top-7 left-0 z-20 block sm:-top-9 sm:-left-4 lg:-top-11 lg:-left-8
+      className="pointer-events-none absolute -top-1.5 -left-2 z-20 block sm:-top-2 sm:-left-6 lg:-top-2.5 lg:-left-10
                  font-script font-normal leading-none text-accent text-[clamp(2.2rem,4.5vw,3.9rem)]"
       style={{ textShadow: '0 2px 16px rgba(245,249,253,0.85)' }}
     >
@@ -445,12 +447,15 @@ function EdgeColumn({ side, shots }: { side: 'left' | 'right'; shots: [string, s
             full opacity over the frame corners — batch 21 gives each side its OWN new
             fluffy watercolour cloud and nudges both slightly up and onto their frame,
             the direction of his arrows. Left 25°, right −30°. */}
+        {/* batch 22: vertical overhang eased to 38% — the cloud still rides its corner but
+            its crown always fits inside the centred stage's top gap (no more half clouds
+            under the lock, his screenshot 4) */}
         <CornerCloud
           src={side === 'left' ? '/media/cloud-corner-l.webp' : '/media/cloud-corner-r.webp'}
           className={
             side === 'left'
-              ? 'right-0 top-0 z-20 w-[54%] translate-x-[38%] -translate-y-[60%] rotate-[25deg]'
-              : 'left-0 top-0 z-20 w-[48%] -translate-x-[38%] -translate-y-[60%] rotate-[-30deg]'
+              ? 'right-0 top-0 z-20 w-[54%] translate-x-[38%] -translate-y-[38%] rotate-[25deg]'
+              : 'left-0 top-0 z-20 w-[48%] -translate-x-[38%] -translate-y-[38%] rotate-[-30deg]'
           }
         />
         {/* fixed tile heights below lg: an unconstrained h-full chain resolves from the IMAGE
@@ -531,18 +536,21 @@ function ProjekatTreci() {
 function BrandPanel({ side, textOpacity }: { side: 'left' | 'right'; textOpacity: MotionValue<number> }) {
   const frame = side === 'left' ? 'rounded-r-3xl' : 'rounded-l-3xl'
   const rule = <div aria-hidden className="mx-auto h-px w-[78%] shrink-0 bg-ink/20" />
+  // batch 22 (owner): every third carries a PLATE — a lighter inset surface that reads as
+  // an empty image seat ("their success images go here"), the contrast he asked for
+  const plate = 'm-3 flex flex-1 flex-col items-center justify-center gap-5 rounded-2xl border border-white/70 bg-white/40 px-5 shadow-[inset_0_2px_12px_rgba(22,50,79,0.07)]'
   return (
-    <div className="relative flex h-full min-h-[420px] w-full items-center lg:min-h-[640px]">
+    <div className="relative flex h-full w-full items-center">
       <div
         className={`flex h-full max-h-[780px] w-full flex-col overflow-hidden
                     border border-white/70 text-center shadow-xl ${frame}`}
         style={{ background: 'linear-gradient(180deg, #A8CEF0 0%, #C9DFF4 55%, #DCEBF8 100%)' }}
       >
-        {/* box 1 — a seat for a client image */}
-        <div className="flex-1" />
+        {/* box 1 — a plated seat for a client image */}
+        <div className={plate} />
         {rule}
-        {/* box 2 — the brand's own seat */}
-        <div className="flex flex-1 flex-col items-center justify-center gap-5 px-5">
+        {/* box 2 — the brand's own seat, on its plate */}
+        <div className={plate}>
           {side === 'left' ? (
             <img src="/media/brand/cloud-d.webp" alt="" aria-hidden
                  className="h-16 w-auto drop-shadow-[0_8px_18px_rgba(22,50,79,0.25)] lg:h-20" />
@@ -565,8 +573,8 @@ function BrandPanel({ side, textOpacity }: { side: 'left' | 'right'; textOpacity
           </motion.div>
         </div>
         {rule}
-        {/* box 3 — a seat for a client image */}
-        <div className="flex-1" />
+        {/* box 3 — a plated seat for a client image */}
+        <div className={plate} />
       </div>
     </div>
   )
@@ -596,38 +604,44 @@ function TreciScena() {
   const inRightX = useTransform(t, [0.34, 0.74], ['140%', '0%'])
   const inText = useTransform(t, [0.62, 0.9], [0, 1])
 
+  // batch 22 (owner): the side columns wear an EXPLICIT height and self-centre, so the
+  // locked viewport shows equal sky above and below them at every window size — and the
+  // corner clouds' overhang always fits inside the top gap (nothing to clip).
+  const COL_H = 'h-[min(720px,calc(100vh-9rem))]'
+
   return (
     <div ref={ref} className="relative w-full" style={{ height: `${RUNWAY_VH}vh` }}>
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <div className="grid h-full w-full grid-cols-12 items-stretch">
+        <div className="grid h-full w-full grid-cols-12 items-center">
           {/* the outgoing act. The column wrappers carry padding + negative margins that
               cancel in layout but GROW the composited layer's bounds — Safari rasterised
               the moving layer at the column box and rectangular-clipped the corner cloud
-              overhang (Nick's MacBook, batch 21); Chrome never showed it. */}
-          <motion.div style={{ x: oldLeftX }} className="col-span-3 col-start-1 row-start-1 h-full transform-gpu -mt-24 -mr-28 pt-24 pr-28">
+              overhang (Nick's MacBook, batch 21); Chrome never showed it. Margins stay
+              SYMMETRIC vertically so the centring holds true. */}
+          <motion.div style={{ x: oldLeftX }} className={`col-span-3 col-start-1 row-start-1 self-center transform-gpu ${COL_H} -my-24 py-24 -mr-28 pr-28 box-content`}>
             <EdgeColumn side="left" shots={TRECI_SHOTS.left} />
           </motion.div>
           <motion.div
             style={{ y: oldY }}
-            className="col-span-6 col-start-4 row-start-1 flex transform-gpu flex-col items-center justify-center px-6 text-center lg:px-14"
+            className="col-span-6 col-start-4 row-start-1 flex h-full transform-gpu flex-col items-center justify-center px-6 text-center lg:px-14"
           >
             <TreciSadrzaj />
           </motion.div>
-          <motion.div style={{ x: oldRightX }} className="col-span-3 col-start-10 row-start-1 h-full transform-gpu -mt-24 -ml-28 pt-24 pl-28">
+          <motion.div style={{ x: oldRightX }} className={`col-span-3 col-start-10 row-start-1 self-center transform-gpu ${COL_H} -my-24 py-24 -ml-28 pl-28 box-content`}>
             <EdgeColumn side="right" shots={TRECI_SHOTS.right} />
           </motion.div>
 
           {/* the incoming act */}
-          <motion.div style={{ x: inLeftX }} className="z-10 col-span-3 col-start-1 row-start-1 h-full transform-gpu">
+          <motion.div style={{ x: inLeftX }} className={`z-10 col-span-3 col-start-1 row-start-1 self-center transform-gpu ${COL_H}`}>
             <BrandPanel side="left" textOpacity={inText} />
           </motion.div>
           <motion.div
             style={{ y: ctaY }}
-            className="z-10 col-span-6 col-start-4 row-start-1 flex transform-gpu items-center justify-center"
+            className="z-10 col-span-6 col-start-4 row-start-1 flex h-full transform-gpu items-center justify-center"
           >
             <MiniCTA />
           </motion.div>
-          <motion.div style={{ x: inRightX }} className="z-10 col-span-3 col-start-10 row-start-1 h-full transform-gpu">
+          <motion.div style={{ x: inRightX }} className={`z-10 col-span-3 col-start-10 row-start-1 self-center transform-gpu ${COL_H}`}>
             <BrandPanel side="right" textOpacity={inText} />
           </motion.div>
         </div>
@@ -781,14 +795,14 @@ function FaqSekcija() {
       {/* LEFT: the big duet heading + the booking card (batch 14: eyebrow deleted, title
           grown, „pitanja" answers in the quill — the site's own primary/script duet) */}
       <div className="flex h-full flex-col justify-between lg:col-span-5">
-        {/* batch 15/19/21: one row, the duet on a single baseline. „Same size" is OPTICAL,
-            not font-size: at equal font-size Great Vibes carries 86px of ink where Inter
-            Tight carries 100 (canvas-measured), so the quill wears a 1.163 factor — the
-            two words read as one height. flex-nowrap + nowrap: they may never split rows
-            (measured to fit the 5/12 column at every lg+ width). */}
+        {/* batch 15/19/21/22: one row, the duet on a single baseline. „Same size" is
+            OPTICAL, not font-size: Great Vibes reads far smaller than its metrics (small
+            x-height, ink in the flourishes) — the ink-parity factor (1.163) still read
+            small to the owner's eye, so the quill now wears 1.35 (his call: increase
+            until it LOOKS equal). flex-nowrap: the pair may never split rows. */}
         <h2 className="mb-8 flex flex-nowrap items-baseline gap-x-4 leading-[0.95] tracking-tight">
           <span className="ink-gradient whitespace-nowrap text-[clamp(3rem,6.2vw,5.6rem)] font-bold">Česta</span>
-          <span className="whitespace-nowrap font-script font-normal text-accent text-[clamp(3.5rem,7.2vw,6.5rem)]">
+          <span className="whitespace-nowrap font-script font-normal text-accent text-[clamp(4rem,8.4vw,7.5rem)]">
             pitanja
           </span>
         </h2>
