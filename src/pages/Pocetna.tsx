@@ -92,17 +92,19 @@ export default function Pocetna() {
                   y={['0%', '-7%']} mask={MASK.flourish}
                   opacity={{ range: [0.10, 0.22, 0.40], values: [0, 0.32, 0.10] }}
                 />
+                {/* batch 24 (owner): THE cloud — the realistic cumulus he circled in the
+                    beat above, now living through the descent; parallax kept everywhere */}
                 <WorldLayer
-                  src="/media/bank-soft.webp"
+                  src="/media/cloud-real.webp"
                   box="-top-[6vh] -bottom-[10vh]"
-                  imgClass="absolute left-[-18%] top-[6%] w-[52%] h-auto max-w-none"
-                  y={['0%', '-14%']} base={0.55} float={{ px: 9, sec: 9 }}
+                  imgClass="absolute left-[-12%] top-[6%] w-[44%] h-auto max-w-none"
+                  y={['0%', '-14%']} base={0.9} float={{ px: 9, sec: 9 }}
                 />
                 <WorldLayer
-                  src="/media/bank-soft.webp"
+                  src="/media/cloud-real.webp"
                   box="-top-[6vh] -bottom-[10vh]"
-                  imgClass="absolute right-[-14%] top-[46%] w-[44%] h-auto max-w-none scale-x-[-1]"
-                  y={['0%', '-8%']} base={0.45} float={{ px: 7, sec: 11, delay: 1.6 }}
+                  imgClass="absolute right-[-10%] top-[46%] w-[38%] h-auto max-w-none scale-x-[-1]"
+                  y={['0%', '-8%']} base={0.8} float={{ px: 7, sec: 11, delay: 1.6 }}
                 />
                 {/* batch 10 — the storybook cloud Nick red-circled into the empty left
                     field beside rows 03/04 */}
@@ -159,7 +161,14 @@ export default function Pocetna() {
               <Marquee />
             </Beat>
 
-            <Beat name="stats"><Stats /></Beat>
+            <Beat name="stats" layers={
+              <WorldLayer
+                src="/media/cloud-real.webp"
+                box="-top-[10vh] -bottom-[10vh]"
+                imgClass="absolute right-[-8%] top-[4%] w-[32%] h-auto max-w-none scale-x-[-1]"
+                y={['0%', '-10%']} base={0.7}
+              />
+            }><Stats /></Beat>
           </div>
 
           {/* THE GROUND — the signature beat and the footer stand on the same plain:

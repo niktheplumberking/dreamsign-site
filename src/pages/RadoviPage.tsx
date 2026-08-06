@@ -101,58 +101,59 @@ function ReferenceRotator() {
     const id = setInterval(() => setI((v) => (v + 1) % REFERENCES.length), 4500)
     return () => clearInterval(id)
   }, [reduced])
-  const r = REFERENCES[i]
-  // batch 23 (owner): the reference wears a real CARD now — a cloud-edged white surface
-  // in the FAQ cards' own border vocabulary, with the quill opening the quote
+  // batch 24 (owner): NO box — the white card read as an empty blob mid-rotation (the
+  // crossfade left it blank for a second). The reference lives directly on the sky in
+  // the world's own vocabulary: quill mark, the line, a glass chip for the project —
+  // and every seat is ALWAYS painted (absolute stack, opacity swap; never an empty beat).
   return (
-    <div className="relative mt-8 w-full max-w-md">
-      <div
-        className="relative border border-white/80 bg-white/65 px-7 pb-8 pt-6 shadow-[0_12px_36px_rgba(22,50,79,0.10)]"
-        style={{ borderRadius: '2rem 2.7rem 2.2rem 2.9rem / 2.7rem 2.1rem 2.9rem 2.2rem' }}
+    <div className="relative mt-7 flex w-full max-w-md flex-col items-center">
+      <span
+        aria-hidden
+        className="font-script text-[2.4rem] leading-none text-accent"
+        style={{ textShadow: '0 2px 16px rgba(245,249,253,0.9)' }}
       >
-        {/* the quill's opening mark rides the card's shoulder */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute -top-5 left-6 font-script text-[3.4rem] leading-none text-accent"
-          style={{ textShadow: '0 2px 14px rgba(245,249,253,0.9)' }}
-        >
-          „
-        </span>
-        <div className="flex min-h-[86px] flex-col items-center justify-center sm:min-h-[78px]">
-          <AnimatePresence mode="wait">
-            <motion.figure
-              key={i}
-              initial={reduced ? false : { opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduced ? undefined : { opacity: 0, y: -12 }}
-              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col items-center gap-2 text-center"
+        „
+      </span>
+      <div className="relative mt-1 h-[104px] w-full sm:h-[96px]">
+        {REFERENCES.map((r, d) => (
+          <motion.figure
+            key={d}
+            initial={false}
+            animate={reduced ? { opacity: d === 0 ? 1 : 0 } : { opacity: d === i ? 1 : 0, y: d === i ? 0 : 8 }}
+            // the outgoing line leaves FIRST, the incoming waits its turn — two quotes may
+            // never superimpose (and the stage is never empty long enough to read blank)
+            transition={
+              d === i
+                ? { duration: 0.5, delay: 0.28, ease: [0.16, 1, 0.3, 1] }
+                : { duration: 0.24, ease: 'easeOut' }
+            }
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-start gap-3 text-center"
+          >
+            <blockquote
+              className="text-[15px] font-medium leading-relaxed text-ink/90 sm:text-[16px]"
+              style={{ textShadow: '0 1px 14px rgba(245,249,253,0.9)' }}
             >
-              <blockquote className="text-[14.5px] font-medium leading-relaxed text-ink/90 sm:text-[15.5px]">
-                {r.t}
-              </blockquote>
-              <figcaption className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">
-                <span aria-hidden className="h-px w-5 bg-accent/50" />
-                {r.s}
-                <span aria-hidden className="h-px w-5 bg-accent/50" />
-              </figcaption>
-            </motion.figure>
-          </AnimatePresence>
-        </div>
-        {/* the seat dots — quiet, clickable */}
-        <div className="pointer-events-auto absolute inset-x-0 -bottom-3 flex justify-center gap-2">
-          {REFERENCES.map((_, d) => (
-            <button
-              key={d}
-              type="button"
-              aria-label={`Referenca ${d + 1}`}
-              onClick={() => setI(d)}
-              className={`h-2 w-2 cursor-pointer rounded-full border border-white/80 shadow-sm transition-colors duration-300 ${
-                d === i ? 'bg-accent' : 'bg-white hover:bg-mist'
-              }`}
-            />
-          ))}
-        </div>
+              {r.t}
+            </blockquote>
+            <figcaption className="liquid-glass rounded-full px-4 py-1.5 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-accent">
+              {r.s}
+            </figcaption>
+          </motion.figure>
+        ))}
+      </div>
+      {/* the seat dots — quiet, clickable */}
+      <div className="pointer-events-auto mt-1 flex gap-2">
+        {REFERENCES.map((_, d) => (
+          <button
+            key={d}
+            type="button"
+            aria-label={`Referenca ${d + 1}`}
+            onClick={() => setI(d)}
+            className={`h-1.5 w-1.5 cursor-pointer rounded-full transition-colors duration-300 ${
+              d === i ? 'bg-accent' : 'bg-ink/25 hover:bg-ink/45'
+            }`}
+          />
+        ))}
       </div>
     </div>
   )
@@ -198,7 +199,8 @@ function TiltScript({ word }: { word: string }) {
   return (
     <span
       aria-hidden
-      className="pointer-events-none absolute left-0 top-0 z-20 block -translate-x-1/2 -translate-y-[88%]"
+      // batch 24: lowered — the word rides just above the title's cap, close but never touching
+      className="pointer-events-none absolute left-0 top-0 z-20 block -translate-x-1/2 -translate-y-[71%]"
     >
       <motion.span
         initial={{ opacity: 0, scale: 0.85, rotate: -16, y: 15 }}
@@ -1002,17 +1004,25 @@ export default function RadoviPage() {
                 imgClass="absolute inset-0 h-[126%] w-full object-cover object-center"
                 y={['0%', '-9%']} base={0.85} mask={MASK.sky}
               />
+              {/* batch 24 (owner): THE cloud — the realistic cumulus he circled, extracted
+                  from B3 and seated through the world; every seat rides the parallax */}
               <WorldLayer
-                src="/media/bank-soft.webp"
+                src="/media/cloud-real.webp"
                 box="-top-[6vh] -bottom-[8vh]"
-                imgClass="absolute left-[-16%] top-[34%] w-[46%] h-auto max-w-none"
-                y={['0%', '-10%']} base={0.5} float={{ px: 9, sec: 10 }}
+                imgClass="absolute left-[-10%] top-[30%] w-[42%] h-auto max-w-none"
+                y={['0%', '-10%']} base={0.9} float={{ px: 9, sec: 10 }}
               />
               <WorldLayer
-                src="/media/bank-soft.webp"
+                src="/media/cloud-real.webp"
                 box="-top-[6vh] -bottom-[8vh]"
-                imgClass="absolute right-[-14%] top-[64%] w-[44%] h-auto max-w-none scale-x-[-1]"
-                y={['0%', '-8%']} base={0.45} float={{ px: 7, sec: 11, delay: 1.4 }}
+                imgClass="absolute right-[-8%] top-[52%] w-[38%] h-auto max-w-none scale-x-[-1]"
+                y={['0%', '-8%']} base={0.85} float={{ px: 7, sec: 11, delay: 1.4 }}
+              />
+              <WorldLayer
+                src="/media/cloud-real.webp"
+                box="-top-[6vh] -bottom-[8vh]"
+                imgClass="absolute left-[6%] top-[76%] w-[30%] h-auto max-w-none"
+                y={['0%', '-13%']} base={0.75}
               />
             </>
           }>
@@ -1048,17 +1058,32 @@ export default function RadoviPage() {
           </Beat>
 
           <Beat name="o-nama" layers={
-            <WorldLayer
-              src="/media/B7-vertical-sea.webp"
-              box="-top-[30vh] -bottom-[36vh]"
-              imgClass="absolute inset-0 h-[128%] w-full object-cover object-center"
-              y={['0%', '-10%']} base={0.55} mask={MASK.sea}
-            />
+            <>
+              <WorldLayer
+                src="/media/B7-vertical-sea.webp"
+                box="-top-[30vh] -bottom-[36vh]"
+                imgClass="absolute inset-0 h-[128%] w-full object-cover object-center"
+                y={['0%', '-10%']} base={0.55} mask={MASK.sea}
+              />
+              <WorldLayer
+                src="/media/cloud-real.webp"
+                box="-top-[10vh] -bottom-[10vh]"
+                imgClass="absolute right-[-6%] top-[8%] w-[34%] h-auto max-w-none scale-x-[-1]"
+                y={['0%', '-12%']} base={0.8}
+              />
+            </>
           }>
             <SveONama />
           </Beat>
 
-          <Beat name="faq">
+          <Beat name="faq" layers={
+            <WorldLayer
+              src="/media/cloud-real.webp"
+              box="-top-[8vh] -bottom-[8vh]"
+              imgClass="absolute left-[-8%] top-[12%] w-[36%] h-auto max-w-none"
+              y={['0%', '-11%']} base={0.8} float={{ px: 8, sec: 12, delay: 0.8 }}
+            />
+          }>
             <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
             <FaqSekcija />
             <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
