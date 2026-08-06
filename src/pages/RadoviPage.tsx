@@ -102,41 +102,57 @@ function ReferenceRotator() {
     return () => clearInterval(id)
   }, [reduced])
   const r = REFERENCES[i]
+  // batch 23 (owner): the reference wears a real CARD now — a cloud-edged white surface
+  // in the FAQ cards' own border vocabulary, with the quill opening the quote
   return (
-    <div className="relative mt-7 flex h-[92px] w-full max-w-md flex-col items-center justify-start sm:h-[84px]">
-      <AnimatePresence mode="wait">
-        <motion.figure
-          key={i}
-          initial={reduced ? false : { opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={reduced ? undefined : { opacity: 0, y: -12 }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-center gap-1.5 text-center"
+    <div className="relative mt-8 w-full max-w-md">
+      <div
+        className="relative border border-white/80 bg-white/65 px-7 pb-8 pt-6 shadow-[0_12px_36px_rgba(22,50,79,0.10)]"
+        style={{ borderRadius: '2rem 2.7rem 2.2rem 2.9rem / 2.7rem 2.1rem 2.9rem 2.2rem' }}
+      >
+        {/* the quill's opening mark rides the card's shoulder */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-5 left-6 font-script text-[3.4rem] leading-none text-accent"
+          style={{ textShadow: '0 2px 14px rgba(245,249,253,0.9)' }}
         >
-          <blockquote
-            className="text-[14.5px] font-medium leading-relaxed text-ink/90 sm:text-[15.5px]"
-            style={{ textShadow: '0 1px 12px rgba(245,249,253,0.85)' }}
-          >
-            „{r.t}"
-          </blockquote>
-          <figcaption className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">
-            {r.s}
-          </figcaption>
-        </motion.figure>
-      </AnimatePresence>
-      {/* the seat dots — quiet, clickable */}
-      <div className="pointer-events-auto absolute -bottom-1 flex gap-2">
-        {REFERENCES.map((_, d) => (
-          <button
-            key={d}
-            type="button"
-            aria-label={`Referenca ${d + 1}`}
-            onClick={() => setI(d)}
-            className={`h-1.5 w-1.5 cursor-pointer rounded-full transition-colors duration-300 ${
-              d === i ? 'bg-accent' : 'bg-ink/20 hover:bg-ink/40'
-            }`}
-          />
-        ))}
+          „
+        </span>
+        <div className="flex min-h-[86px] flex-col items-center justify-center sm:min-h-[78px]">
+          <AnimatePresence mode="wait">
+            <motion.figure
+              key={i}
+              initial={reduced ? false : { opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduced ? undefined : { opacity: 0, y: -12 }}
+              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col items-center gap-2 text-center"
+            >
+              <blockquote className="text-[14.5px] font-medium leading-relaxed text-ink/90 sm:text-[15.5px]">
+                {r.t}
+              </blockquote>
+              <figcaption className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">
+                <span aria-hidden className="h-px w-5 bg-accent/50" />
+                {r.s}
+                <span aria-hidden className="h-px w-5 bg-accent/50" />
+              </figcaption>
+            </motion.figure>
+          </AnimatePresence>
+        </div>
+        {/* the seat dots — quiet, clickable */}
+        <div className="pointer-events-auto absolute inset-x-0 -bottom-3 flex justify-center gap-2">
+          {REFERENCES.map((_, d) => (
+            <button
+              key={d}
+              type="button"
+              aria-label={`Referenca ${d + 1}`}
+              onClick={() => setI(d)}
+              className={`h-2 w-2 cursor-pointer rounded-full border border-white/80 shadow-sm transition-colors duration-300 ${
+                d === i ? 'bg-accent' : 'bg-white hover:bg-mist'
+              }`}
+            />
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -172,28 +188,39 @@ function MiniCTA() {
   )
 }
 
-/** the tilted script word riding the giant headline's first letter — batch 22 (owner's
-    circles): it dips INTO the cap, hanging slightly left of the P, the SAME seat on all
-    three projects */
+/** the tilted script word above the giant headline — batch 23 (owner's exact rule): drop
+    a vertical line from the rotated word's CENTRE and it lands on the title text's
+    TOP-LEFT corner, with no ink overlapping the title. It anchors to the WORD's real box
+    (rendered inside GiantH2), so the seat is identical on all three projects and at
+    every width. The outer span owns the seat (Tailwind translates), the inner motion
+    span owns the entrance — framer overwrites `transform`, so they may never share. */
 function TiltScript({ word }: { word: string }) {
   return (
-    <motion.span
+    <span
       aria-hidden
-      initial={{ opacity: 0, scale: 0.85, rotate: -16, y: 15 }}
-      whileInView={{ opacity: 1, scale: 1, rotate: -12, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="pointer-events-none absolute -top-1.5 -left-2 z-20 block sm:-top-2 sm:-left-6 lg:-top-2.5 lg:-left-10
-                 font-script font-normal leading-none text-accent text-[clamp(2.2rem,4.5vw,3.9rem)]"
-      style={{ textShadow: '0 2px 16px rgba(245,249,253,0.85)' }}
+      className="pointer-events-none absolute left-0 top-0 z-20 block -translate-x-1/2 -translate-y-[88%]"
     >
-      {word}
-    </motion.span>
+      <motion.span
+        initial={{ opacity: 0, scale: 0.85, rotate: -16, y: 15 }}
+        whileInView={{ opacity: 1, scale: 1, rotate: -12, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="block font-script font-normal normal-case leading-none tracking-normal text-accent
+                   text-[clamp(2.2rem,4.5vw,3.9rem)]"
+        style={{ textShadow: '0 2px 16px rgba(245,249,253,0.85)' }}
+      >
+        {word}
+      </motion.span>
+    </span>
   )
 }
 
-/** the giant condensed section headline, ink gradient (the homepage h1's own ramp) */
-function GiantH2({ children, align = 'center' }: { children: React.ReactNode; align?: 'center' | 'left' }) {
+/** the giant condensed section headline, ink gradient (the homepage h1's own ramp).
+    batch 23: `tilt` renders the script word INSIDE, anchored to the title text's own
+    inline box — the only anchor that tracks the glyphs at every width and alignment. */
+function GiantH2({ children, tilt, align = 'center' }: {
+  children: React.ReactNode; tilt?: string; align?: 'center' | 'left'
+}) {
   return (
     <motion.h2
       initial={{ opacity: 0, y: 20 }}
@@ -213,7 +240,10 @@ function GiantH2({ children, align = 'center' }: { children: React.ReactNode; al
         filter: 'drop-shadow(0 4px 14px rgba(22,50,79,0.14))',
       }}
     >
-      {children}
+      <span className="relative">
+        {children}
+        {tilt && <TiltScript word={tilt} />}
+      </span>
     </motion.h2>
   )
 }
@@ -339,8 +369,7 @@ function ProjekatPrvi() {
       {/* LEFT 5: centred text block, tilted script above the giant word */}
       <div className="relative z-10 flex flex-col items-center justify-center px-6 py-12 text-center sm:px-10 lg:col-span-5 lg:px-14">
         <Drift amp={18} className="relative flex w-full max-w-lg flex-col items-center justify-center">
-          <TiltScript word="Prvi" />
-          <GiantH2>Projekat</GiantH2>
+          <GiantH2 tilt="Prvi">Projekat</GiantH2>
           <div className="mt-6">
             <ProjectCopy
               text="Premium padel brend iz Dubaija — prodavnica opreme, izgradnja terena i turniri, sve pod jednim digitalnim krovom, građeno za publiku koja traži vrhunsko."
@@ -400,10 +429,11 @@ function ProjekatDrugi() {
       {/* TOP: title left / paragraph right (6/6, reference geometry) */}
       <div className="mx-auto w-full max-w-[1400px] px-6 sm:px-10 lg:px-14">
         <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-12">
+          {/* batch 23 (owner): the pl-14 indent is GONE — it pushed the title right until
+              the T fell off the column's edge; back left where it lived before */}
           <div className="relative flex flex-col items-center text-center lg:col-span-6 lg:items-start lg:text-left">
-            <Drift amp={18} className="relative flex w-full max-w-lg flex-col items-center lg:items-start lg:pl-14">
-              <TiltScript word="Drugi" />
-              <GiantH2 align="left">Projekat</GiantH2>
+            <Drift amp={18} className="relative flex w-full max-w-lg flex-col items-center lg:items-start">
+              <GiantH2 tilt="Drugi" align="left">Projekat</GiantH2>
             </Drift>
           </div>
           <Drift amp={10} className="flex flex-col items-center lg:col-span-6 lg:items-start lg:justify-self-end">
@@ -450,12 +480,15 @@ function EdgeColumn({ side, shots }: { side: 'left' | 'right'; shots: [string, s
         {/* batch 22: vertical overhang eased to 38% — the cloud still rides its corner but
             its crown always fits inside the centred stage's top gap (no more half clouds
             under the lock, his screenshot 4) */}
+        {/* batch 23 (owner): the two clouds SWAPPED seats — the tall cauliflower now rides
+            the left frame, the wide bank the right one; each seat keeps its rotation
+            (left leans right +25°, right leans left −30°) */}
         <CornerCloud
-          src={side === 'left' ? '/media/cloud-corner-l.webp' : '/media/cloud-corner-r.webp'}
+          src={side === 'left' ? '/media/cloud-corner-r.webp' : '/media/cloud-corner-l.webp'}
           className={
             side === 'left'
-              ? 'right-0 top-0 z-20 w-[54%] translate-x-[38%] -translate-y-[38%] rotate-[25deg]'
-              : 'left-0 top-0 z-20 w-[48%] -translate-x-[38%] -translate-y-[38%] rotate-[-30deg]'
+              ? 'right-0 top-0 z-20 w-[46%] translate-x-[38%] -translate-y-[38%] rotate-[25deg]'
+              : 'left-0 top-0 z-20 w-[54%] -translate-x-[38%] -translate-y-[38%] rotate-[-30deg]'
           }
         />
         {/* fixed tile heights below lg: an unconstrained h-full chain resolves from the IMAGE
@@ -490,8 +523,7 @@ const TRECI_SHOTS = {
 function TreciSadrzaj() {
   return (
     <Drift amp={18} className="relative flex w-full max-w-lg flex-col items-center justify-center">
-      <TiltScript word="Treći" />
-      <GiantH2>Projekat</GiantH2>
+      <GiantH2 tilt="Treći">Projekat</GiantH2>
       <div className="mt-6">
         <ProjectCopy
           text="Picerija sa picom na drva iz Novog Sada — meni, priča i porudžbina na dva klika, u duhu lokala koji miriše na vatru."
@@ -535,9 +567,9 @@ function ProjekatTreci() {
     the middle third. */
 function BrandPanel({ side, textOpacity }: { side: 'left' | 'right'; textOpacity: MotionValue<number> }) {
   const frame = side === 'left' ? 'rounded-r-3xl' : 'rounded-l-3xl'
-  const rule = <div aria-hidden className="mx-auto h-px w-[78%] shrink-0 bg-ink/20" />
-  // batch 22 (owner): every third carries a PLATE — a lighter inset surface that reads as
-  // an empty image seat ("their success images go here"), the contrast he asked for
+  // batch 22/23 (owner): every third carries a PLATE — a lighter inset surface that reads
+  // as an empty image seat; the separator rules are gone (his batch-23 note), the plates
+  // alone carry the three-box read
   const plate = 'm-3 flex flex-1 flex-col items-center justify-center gap-5 rounded-2xl border border-white/70 bg-white/40 px-5 shadow-[inset_0_2px_12px_rgba(22,50,79,0.07)]'
   return (
     <div className="relative flex h-full w-full items-center">
@@ -548,7 +580,6 @@ function BrandPanel({ side, textOpacity }: { side: 'left' | 'right'; textOpacity
       >
         {/* box 1 — a plated seat for a client image */}
         <div className={plate} />
-        {rule}
         {/* box 2 — the brand's own seat, on its plate */}
         <div className={plate}>
           {side === 'left' ? (
@@ -572,7 +603,6 @@ function BrandPanel({ side, textOpacity }: { side: 'left' | 'right'; textOpacity
             </span>
           </motion.div>
         </div>
-        {rule}
         {/* box 3 — a plated seat for a client image */}
         <div className={plate} />
       </div>
@@ -802,7 +832,7 @@ function FaqSekcija() {
             until it LOOKS equal). flex-nowrap: the pair may never split rows. */}
         <h2 className="mb-8 flex flex-nowrap items-baseline gap-x-4 leading-[0.95] tracking-tight">
           <span className="ink-gradient whitespace-nowrap text-[clamp(3rem,6.2vw,5.6rem)] font-bold">Česta</span>
-          <span className="whitespace-nowrap font-script font-normal text-accent text-[clamp(4rem,8.4vw,7.5rem)]">
+          <span className="whitespace-nowrap font-script font-normal text-accent text-[clamp(4.5rem,9.3vw,8.4rem)]">
             pitanja
           </span>
         </h2>

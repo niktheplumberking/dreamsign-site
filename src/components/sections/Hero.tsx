@@ -58,12 +58,14 @@ export default function Hero() {
           </span>
           <span
             aria-hidden={false}
-            // batch 15: grown to fill the primary line's width (owner's note), from 7vw
-            className="block font-script font-normal text-accent
-                       text-[clamp(3.1rem,10.6vw,8.4rem)] mt-[0.02em] leading-[0.95]"
+            // batch 15: grown to fill the primary line's width (owner's note), from 7vw.
+            // batch 23 (owner): „za vas" joins the quill — the longer row wears a slightly
+            // smaller clamp + nowrap so it never wraps on phones.
+            className="block whitespace-nowrap font-script font-normal text-accent
+                       text-[clamp(2.5rem,9.6vw,7.7rem)] mt-[0.02em] leading-[0.95]"
             style={GLOW}
           >
-            <EditableText k="hero-naslov-script">{bk('hero-naslov-script', 'koji prodaju')}</EditableText>
+            <EditableText k="hero-naslov-script">{bk('hero-naslov-script', 'koji prodaju za vas')}</EditableText>
           </span>
         </h1>
         <p

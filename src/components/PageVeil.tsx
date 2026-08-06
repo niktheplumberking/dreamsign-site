@@ -1,13 +1,17 @@
-// THE PAGE VEIL (batch 22, owner) — every internal navigation crosses the sky: a gust of
-// clouds rushes the viewport (left or right, picked at random), the route swaps while the
-// screen is covered, and the gust blows out the far side. Total ride ~1.35s (his law: <2s).
+// THE PAGE VEIL (batch 22/23, owner) — every internal navigation crosses the sky: a gust
+// of clouds rushes the viewport (left or right, picked at random), the route swaps while
+// the screen is covered, and the gust blows out the far side. Total ride ~1.35s (<2s law).
 //
 // One capture-phase listener owns EVERY internal <a> — nav, footer, logo, 404 — so no
 // component needs to know the veil exists. preventDefault() is enough to stop React
 // Router's Link (it honours defaultPrevented); external links, new-tab clicks, modified
 // clicks and same-page clicks pass through untouched. Reduced motion navigates plainly.
+//
+// Batch 23: the flight is PURE CSS animation (keyframes in index.css) — compositor-driven,
+// so the route swap's render stall can never freeze the wind mid-gust (the "slight stop"
+// Nick felt). The puff images preload once on mount so the first gust flies as smoothly
+// as the tenth.
 import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useReducedMotionSafe } from '../lib/hooks'
 
@@ -42,6 +46,11 @@ export default function PageVeil() {
   const nav = useRef(navigate)
   nav.current = navigate
 
+  // the first gust must not decode its clouds mid-flight
+  useEffect(() => {
+    for (const [src] of PUFFS) { const i = new Image(); i.src = src }
+  }, [])
+
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
@@ -68,40 +77,34 @@ export default function PageVeil() {
     return () => { clearTimeout(swap); clearTimeout(done) }
   }, [gust])
 
+  if (!gust) return null
+  const sweep = gust.dir === 1 ? 'veil-sweep-r' : 'veil-sweep-l'
   return (
-    <AnimatePresence>
-      {gust && (
-        <motion.div
-          key={gust.key}
-          // click-TRANSPARENT: the busy ref already swallows double-clicks, so even a
-          // zombie veil could never dead-lock the page (defence in depth)
-          className="pointer-events-none fixed inset-0 z-[95] overflow-hidden"
-          aria-hidden
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.15 } }}
-        >
-          {/* the sky-wall behind the gust — guarantees the swap is never seen naked */}
-          <motion.div
-            className="absolute inset-0"
-            style={{ background: 'linear-gradient(to bottom, #D7E7F7 0%, #CDE2F5 55%, #E6F1FB 100%)' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 1, 0] }}
-            transition={{ duration: TOTAL_MS / 1000, times: [0, 0.34, 0.62, 1], ease: 'linear' }}
-          />
-          {/* the wind: every puff crosses the whole stage, staggered depths and speeds */}
-          {PUFFS.map(([src, top, vw, delay, dur, tilt], i) => (
-            <motion.img
-              key={i}
-              src={src} alt=""
-              className="absolute max-w-none select-none"
-              style={{ top: `${top}%`, width: `${vw}vw`, left: 0, rotate: `${tilt}deg` }}
-              initial={{ x: gust.dir === 1 ? '-120vw' : '120vw' }}
-              animate={{ x: gust.dir === 1 ? '120vw' : '-120vw' }}
-              transition={{ duration: dur / 1000, delay: delay / 1000, ease: [0.45, 0, 0.25, 1] }}
-            />
-          ))}
-        </motion.div>
-      )}
-    </AnimatePresence>
+    // click-TRANSPARENT: the busy ref already swallows double-clicks, so even a zombie
+    // veil could never dead-lock the page (defence in depth)
+    <div key={gust.key} className="pointer-events-none fixed inset-0 z-[95] overflow-hidden" aria-hidden>
+      {/* the sky-wall behind the gust — guarantees the swap is never seen naked */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(to bottom, #D7E7F7 0%, #CDE2F5 55%, #E6F1FB 100%)',
+          animation: `veil-wall ${TOTAL_MS}ms linear both`,
+        }}
+      />
+      {/* the wind: every puff crosses the whole stage, staggered depths and speeds */}
+      {PUFFS.map(([src, top, vw, delay, dur, tilt], i) => (
+        <img
+          key={i}
+          src={src} alt=""
+          className="absolute max-w-none select-none will-change-transform"
+          style={{
+            top: `${top}%`, width: `${vw}vw`, left: 0,
+            transform: `translateX(${gust.dir === 1 ? '-120vw' : '120vw'}) rotate(${tilt}deg)`,
+            animation: `${sweep} ${dur}ms cubic-bezier(0.45, 0, 0.25, 1) ${delay}ms both`,
+            ['--tilt' as string]: `${tilt}deg`,
+          } as React.CSSProperties}
+        />
+      ))}
+    </div>
   )
 }

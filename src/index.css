@@ -66,6 +66,20 @@ body {
   text-shadow: 0 0 rgba(0, 0, 0, 0);
 }
 
+/* ---------- The page veil's gust (batch 23): PURE CSS keyframes — compositor-driven,
+   so the route swap's render stall can never freeze the wind mid-flight ---------- */
+@keyframes veil-sweep-r {
+  from { transform: translateX(-120vw) rotate(var(--tilt, 0deg)); }
+  to   { transform: translateX(120vw)  rotate(var(--tilt, 0deg)); }
+}
+@keyframes veil-sweep-l {
+  from { transform: translateX(120vw)  rotate(var(--tilt, 0deg)); }
+  to   { transform: translateX(-120vw) rotate(var(--tilt, 0deg)); }
+}
+@keyframes veil-wall {
+  0% { opacity: 0; } 34% { opacity: 1; } 62% { opacity: 1; } 100% { opacity: 0; }
+}
+
 /* ---------- The house glass, tuned light (design-language §4) ---------- */
 .liquid-glass {
   background: rgba(255, 255, 255, 0.38);
