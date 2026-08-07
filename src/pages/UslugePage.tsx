@@ -39,23 +39,36 @@ function CloudMap() {
                  top-[-160px] sm:top-[-40px] md:top-[-56px] lg:top-[-76px]"
       aria-hidden
     >
+      {/* batch 31 (owner): a new dress, same seats — THREE SEPARATE pen lines, each
+          from its OWN origin on the title's side (his rule: never one shared point),
+          and the clouds carry body now: a sky-gradient fill, a soft ink shadow and the
+          pale-ink contour of our asset law instead of flat white outlines. */}
       <svg viewBox="0 0 500 240" fill="none" className="h-auto w-full overflow-visible">
-        <g stroke="#16324F" strokeWidth="1.6" strokeLinecap="round" opacity="0.6">
-          <path d="M 10 140 C 40 70, 85 45, 120 40" />
-          <path d="M 10 140 C 110 115, 200 85, 305 68" />
-          <path d="M 10 140 C 90 165, 175 180, 235 175" />
+        <defs>
+          <linearGradient id="cm-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.92" />
+            <stop offset="1" stopColor="#E7F1FB" stopOpacity="0.95" />
+          </linearGradient>
+          <filter id="cm-shadow" x="-20%" y="-20%" width="140%" height="160%">
+            <feDropShadow dx="0" dy="3" stdDeviation="4" floodColor="#16324F" floodOpacity="0.16" />
+          </filter>
+        </defs>
+        <g stroke="#16324F" strokeWidth="1.6" strokeLinecap="round" opacity="0.45">
+          <path d="M 2 58 C 42 46, 84 39, 126 34" />
+          <path d="M 0 132 C 100 122, 204 94, 308 64" />
+          <path d="M 12 205 C 82 201, 162 189, 240 174" />
         </g>
         {[
           { t: 'translate(115, 12)', label: '1. Web dizajn', w: 140, tx: 70 },
           { t: 'translate(300, 38)', label: '2. SEO', w: 140, tx: 70 },
           { t: 'translate(230, 148)', label: '3. Marketing', w: 160, tx: 80 },
         ].map((c) => (
-          <g key={c.label} transform={c.t}>
+          <g key={c.label} transform={c.t} filter="url(#cm-shadow)">
             <path
               d={c.w === 160
                 ? 'M 20 40 C 8 40 2 28 12 18 C 8 5 30 -3 50 5 C 68 -5 102 -5 120 5 C 136 -3 158 5 152 18 C 166 28 158 40 142 40 Z'
                 : 'M 20 40 C 8 40 2 28 12 18 C 8 5 28 -3 44 5 C 58 -5 88 -5 102 5 C 116 -3 134 5 130 18 C 142 28 136 40 122 40 Z'}
-              fill="rgba(255,255,255,0.6)" stroke="#16324F" strokeWidth="1.8"
+              fill="url(#cm-fill)" stroke="#16324F" strokeOpacity="0.5" strokeWidth="1.8"
               strokeLinecap="round" strokeLinejoin="round"
             />
             <text x={c.tx} y="22" textAnchor="middle" dominantBaseline="middle"
@@ -213,18 +226,19 @@ function UslugeHero() {
                        className={`${row} whitespace-nowrap text-[12.5vw] sm:text-[10vw] md:text-[8.5vw] xl:text-[7.8rem]`}>
             Mi smo vaša
           </motion.span>
-          {/* batch 30 (owner): the script row and the subtitle share ONE bottom-aligned
-              row (his blue line) — the title comes down to meet the subtext, the
-              original third-row grammar with the new duet words */}
+          {/* batch 31 (owner): TRUE alignment — items-BASELINE, so the subtitle's text
+              sits on the script row's own baseline (batch 30 aligned box bottoms while
+              pb-4 lifted the text 16px off them; his line was never met). The subtitle
+              comes UP to the row; the pb crutches are gone. */}
           <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                        transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                       className="mt-1 flex w-full flex-col items-start justify-between gap-6 sm:mt-2 lg:flex-row lg:items-end lg:gap-12">
+                       className="mt-1 flex w-full flex-col items-start justify-between gap-6 sm:mt-2 lg:flex-row lg:items-baseline lg:gap-12">
             <span className="block whitespace-nowrap font-script font-normal normal-case tracking-normal text-accent
                              leading-[1.02] text-[13.9vw] sm:text-[11.1vw] md:text-[9.5vw] xl:text-[8.63rem]"
                   style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
               full-service agencija
             </span>
-            <span className="block max-w-xs pb-1 text-left text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-sm lg:pb-4 lg:text-base xl:max-w-md"
+            <span className="block max-w-xs text-left text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-sm lg:text-base xl:max-w-md"
                   style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
               <EditableText k="usluge-uvod">
                 {bk('usluge-uvod', 'Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.')}
@@ -232,6 +246,11 @@ function UslugeHero() {
             </span>
           </motion.span>
         </h1>
+
+        {/* batch 31 (owner): the title returns to its ORIGINAL height — the batch-30
+            block lowering (3.5vh) stays only below this spacer, so the cards keep his
+            red-line seat while the h1 rides back up */}
+        <div aria-hidden className="h-[3.5vh] w-full" />
 
         {/* the reviews — the train slider he approved, in the original seat, riding
             clear of the sea */}
@@ -249,6 +268,26 @@ function UslugeHero() {
         <div aria-hidden style={{ height: 'max(10vh, 120px)' }} />
         <ServicesStack />
         <SkyGap />
+      </div>
+
+      {/* batch 31 (owner): HIS prescribed fix, verbatim — clouds from beneath OVERLAP
+          the stack's bottom edge as a ~40% OVERLAY (z-20, above the stage), blending
+          the foot line instead of trying to out-paint it. Full width, mass centred on
+          the foot (section bottom − SkyGap 310px), tops riding just under the CTA
+          pill's worst-case seat so they never touch it. */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-[130px] z-20 h-[350px] select-none overflow-hidden">
+        {[
+          { cls: 'left-[-6%] top-[38%] w-[44%]', px: 7, sec: 12, delay: 0 },
+          { cls: 'left-[29%] top-[30%] w-[42%] scale-x-[-1]', px: 8, sec: 10, delay: 1.1 },
+          { cls: 'right-[-5%] top-[36%] w-[40%]', px: 6, sec: 13, delay: 0.5 },
+        ].map((c, i) => (
+          <motion.img
+            key={i} src="/media/cloud-real.webp" alt="" loading="eager"
+            className={`absolute h-auto max-w-none opacity-40 ${c.cls}`}
+            animate={reduced ? undefined : { y: [0, -c.px, 0] }}
+            transition={reduced ? undefined : { duration: c.sec, repeat: Infinity, ease: 'easeInOut', delay: c.delay }}
+          />
+        ))}
       </div>
 
       {/* the world through this stretch: B3's quiet sky behind the stack + THE cloud
