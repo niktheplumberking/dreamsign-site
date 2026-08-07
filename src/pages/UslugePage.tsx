@@ -51,7 +51,9 @@ function LabelCloud({ label, className = '', bobDelay = 0, reduced }: {
   )
 }
 
-/** the fan: three lines from three different points under the title, three real clouds */
+/** the fan: three lines from three different points under the title, three real clouds.
+    batch 26: COMPACT — the whole hero (title, fan, slider) must live ABOVE the sky-sea
+    line at the hero's foot (his blue line; nothing may ever cross it). */
 function CloudFan({ reduced }: { reduced: boolean }) {
   const draw = (i: number) =>
     reduced
@@ -62,7 +64,7 @@ function CloudFan({ reduced }: { reduced: boolean }) {
           transition: { duration: 0.9, delay: 0.5 + i * 0.22, ease: [0.45, 0, 0.25, 1] as const },
         }
   return (
-    <div aria-hidden className="relative mt-2 h-[300px] w-full sm:h-[340px] lg:h-[380px]">
+    <div aria-hidden className="relative mt-1 h-[210px] w-full sm:h-[230px] lg:h-[250px]">
       {/* the pen lines — each starts under a DIFFERENT word of the title (his metaphor:
           the title branches into what we do) */}
       <svg
@@ -70,17 +72,17 @@ function CloudFan({ reduced }: { reduced: boolean }) {
         className="pointer-events-none absolute inset-0 h-full w-full"
       >
         <g stroke="#16324F" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke">
-          <motion.path vectorEffect="non-scaling-stroke" d="M 7 2 C 6 30, 8 42, 11 58" {...draw(0)} />
-          <motion.path vectorEffect="non-scaling-stroke" d="M 27 2 C 32 26, 42 40, 49 50" {...draw(1)} />
-          <motion.path vectorEffect="non-scaling-stroke" d="M 48 2 C 62 22, 76 34, 83 62" {...draw(2)} />
+          <motion.path vectorEffect="non-scaling-stroke" d="M 5 4 C 4 30, 6 44, 9 62" {...draw(0)} />
+          <motion.path vectorEffect="non-scaling-stroke" d="M 21 4 C 28 26, 40 40, 47 54" {...draw(1)} />
+          <motion.path vectorEffect="non-scaling-stroke" d="M 38 4 C 56 22, 74 36, 82 64" {...draw(2)} />
         </g>
       </svg>
       <LabelCloud reduced={reduced} label="Web dizajn" bobDelay={0}
-                  className="left-[1%] top-[52%] w-[168px] sm:w-[200px] lg:w-[236px]" />
+                  className="left-[1%] top-[54%] w-[148px] sm:w-[168px] lg:w-[188px]" />
       <LabelCloud reduced={reduced} label="SEO" bobDelay={1.1}
-                  className="left-[38%] top-[44%] w-[150px] sm:w-[184px] lg:w-[214px]" />
+                  className="left-[39%] top-[46%] w-[132px] sm:w-[152px] lg:w-[172px]" />
       <LabelCloud reduced={reduced} label="Marketing" bobDelay={0.5}
-                  className="left-[71%] top-[56%] w-[160px] sm:w-[196px] lg:w-[226px]" />
+                  className="left-[72%] top-[58%] w-[142px] sm:w-[162px] lg:w-[182px]" />
     </div>
   )
 }
@@ -112,21 +114,35 @@ function ReferenceCard({ r }: { r: (typeof REFERENCE)[number] }) {
 }
 
 function Slider({ reduced }: { reduced: boolean }) {
-  // batch 25 (owner): ONE slot changes at a time (alternating), and it SLIDES — no fade.
-  // `n` counts steps in either direction; each parity owns one slot, so exactly one card
-  // key changes per step and only that card animates.
-  const [n, setN] = useState(0)
-  const next = useCallback(() => setN((v) => v + 1), [])
-  const prev = useCallback(() => setN((v) => v - 1), [])
+  // batch 26 (owner): ONE CONNECTED TRAIN — every step, both visible cards slide LEFT
+  // together: the left card leaves the stage, the right card takes the left seat, the
+  // next card enters from the right. (His words: "same effect on both reviews always.")
+  const N = REFERENCE.length
+  const [idx, setIdx] = useState(0)
+  const next = useCallback(() => setIdx((v) => v + 1), [])
+  const prev = useCallback(() => setIdx((v) => v - 1), [])
   useEffect(() => {
     if (reduced) return
     const t = setInterval(next, 7000)
     return () => clearInterval(t)
   }, [next, reduced])
 
+  // one card-width (incl. gap) measured live — transforms animate in px, no calc strings
+  const viewRef = useRef<HTMLDivElement>(null)
+  const [slotW, setSlotW] = useState(0)
+  useEffect(() => {
+    const measure = () => {
+      const el = viewRef.current
+      if (!el) return
+      const two = window.matchMedia('(min-width: 768px)').matches
+      setSlotW(two ? (el.clientWidth - 16) / 2 + 16 : el.clientWidth + 16)
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+
   const mod = (v: number, m: number) => ((v % m) + m) % m
-  const a = REFERENCE[mod(0 + 2 * Math.ceil(n / 2), REFERENCE.length)]
-  const b = REFERENCE[mod(1 + 2 * Math.floor(n / 2), REFERENCE.length)]
   const Btn = ({ onClick, label, children }: { onClick: () => void; label: string; children: React.ReactNode }) => (
     <button
       onClick={onClick} aria-label={label}
@@ -138,27 +154,25 @@ function Slider({ reduced }: { reduced: boolean }) {
   )
 
   return (
-    <div className="z-20 mt-8 flex w-full items-center gap-2 sm:mt-10 sm:gap-4 lg:mt-12">
+    <div className="z-20 mt-6 flex w-full items-center gap-2 sm:mt-7 sm:gap-4">
       <Btn onClick={prev} label="Prethodna referenca">‹</Btn>
-      <div className="flex-1 overflow-hidden py-1">
-        <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
-          <div className="relative min-h-[105px] overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.div key={a.name} initial={{ x: '112%' }} animate={{ x: 0 }} exit={{ x: '-112%' }}
-                          transition={{ duration: reduced ? 0 : 0.75, ease: [0.3, 0, 0.2, 1] }}>
-                <ReferenceCard r={a} />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          <div className="relative hidden min-h-[105px] overflow-hidden md:block">
-            <AnimatePresence mode="wait">
-              <motion.div key={b.name} initial={{ x: '112%' }} animate={{ x: 0 }} exit={{ x: '-112%' }}
-                          transition={{ duration: reduced ? 0 : 0.75, ease: [0.3, 0, 0.2, 1] }}>
-                <ReferenceCard r={b} />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
+      <div ref={viewRef} className="relative h-[112px] flex-1 overflow-hidden py-1">
+        {REFERENCE.map((r, i) => {
+          // seat 0 = left stage, 1 = right stage, N-1 = just off-left, rest park off-right
+          const s = mod(i - mod(idx, N), N)
+          const off = s === N - 1 ? -1 : s
+          return (
+            <motion.div
+              key={r.name}
+              className="absolute left-0 top-1 w-full md:w-[calc(50%-8px)]"
+              initial={false}
+              animate={{ x: off * slotW }}
+              transition={{ duration: reduced || !slotW ? 0 : 0.75, ease: [0.3, 0, 0.2, 1] }}
+            >
+              <ReferenceCard r={r} />
+            </motion.div>
+          )
+        })}
       </div>
       <Btn onClick={next} label="Sledeća referenca">›</Btn>
     </div>
@@ -176,39 +190,50 @@ function UslugeHero() {
     // block); the trailing sky lives inside this beat so the hero's own bottom edge —
     // where the slider cards sit by design — stays outside the junction scan band
     <section data-beat="hero" className="relative z-10 w-full overflow-hidden">
-      <motion.img
-        src="/media/hero-sky-still.webp" alt=""
-        className="absolute inset-0 z-0 h-[120%] w-full object-cover"
-        style={reduced ? undefined : { y: skyY }}
-      />
-      <div className="relative flex min-h-screen w-full flex-col justify-end px-4 pb-12 pt-28 sm:px-10 sm:pb-16 lg:px-16 lg:pb-20">
+      {/* the sky dissolves in SECTION space before the overflow cut — the separator line
+          Nick circled under the hero can never exist (the radovi batch-20 grammar) */}
+      <div
+        aria-hidden
+        className="absolute inset-0 z-0 overflow-hidden"
+        style={{
+          WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 99%)',
+          maskImage: 'linear-gradient(to bottom, black 80%, transparent 99%)',
+        }}
+      >
+        <motion.img
+          src="/media/hero-sky-still.webp" alt=""
+          className="absolute inset-0 h-[120%] w-full object-cover"
+          style={reduced ? undefined : { y: skyY }}
+        />
+      </div>
+      <div className="relative flex min-h-screen w-full flex-col justify-end px-4 pb-[16vh] pt-24 sm:px-10 lg:px-16">
 
       <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-col items-start justify-end">
-        {/* batch 25 (owner): the duet turned around — the quill opens quietly, the primary
-            carries the whole claim in ONE voice (no more lone script word closing it) */}
+        {/* batch 26 (owner): the HOUSE duet — first row primary, second row script, the
+            same grammar as the home and radovi heroes */}
         <h1 className="flex w-full flex-col items-start text-left">
           <motion.span
-            initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="block -rotate-2 font-script font-normal normal-case leading-none tracking-normal text-accent
-                       text-[clamp(2.2rem,5.4vw,4.4rem)]"
-            style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}
+            className={`${row} whitespace-nowrap text-[clamp(1.9rem,6.2vw,4.9rem)]`}
           >
-            Mi smo
+            Mi smo full–service
           </motion.span>
           <motion.span
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-            className={`${row} mt-2 whitespace-nowrap text-[8.6vw] sm:text-[7.4vw] xl:text-[6.8rem]`}
+            className="mt-1 block font-script font-normal normal-case leading-[0.95] tracking-normal text-accent
+                       text-[clamp(2.4rem,7vw,5.6rem)]"
+            style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}
           >
-            Full–service agencija
+            agencija
           </motion.span>
         </h1>
 
         <motion.span
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-4 block max-w-xs text-left text-xs font-medium leading-relaxed text-ink/85 sm:max-w-sm sm:text-sm lg:text-base xl:max-w-md"
+          className="mt-3 block max-w-xs text-left text-xs font-medium leading-relaxed text-ink/85 sm:max-w-sm sm:text-sm lg:text-base xl:max-w-md"
           style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}
         >
           <EditableText k="usluge-uvod">
@@ -219,12 +244,17 @@ function UslugeHero() {
         {/* the three things we do, hanging off the title's own words */}
         <CloudFan reduced={reduced} />
 
+        {/* the reviews — HIS seat, at the hero's foot, never crossing the sea line and
+            never to be moved again (owner's law, batch 26) */}
         <Slider reduced={reduced} />
       </div>
       </div>
-      {/* trailing sky inside the hero beat — the slider's bottom edge never meets a scan;
-          batch 25: trimmed to the junction-law floor so the trust band rides higher */}
-      <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
+
+      {/* batch 26: the band lives INSIDE the hero beat, right under the sea (his
+          screenshot-2 box) — so the junction the rig scans sits BELOW the band's feathered
+          tail, where sky meets sky. The sea's crest is mid-beat, never scanned. */}
+      <div aria-hidden style={{ height: 'max(4vh, 44px)' }} />
+      <TrustBand />
     </section>
   )
 }
@@ -246,7 +276,16 @@ function TrustBand() {
   // (Nick's "glitch", batch 25)
   const items = [...BADGES, ...BADGES]
   return (
-    <div className="relative w-full overflow-hidden bg-ink py-8 text-tint shadow-inner sm:py-12">
+    // batch 26 (owner): the band sits right under the hero, INSIDE the seam zone — its
+    // top and bottom FEATHER into the sky (~70px each) so no razor edge can ever exist;
+    // the content rides in the solid core. One world, no separator lines.
+    <div
+      className="relative w-full overflow-hidden bg-ink py-16 text-tint sm:py-20"
+      style={{
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%)',
+        maskImage: 'linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%)',
+      }}
+    >
       <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-20 bg-gradient-to-r from-ink to-transparent sm:w-40" />
       <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-20 bg-gradient-to-l from-ink to-transparent sm:w-40" />
       <div className="flex w-max animate-marquee items-center gap-12 sm:gap-16 lg:gap-20">
@@ -311,14 +350,14 @@ const CARD_BG = '#EFF6FC'
 function StackCard({ i, active, onOpen }: { i: number; active: boolean; onOpen: () => void }) {
   const s = SERVICES[i]
   return (
-    <div className="w-full px-5 py-4 sm:px-8 sm:py-5 lg:px-10">
+    <div className="w-full py-4 sm:py-5">
       <div className="grid w-full grid-cols-12 items-start gap-3 sm:gap-6 lg:gap-8">
-        <div className="col-span-2 lg:col-span-2">
-          <span className="select-none text-3xl font-normal leading-none tracking-tight text-accent/90 sm:text-5xl lg:text-6xl" aria-hidden>
+        <div className="col-span-3 lg:col-span-3">
+          <span className="select-none text-4xl font-normal leading-none tracking-tight text-ink/90 sm:text-6xl lg:text-[88px]" aria-hidden>
             {s.n}
           </span>
         </div>
-        <div className="col-span-10 flex flex-col pt-0.5 sm:pt-1 lg:col-span-10">
+        <div className="col-span-9 flex flex-col pt-1 sm:pt-2 lg:col-span-9">
           <button onClick={onOpen} className="group/title flex w-full cursor-pointer items-center justify-between text-left" aria-expanded={active}>
             {/* batch 19: brand ramp (colour law) — the hover dim moved to opacity, since
                 a colour change would repaint solid ink over the clipped gradient */}
@@ -397,14 +436,21 @@ function ServicesStack() {
   }
 
   return (
-    // 260vh: the last card is open by 78% of the runway — no dead scroll trailing it
+    // 260vh: the last card is open by 78% of the runway — no dead scroll trailing it.
+    // batch 26 (owner): NO box — the surface is FULL WIDTH again (the old blanket look):
+    // one edge-to-edge ground whose top and bottom dissolve into the sky, with the four
+    // rows living on it. The accordion mechanics stay: all titles always visible, the
+    // active body expands in place, the camera locked by the pin.
     <div ref={ref} className="relative h-[260vh] w-full">
-      <div className="sticky top-0 flex h-screen w-full flex-col justify-center overflow-hidden px-3 pt-14 sm:px-6 sm:pt-16">
+      <div className="sticky top-0 flex h-screen w-full flex-col justify-center overflow-hidden pt-14 sm:pt-16">
         <div
-          className="mx-auto w-full max-w-6xl overflow-hidden rounded-[1.8rem] border border-white/70
-                     shadow-[0_18px_50px_rgba(22,50,79,0.10)]"
-          style={{ background: CARD_BG }}
-        >
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(to bottom, transparent 0%, ${CARD_BG} 14%, ${CARD_BG} 88%, transparent 100%)`,
+          }}
+        />
+        <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-12">
           {SERVICES.map((_, i) => (
             <div key={i} className={i > 0 ? 'border-t border-ink/15' : ''}>
               <StackCard i={i} active={active === i} onOpen={() => jump(i)} />
@@ -462,10 +508,8 @@ export default function UslugePage() {
               />
             </>
           }>
-            <SkyGap />
-            <TrustBand />
-            {/* the closed gap — a breath, alive with the hovering clouds above */}
-            <div aria-hidden style={{ height: 'max(16vh, 190px)' }} />
+            {/* the breath before the stack, alive with the hovering clouds */}
+            <div aria-hidden style={{ height: 'max(22vh, 260px)' }} />
             <ServicesStack />
             <SkyGap />
           </Beat>
