@@ -45,11 +45,13 @@ function CloudMap() {
       {/* batch 34 (owner): the trails became REAL pen lines — solid, BLUE, and wandering
           like his sketch (never near-straight); the puffs grew so the words sit deep
           inside the cloud body. */}
+      {/* batch 35 (owner): every line ARRIVES FROM UNDERNEATH, hooking up into the
+          cloud's bottom-centre — never from the left (his red drawing) */}
       <svg viewBox="0 0 500 240" fill="none" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
         <g stroke="#2E5F9E" strokeWidth="2" strokeLinecap="round" opacity="0.6">
-          <path d="M 2 66 C 26 30, 52 74, 82 50 C 100 36, 112 48, 122 42" />
-          <path d="M 0 140 C 46 158, 92 100, 148 118 C 200 134, 246 88, 300 76" />
-          <path d="M 10 210 C 54 230, 104 184, 152 202 C 186 214, 212 190, 238 184" />
+          <path d="M 2 78 C 40 52, 88 96, 128 84 C 156 76, 166 72, 170 58" />
+          <path d="M 0 148 C 70 160, 170 128, 250 132 C 330 136, 372 122, 380 98" />
+          <path d="M 10 214 C 70 230, 160 214, 230 212 C 276 210, 296 206, 300 190" />
         </g>
       </svg>
       {[
@@ -731,10 +733,16 @@ function ProcessWheel() {
 
   useEffect(() => {
     const m = () => {
-      // batch 33 (owner): ENORMOUS — the seat (θ=0, at radius 1.19R) lands at the
-      // viewport's horizontal centre: cx + 1.19R ≈ 0.49·vw on desktop
-      const R = Math.max(130, Math.min(window.innerHeight * 0.72, window.innerWidth * 0.41))
-      setDim({ R, cx: 24, fontPx: Math.max(34, R * 0.2) })
+      // batch 35 (owner): THE ENDLESS ARC — geometry, not masks. The circle must never
+      // cross the stage's top or bottom edge (a crossing becomes a mid-air break the
+      // moment the stage edge sits inside the viewport), so R ≤ ~vh/2; and it must
+      // poke out through the LEFT screen edge (cx − R < 0), so its line enters and
+      // leaves only through the edge of the screen — infinite at every scroll.
+      const vh = window.innerHeight, vw = window.innerWidth
+      const R = Math.max(104, Math.min(vh * 0.467, vw * 0.3))
+      let cx = vw * 0.47 - 1.19 * R
+      if (cx > R - 30) cx = R - 30 // guarantee the left poke on odd aspect ratios
+      setDim({ R, cx, fontPx: Math.max(34, R * 0.2) })
     }
     m()
     window.addEventListener('resize', m)
@@ -785,8 +793,11 @@ function ProcessWheel() {
           transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
         />
         {/* batch 34 (owner): the section title in the PRIMARY face, big, centred */}
-        <h2 className="ink-gradient absolute left-1/2 top-24 w-max -translate-x-1/2 text-center text-3xl
-                       font-semibold uppercase tracking-tight sm:top-28 sm:text-5xl lg:text-6xl">
+        {/* batch 35 (owner): DISPLAY size, the house ramp — the same dark-to-light blue
+            gradient the homepage's giant service line wears, "much much bigger" */}
+        <h2 className="ink-gradient absolute left-1/2 top-20 w-max -translate-x-1/2 text-center
+                       font-semibold uppercase leading-none tracking-tight
+                       text-[clamp(2.75rem,9vw,4.5rem)] sm:top-24 lg:text-[clamp(4rem,7.5vw,7rem)]">
           Naš proces
         </h2>
 
@@ -800,21 +811,13 @@ function ProcessWheel() {
         >
           {/* wheel space: local (0,0) = left edge, mid-height */}
           <div aria-hidden className="absolute left-0 top-1/2">
-            {/* the ring's line DISSOLVES before its ends — his break points cannot exist
-                at any scroll position (the arc melts, never terminates) */}
+            {/* batch 35: NO mask — the batch-34 end-fade itself manufactured the visible
+                ends he circled. The circle now lives entirely inside the stage's height
+                and leaves only through the left screen edge: nothing to hide. */}
             <div
-              className="absolute"
-              style={{
-                width: 2 * R, height: 2 * R, left: cx - R, top: -R,
-                WebkitMaskImage: 'linear-gradient(to bottom, transparent 3%, black 22%, black 78%, transparent 97%)',
-                maskImage: 'linear-gradient(to bottom, transparent 3%, black 22%, black 78%, transparent 97%)',
-                // its own compositor layer — a masked 2R-square rastered on the shared
-                // layer taxes every scroll frame (the b13 shared-layer lesson)
-                transform: 'translateZ(0)',
-              }}
-            >
-              <div className="absolute inset-0 rounded-full border border-ink/25" />
-            </div>
+              className="absolute rounded-full border border-ink/25"
+              style={{ width: 2 * R, height: 2 * R, left: cx - R, top: -R, transform: 'translateZ(0)' }}
+            />
             <span className="absolute h-1.5 w-1.5 rounded-full bg-ink/40" style={{ left: cx - 3, top: -3 }} />
             {PROCESS.map((_, i) => (
               <WheelNumber key={i} i={i} rot={rot} R={R} cx={cx} fontPx={fontPx} />
