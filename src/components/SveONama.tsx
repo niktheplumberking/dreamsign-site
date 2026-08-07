@@ -1,0 +1,87 @@
+// SVE O NAMA — Nick's own composition, shared by /radovi and /usluge (batch 28).
+// THE COPY IS HIS, VERBATIM, AND LOCKED (owner's instruction 2026-08-03: "dont touch
+// SVE O NAMA"). Layout coordinates carried over 1/1; only faces and colours are ours.
+import { motion } from 'motion/react'
+
+export default function SveONama() {
+  return (
+    <div className="relative flex h-screen max-h-screen min-h-screen w-full select-none flex-col justify-between px-6 text-ink sm:px-10 lg:px-14">
+      {/* the thin decorative circle poking off the left edge */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-1/2 z-0 -translate-y-1/2 rounded-full border border-ink/25
+                   -left-[100px] h-[480px] w-[480px] sm:-left-[140px] sm:h-[680px] sm:w-[680px]
+                   md:-left-[180px] md:h-[850px] md:w-[850px] lg:-left-[200px] lg:h-[1020px] lg:w-[1020px]"
+      />
+
+      {/* the lone "O", upper right */}
+      <motion.span
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="pointer-events-none absolute z-10 block -translate-y-1/2 font-bold uppercase leading-none tracking-tight text-ink
+                   top-[28%] right-[14%] text-[5.25rem] sm:top-[32%] sm:right-[18%] sm:text-[7.75rem]
+                   md:right-[22%] md:text-[min(9.75rem,10.4vw)] lg:top-[35%] lg:right-[25%] lg:text-[min(11.75rem,9.6vw)] xl:text-[min(13.25rem,10.2vw)]"
+        aria-hidden
+      >
+        O
+      </motion.span>
+
+      {/* centre-left text block — HIS COPY, VERBATIM */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute z-20 w-full max-w-xs -translate-y-1/2 px-2 text-left
+                   top-[55%] left-[14%] sm:top-[58%] sm:left-[18%] sm:max-w-md md:left-[22%] lg:max-w-lg"
+      >
+        <p className="text-base font-medium leading-relaxed text-ink/95 sm:text-lg lg:text-xl xl:text-[1.375rem]">
+          Naša strast je vođenje klijenata da pronađu svoj jedinstveni glas u svetu vizuelnih
+          komunikacija, kreirajući brendove sa smislom i emocijom, bez da budemo samo još
+          jedan u nizu. Otkrijte lepotu autentičnosti i snagu izuzetnog dizajna.
+        </p>
+      </motion.div>
+
+      {/* lower-right text block — HIS COPY, VERBATIM */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute z-20 w-full max-w-xs px-2 text-left
+                   bottom-20 right-8 sm:bottom-28 sm:right-16 sm:max-w-md md:right-24 lg:bottom-36 lg:right-32 lg:max-w-lg"
+      >
+        <p className="text-base font-medium leading-relaxed text-ink/95 sm:text-lg lg:text-xl xl:text-[1.375rem]">
+          Kroz pažljivo osmišljene strategije i posvećenost detaljima, stvaramo vizuelne
+          identitete i digitalna iskustva koja inspirišu i ostavljaju trajan utisak.
+        </p>
+      </motion.div>
+
+      {/* SVE (top) and NAMA (bottom), stepping right — the section's h2 reads whole */}
+      <h2 className="pointer-events-none relative z-10 mx-auto flex h-full w-full max-w-[1700px] flex-col justify-between pt-20 pb-4 sm:pt-24 sm:pb-6 lg:pt-28">
+        <motion.span
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="block w-full pl-10 text-left font-bold uppercase leading-[0.8] tracking-tight text-ink
+                     text-[4.5rem] sm:pl-24 sm:text-[7rem] md:pl-36 md:text-[min(9rem,9.6vw)] lg:pl-48 lg:text-[min(11rem,9vw)] xl:text-[min(13rem,10vw)]"
+        >
+          SVE
+        </motion.span>
+        <motion.span
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="-mt-4 block w-full pl-16 text-left font-bold uppercase leading-[0.8] tracking-tight text-ink
+                     text-[4.5rem] sm:-mt-6 sm:pl-36 sm:text-[7rem] md:pl-52 md:text-[min(9rem,9.6vw)] lg:-mt-8 lg:pl-64 lg:text-[min(11rem,9vw)] xl:text-[min(13rem,10vw)]"
+        >
+          NAMA
+        </motion.span>
+      </h2>
+    </div>
+  )
+}

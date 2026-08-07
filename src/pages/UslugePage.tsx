@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react'
 import { World, WorldLayer, SeamBridge, Beat, useWorld } from '../components/World'
 import LandingCTA from '../components/LandingCTA'
+import SveONama from '../components/SveONama'
 import Ground from '../components/Ground'
 import { GlossyPill } from '../components/Nav'
 import { MASK } from '../lib/masks'
@@ -22,70 +23,49 @@ const SkyGap = () => <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
 
 /* ------------------------------------------------------------------ hero (his block) */
 
-/* batch 25 (owner) — the hand-drawn mind-map is GONE ("like somebody threw them there").
-   The metaphor stays, executed with the site's REAL assets: the title says full-service
-   agencija, and three pen lines leave from under three DIFFERENT words of it, each landing
-   on a real cloud carrying one of the three things we do. */
+/* batch 28 (owner): the hero reverted 1/1 to its pre-change state — his order ("revert
+   how it was before we started doing any changes on hero section... then I will give you
+   better instructions"). The mind-map below is the ORIGINAL, restored verbatim. */
 
-/** a labelled cloud in the CloudButton's own dress — the real puff, label in its body */
-function LabelCloud({ label, className = '', bobDelay = 0, reduced }: {
-  label: string; className?: string; bobDelay?: number; reduced: boolean
-}) {
+/** the mind-map: three outlined clouds — OUR real services — tied by thin pen lines to
+    one origin. Geometry from the reference SVG; stroke and faces ours. */
+function CloudMap() {
   return (
     <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      className="pointer-events-none absolute right-0 z-10 w-[230px] sm:w-[340px] md:w-[420px] lg:w-[480px]
+                 top-[-160px] sm:top-[-40px] md:top-[-56px] lg:top-[-76px]"
       aria-hidden
-      animate={reduced ? undefined : { y: [0, -7, 0] }}
-      transition={{ duration: 5.6, repeat: Infinity, ease: 'easeInOut', delay: bobDelay }}
-      className={`absolute ${className}`}
     >
-      <img
-        src="/media/cloud-puff.webp" alt=""
-        className="w-full select-none drop-shadow-[0_10px_24px_rgba(22,50,79,0.20)]"
-      />
-      <span className="pointer-events-none absolute inset-0 flex items-center justify-center pt-[4%]">
-        <span className="max-w-[62%] text-center text-[10.5px] font-semibold uppercase leading-tight tracking-[0.12em] text-ink/85 sm:text-[12px]">
-          {label}
-        </span>
-      </span>
-    </motion.div>
-  )
-}
-
-/** the fan: three lines from three different points under the title, three real clouds.
-    batch 26: COMPACT — the whole hero (title, fan, slider) must live ABOVE the sky-sea
-    line at the hero's foot (his blue line; nothing may ever cross it). */
-function CloudFan({ reduced }: { reduced: boolean }) {
-  const draw = (i: number) =>
-    reduced
-      ? {}
-      : {
-          initial: { pathLength: 0, opacity: 0 },
-          animate: { pathLength: 1, opacity: 0.55 },
-          transition: { duration: 0.9, delay: 0.5 + i * 0.22, ease: [0.45, 0, 0.25, 1] as const },
-        }
-  return (
-    <div aria-hidden className="relative mt-1 h-[210px] w-full sm:h-[230px] lg:h-[250px]">
-      {/* the pen lines — each starts under a DIFFERENT word of the title (his metaphor:
-          the title branches into what we do) */}
-      <svg
-        viewBox="0 0 100 100" preserveAspectRatio="none" fill="none"
-        className="pointer-events-none absolute inset-0 h-full w-full"
-      >
-        {/* batch 27: the title is CENTRED now — the three starts sit under its words
-            mid-stage and fan OUTWARD to the three clouds */}
-        <g stroke="#16324F" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke">
-          <motion.path vectorEffect="non-scaling-stroke" d="M 33 4 C 22 26, 14 42, 10 60" {...draw(0)} />
-          <motion.path vectorEffect="non-scaling-stroke" d="M 48 4 C 48 26, 48 40, 48 52" {...draw(1)} />
-          <motion.path vectorEffect="non-scaling-stroke" d="M 63 4 C 72 24, 79 40, 83 62" {...draw(2)} />
+      <svg viewBox="0 0 500 240" fill="none" className="h-auto w-full overflow-visible">
+        <g stroke="#16324F" strokeWidth="1.6" strokeLinecap="round" opacity="0.6">
+          <path d="M 10 140 C 40 70, 85 45, 120 40" />
+          <path d="M 10 140 C 110 115, 200 85, 305 68" />
+          <path d="M 10 140 C 90 165, 175 180, 235 175" />
         </g>
+        {[
+          { t: 'translate(115, 12)', label: '1. Web dizajn', w: 140, tx: 70 },
+          { t: 'translate(300, 38)', label: '2. SEO', w: 140, tx: 70 },
+          { t: 'translate(230, 148)', label: '3. Marketing', w: 160, tx: 80 },
+        ].map((c) => (
+          <g key={c.label} transform={c.t}>
+            <path
+              d={c.w === 160
+                ? 'M 20 40 C 8 40 2 28 12 18 C 8 5 30 -3 50 5 C 68 -5 102 -5 120 5 C 136 -3 158 5 152 18 C 166 28 158 40 142 40 Z'
+                : 'M 20 40 C 8 40 2 28 12 18 C 8 5 28 -3 44 5 C 58 -5 88 -5 102 5 C 116 -3 134 5 130 18 C 142 28 136 40 122 40 Z'}
+              fill="rgba(255,255,255,0.6)" stroke="#16324F" strokeWidth="1.8"
+              strokeLinecap="round" strokeLinejoin="round"
+            />
+            <text x={c.tx} y="22" textAnchor="middle" dominantBaseline="middle"
+                  fill="#16324F" fontSize="13" fontWeight="600" fontFamily="'Inter Tight', system-ui, sans-serif">
+              {c.label}
+            </text>
+          </g>
+        ))}
       </svg>
-      <LabelCloud reduced={reduced} label="Web dizajn" bobDelay={0}
-                  className="left-[1%] top-[54%] w-[148px] sm:w-[168px] lg:w-[188px]" />
-      <LabelCloud reduced={reduced} label="SEO" bobDelay={1.1}
-                  className="left-[39%] top-[46%] w-[132px] sm:w-[152px] lg:w-[172px]" />
-      <LabelCloud reduced={reduced} label="Marketing" bobDelay={0.5}
-                  className="left-[72%] top-[58%] w-[142px] sm:w-[162px] lg:w-[182px]" />
-    </div>
+    </motion.div>
   )
 }
 
@@ -196,61 +176,65 @@ function UslugeHero() {
     <section data-beat="hero" className="relative z-10 w-full overflow-clip">
       {/* the sky dissolves in SECTION space before the overflow cut — the separator line
           Nick circled under the hero can never exist (the radovi batch-20 grammar) */}
-      {/* the sea stays LOW (his red line: background clouds may never touch the reviews):
-          the frame favours the image's upper sky, and the foot dissolves in section space */}
+      {/* the ORIGINAL image framing back (his order — the sea and its clouds live again).
+          h-SCREEN, not inset-0: the section is a mega-beat now (band + stack live in it),
+          and a full-section img had stretched the sky 4x — THAT was what "deleted" the
+          sea from the first fold. The foot keeps its dissolve so no separator line. */}
       <div
         aria-hidden
-        className="absolute inset-0 z-0 overflow-hidden"
+        className="absolute inset-x-0 top-0 z-0 h-screen overflow-hidden"
         style={{
-          WebkitMaskImage: 'linear-gradient(to bottom, black 84%, transparent 99%)',
-          maskImage: 'linear-gradient(to bottom, black 84%, transparent 99%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 86%, transparent 99%)',
+          maskImage: 'linear-gradient(to bottom, black 86%, transparent 99%)',
         }}
       >
         <motion.img
           src="/media/hero-sky-still.webp" alt=""
           className="absolute inset-0 h-[120%] w-full object-cover"
-          style={{ objectPosition: '50% 18%', ...(reduced ? {} : { y: skyY }) }}
+          style={{ objectPosition: '50% 42%', ...(reduced ? {} : { y: skyY }) }}
         />
       </div>
-      <div className="relative flex min-h-screen w-full flex-col justify-end px-4 pb-[10vh] pt-24 sm:px-10 lg:px-16">
+      {/* pb seats the review cards ABOVE the sea's crest (his red rule: the background
+          clouds never touch the reviews) — verified against the rendered crest */}
+      <div className="relative flex min-h-screen w-full flex-col justify-end px-4 pb-[27vh] pt-28 sm:px-10 lg:px-16">
 
-      {/* batch 27 (owner): the layout matches the OTHER heroes — everything CENTRED */}
-      <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-col items-center justify-end text-center">
-        <h1 className="flex w-full flex-col items-center">
-          <motion.span
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className={`${row} whitespace-nowrap text-[clamp(1.9rem,6.2vw,4.9rem)]`}
-          >
-            Mi smo full–service
+      <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-col items-center justify-end">
+        <CloudMap />
+
+        {/* batch 19: the glow moved OFF the h1 — inherited onto the gradient-clipped rows
+            it painted a glyph-shaped white halo OVER the ramp (text paints after
+            background) and frosted them silver. The script span carries its own glow. */}
+        <h1 className="flex w-full flex-col items-start text-left">
+          <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                       className={`${row} text-[13vw] sm:text-[10.5vw] md:text-[9vw] xl:text-[8.2rem]`}>
+            Mi smo
           </motion.span>
-          <motion.span
-            initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-1 block font-script font-normal normal-case leading-[0.95] tracking-normal text-accent
-                       text-[clamp(2.4rem,7vw,5.6rem)]"
-            style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}
-          >
-            agencija
+          <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                       transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                       className={`${row} whitespace-nowrap text-[12.5vw] sm:text-[10vw] md:text-[8.5vw] xl:text-[7.8rem]`}>
+            Full–service
+          </motion.span>
+          <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                       transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                       className="mt-1 flex w-full flex-col items-start justify-between gap-6 sm:mt-2 lg:flex-row lg:items-end lg:gap-12">
+            {/* the reference sets this row in a second face — ours is the quill */}
+            <span className="block font-script font-normal normal-case leading-none tracking-normal text-accent
+                             text-[13vw] sm:text-[10.5vw] md:text-[9vw] xl:text-[8.2rem]"
+                  style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
+              agencija
+            </span>
+            <span className="block max-w-xs pb-1 text-left text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-sm lg:pb-4 lg:text-base xl:max-w-md"
+                  style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
+              <EditableText k="usluge-uvod">
+                {bk('usluge-uvod', 'Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.')}
+              </EditableText>
+            </span>
           </motion.span>
         </h1>
 
-        <motion.span
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-3 block max-w-[46ch] text-center text-xs font-medium leading-relaxed text-ink/85 sm:text-sm lg:text-base"
-          style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}
-        >
-          <EditableText k="usluge-uvod">
-            {bk('usluge-uvod', 'Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.')}
-          </EditableText>
-        </motion.span>
-
-        {/* the three things we do, hanging off the centred title's own words */}
-        <CloudFan reduced={reduced} />
-
-        {/* the reviews — HIS seat, at the hero's foot, on clear sky above the sea,
-            never to be moved again (owner's law) */}
+        {/* the reviews — the train slider he approved, in the original seat, riding
+            clear of the sea */}
         <Slider reduced={reduced} />
       </div>
       </div>
@@ -268,7 +252,9 @@ function UslugeHero() {
       </div>
 
       {/* the world through this stretch: B3's quiet sky behind the stack + THE cloud
-          hovering the band→stack breath, parallax as everywhere */}
+          hovering the band→stack breath, parallax as everywhere. The last two straddle
+          the section's END — across the o-nama boundary — so the eye leaves this beat
+          on cloud, never on a tone step (his arrows, batch 28). */}
       <WorldLayer
         src="/media/B3-square-sky.webp" eager
         box="top-[100vh] -bottom-[10vh]"
@@ -286,6 +272,18 @@ function UslugeHero() {
         box="top-[125vh] h-[80vh]"
         imgClass="absolute right-[-8%] top-[10%] w-[34%] h-auto max-w-none scale-x-[-1]"
         y={['0%', '-8%']} base={0.8} float={{ px: 7, sec: 12, delay: 1.2 }}
+      />
+      <WorldLayer
+        src="/media/cloud-real.webp" eager
+        box="-bottom-[26vh] h-[60vh]"
+        imgClass="absolute left-[-8%] top-[16%] w-[36%] h-auto max-w-none"
+        y={['0%', '-10%']} base={0.85}
+      />
+      <WorldLayer
+        src="/media/cloud-real.webp" eager
+        box="-bottom-[38vh] h-[60vh]"
+        imgClass="absolute right-[-10%] top-[30%] w-[32%] h-auto max-w-none scale-x-[-1]"
+        y={['0%', '-7%']} base={0.75}
       />
     </section>
   )
@@ -381,9 +379,14 @@ function StackCard({ i, active, onOpen }: { i: number; active: boolean; onOpen: 
     <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-8 sm:py-5 lg:px-12">
       <div className="grid w-full grid-cols-12 items-start gap-2 sm:gap-6 lg:gap-8">
         <div className="col-span-4 lg:col-span-3">
-          {/* the OLD numeral, clamped by viewport height so four rows + one open body
-              always fit the locked stage */}
-          <span className="select-none text-5xl font-normal leading-none tracking-tight text-ink/90 sm:text-7xl lg:text-[clamp(64px,10.5vh,104px)]" aria-hidden>
+          {/* batch 28 (owner): MUCH bigger, with real depth — a white top-light and a deep
+              soft ink shadow lift the numeral off the surface (plain text, so text-shadow
+              is safe; the Safari clipped-text law does not apply here) */}
+          <span
+            className="select-none text-6xl font-normal leading-none tracking-tight text-ink/90 sm:text-8xl lg:text-[clamp(88px,13vh,132px)]"
+            style={{ textShadow: '0 2px 0 rgba(255,255,255,0.65), 0 14px 34px rgba(22,50,79,0.30)' }}
+            aria-hidden
+          >
             {s.n}
           </span>
         </div>
@@ -515,8 +518,29 @@ export default function UslugePage() {
         <div className="relative z-20">
           <SeamBridge className="-top-[10vh] h-[50vh]" />
 
-          {/* batch 27: the band AND the stack live inside the hero beat now (see
-              UslugeHero) — this wrapper carries only the bridge and the ground */}
+          {/* batch 28 (owner): SVE O NAMA joins /usluge — the same composition, sea layer
+              and grammar as /radovi, seated between the stack and the finale so the page
+              closes exactly like the portfolio (his order; the FAQ deliberately absent) */}
+          <Beat name="o-nama" layers={
+            <>
+              <WorldLayer
+                src="/media/B7-vertical-sea.webp"
+                box="-top-[30vh] -bottom-[36vh]"
+                imgClass="absolute inset-0 h-[128%] w-full object-cover object-center"
+                y={['0%', '-10%']} base={0.55} mask={MASK.sea}
+              />
+              <WorldLayer
+                src="/media/cloud-real.webp" eager
+                box="-top-[10vh] -bottom-[10vh]"
+                imgClass="absolute right-[-6%] top-[8%] w-[34%] h-auto max-w-none scale-x-[-1]"
+                y={['0%', '-12%']} base={0.8}
+              />
+            </>
+          }>
+            <SveONama />
+            <SkyGap />
+          </Beat>
+
           <Ground>
             <Beat name="finale">
               <div className="pt-[10vh]">
