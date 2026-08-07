@@ -95,13 +95,13 @@ export default function Pocetna() {
                 {/* batch 24 (owner): THE cloud — the realistic cumulus he circled in the
                     beat above, now living through the descent; parallax kept everywhere */}
                 <WorldLayer
-                  src="/media/cloud-real.webp"
+                  src="/media/cloud-real.webp" eager
                   box="-top-[6vh] -bottom-[10vh]"
                   imgClass="absolute left-[-12%] top-[6%] w-[44%] h-auto max-w-none"
                   y={['0%', '-14%']} base={0.9} float={{ px: 9, sec: 9 }}
                 />
                 <WorldLayer
-                  src="/media/cloud-real.webp"
+                  src="/media/cloud-real.webp" eager
                   box="-top-[6vh] -bottom-[10vh]"
                   imgClass="absolute right-[-10%] top-[46%] w-[38%] h-auto max-w-none scale-x-[-1]"
                   y={['0%', '-8%']} base={0.8} float={{ px: 7, sec: 11, delay: 1.6 }}
@@ -163,7 +163,7 @@ export default function Pocetna() {
 
             <Beat name="stats" layers={
               <WorldLayer
-                src="/media/cloud-real.webp"
+                src="/media/cloud-real.webp" eager
                 box="-top-[10vh] -bottom-[10vh]"
                 imgClass="absolute right-[-8%] top-[4%] w-[32%] h-auto max-w-none scale-x-[-1]"
                 y={['0%', '-10%']} base={0.7}

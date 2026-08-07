@@ -169,11 +169,11 @@ export default function PageHero({
             <span
               className="block w-full whitespace-nowrap font-semibold uppercase tracking-tight
                          text-[clamp(4.2rem,17vw,15rem)] leading-[0.85] bg-clip-text text-transparent"
+              // no filter on clipped text — the Safari invisibility bug (batch 25)
               style={{
                 backgroundImage: 'linear-gradient(to bottom, #16324F 30%, #2E5F9E 100%)',
                 padding: '0.12em 0.05em',
                 margin: '-0.12em -0.05em',
-                filter: 'drop-shadow(0 10px 26px rgba(22,50,79,0.20))',
               }}
             >
               {titleK ? <EditableText k={titleK}>{title}</EditableText> : title}

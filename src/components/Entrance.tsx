@@ -21,20 +21,22 @@ import { AnimatePresence, motion } from 'motion/react'
 import { EASE_A } from '../lib/motion'
 import { D_EDGE, IMG_H } from './Lockup'
 
-/* ---------- the clock (ms) — starts at READY, not at mount ---------- */
-const MARK_IN = 600        // DS fades in, already seated centre
-const MARK_HOLD = 400
-const PUSH = 1150
-const NAME_HOLD = 400
-const DRIFT = 850          // one bank's travel — batch 5: "much faster"
-const FADE = 950           // its crossfade still outlasts the travel, so nothing blinks
-const STAGGER_IN = 80
-const STAGGER_OUT = 65
-const COVER_HOLD = 350
-const REVEAL = 280
+/* ---------- the clock (ms) — starts at READY, not at mount ----------
+   batch 25 (owner): the whole ride shortened ~33% — every beat keeps its easing and its
+   overlaps (FADE still outlasts DRIFT so nothing blinks), the clock just runs tighter. */
+const MARK_IN = 420        // DS fades in, already seated centre
+const MARK_HOLD = 220
+const PUSH = 780
+const NAME_HOLD = 220
+const DRIFT = 650          // one bank's travel
+const FADE = 720           // its crossfade still outlasts the travel, so nothing blinks
+const STAGGER_IN = 50
+const STAGGER_OUT = 42
+const COVER_HOLD = 180
+const REVEAL = 200
 
-const T_PUSH = MARK_IN + MARK_HOLD                   // 1000
-const T_COVER = T_PUSH + PUSH + NAME_HOLD            // 2550
+const T_PUSH = MARK_IN + MARK_HOLD                   // 640
+const T_COVER = T_PUSH + PUSH + NAME_HOLD            // 1640
 
 /** the banks, unchanged from batch 4 — Nick: "clouds should come as they are" */
 const BANKS: {

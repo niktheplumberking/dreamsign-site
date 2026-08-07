@@ -199,8 +199,9 @@ function TiltScript({ word }: { word: string }) {
   return (
     <span
       aria-hidden
-      // batch 24: lowered — the word rides just above the title's cap, close but never touching
-      className="pointer-events-none absolute left-0 top-0 z-20 block -translate-x-1/2 -translate-y-[71%]"
+      // batch 24/25: lowered again — the word rides just above the title's cap, close but
+      // never touching
+      className="pointer-events-none absolute left-0 top-0 z-20 block -translate-x-1/2 -translate-y-[64%]"
     >
       <motion.span
         initial={{ opacity: 0, scale: 0.85, rotate: -16, y: 15 }}
@@ -235,11 +236,12 @@ function GiantH2({ children, tilt, align = 'center' }: {
       className={`w-[115%] max-w-none whitespace-nowrap pt-6 font-semibold uppercase tracking-tight leading-[0.85]
                   text-[clamp(3rem,7.6vw,7.4rem)] bg-clip-text text-transparent
                   ${align === 'left' ? 'text-center lg:text-left' : 'text-center'}`}
+      // NO filter here, ever: Safari refuses to paint background-clip:text when the same
+      // element carries a filter — „PROJEKAT" was INVISIBLE on Nick's MacBook (batch 25)
       style={{
         backgroundImage: 'linear-gradient(to bottom, #16324F 30%, #2E5F9E 100%)',
         padding: '0.18em 0.05em',
         margin: '-0.12em calc(-7.5% - 0.05em)',
-        filter: 'drop-shadow(0 4px 14px rgba(22,50,79,0.14))',
       }}
     >
       <span className="relative">
@@ -1007,19 +1009,19 @@ export default function RadoviPage() {
               {/* batch 24 (owner): THE cloud — the realistic cumulus he circled, extracted
                   from B3 and seated through the world; every seat rides the parallax */}
               <WorldLayer
-                src="/media/cloud-real.webp"
+                src="/media/cloud-real.webp" eager
                 box="-top-[6vh] -bottom-[8vh]"
                 imgClass="absolute left-[-10%] top-[30%] w-[42%] h-auto max-w-none"
                 y={['0%', '-10%']} base={0.9} float={{ px: 9, sec: 10 }}
               />
               <WorldLayer
-                src="/media/cloud-real.webp"
+                src="/media/cloud-real.webp" eager
                 box="-top-[6vh] -bottom-[8vh]"
                 imgClass="absolute right-[-8%] top-[52%] w-[38%] h-auto max-w-none scale-x-[-1]"
                 y={['0%', '-8%']} base={0.85} float={{ px: 7, sec: 11, delay: 1.4 }}
               />
               <WorldLayer
-                src="/media/cloud-real.webp"
+                src="/media/cloud-real.webp" eager
                 box="-top-[6vh] -bottom-[8vh]"
                 imgClass="absolute left-[6%] top-[76%] w-[30%] h-auto max-w-none"
                 y={['0%', '-13%']} base={0.75}
@@ -1034,10 +1036,10 @@ export default function RadoviPage() {
                 riding its own parallax — centred and stroke-thin per row, so the junction
                 rig's full-width median never sees it */}
             <Drift amp={30} className="relative z-10 flex justify-center px-5">
+              {/* no filter on clipped text — the Safari invisibility bug (batch 25) */}
               <h2
                 className="ink-gradient whitespace-nowrap text-center font-semibold uppercase tracking-tight
                            leading-none text-[clamp(2.6rem,8.6vw,7.6rem)]"
-                style={{ filter: 'drop-shadow(0 8px 22px rgba(22,50,79,0.16))' }}
               >
                 Naš portfolio
               </h2>
@@ -1066,7 +1068,7 @@ export default function RadoviPage() {
                 y={['0%', '-10%']} base={0.55} mask={MASK.sea}
               />
               <WorldLayer
-                src="/media/cloud-real.webp"
+                src="/media/cloud-real.webp" eager
                 box="-top-[10vh] -bottom-[10vh]"
                 imgClass="absolute right-[-6%] top-[8%] w-[34%] h-auto max-w-none scale-x-[-1]"
                 y={['0%', '-12%']} base={0.8}
@@ -1078,7 +1080,7 @@ export default function RadoviPage() {
 
           <Beat name="faq" layers={
             <WorldLayer
-              src="/media/cloud-real.webp"
+              src="/media/cloud-real.webp" eager
               box="-top-[8vh] -bottom-[8vh]"
               imgClass="absolute left-[-8%] top-[12%] w-[36%] h-auto max-w-none"
               y={['0%', '-11%']} base={0.8} float={{ px: 8, sec: 12, delay: 0.8 }}
