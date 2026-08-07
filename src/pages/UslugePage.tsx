@@ -42,18 +42,20 @@ function CloudMap() {
       {/* batch 33 (owner): the map wears OUR OWN clouds now — the cloud-button puff,
           floating gently in place — and the pen lines became BEAD TRAILS (dotted, round
           caps): three origins, three curves, a hand-plotted mind-map feel. Same seats. */}
+      {/* batch 34 (owner): the trails became REAL pen lines — solid, BLUE, and wandering
+          like his sketch (never near-straight); the puffs grew so the words sit deep
+          inside the cloud body. */}
       <svg viewBox="0 0 500 240" fill="none" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
-        <g stroke="#16324F" strokeWidth="2.2" strokeLinecap="round" opacity="0.5"
-           strokeDasharray="0.1 9">
-          <path d="M 2 58 C 42 46, 84 39, 124 38" />
-          <path d="M 0 132 C 100 122, 204 96, 304 72" />
-          <path d="M 12 205 C 82 201, 162 191, 236 180" />
+        <g stroke="#2E5F9E" strokeWidth="2" strokeLinecap="round" opacity="0.6">
+          <path d="M 2 66 C 26 30, 52 74, 82 50 C 100 36, 112 48, 122 42" />
+          <path d="M 0 140 C 46 158, 92 100, 148 118 C 200 134, 246 88, 300 76" />
+          <path d="M 10 210 C 54 230, 104 184, 152 202 C 186 214, 212 190, 238 184" />
         </g>
       </svg>
       {[
-        { label: '1. Web dizajn', cls: 'left-[22%] top-[1%] w-[30%]', sec: 5.4, delay: 0 },
-        { label: '2. SEO', cls: 'left-[59%] top-[14%] w-[29%]', sec: 6.2, delay: 0.9 },
-        { label: '3. Marketing', cls: 'left-[44%] top-[58%] w-[33%]', sec: 6.8, delay: 1.7 },
+        { label: '1. Web dizajn', cls: 'left-[13%] top-[-9%] w-[42%]', sec: 5.4, delay: 0 },
+        { label: '2. SEO', cls: 'left-[56%] top-[7%] w-[40%]', sec: 6.2, delay: 0.9 },
+        { label: '3. Marketing', cls: 'left-[37%] top-[47%] w-[46%]', sec: 6.8, delay: 1.7 },
       ].map((c) => (
         <motion.span
           key={c.label}
@@ -66,7 +68,7 @@ function CloudMap() {
             className="w-full select-none drop-shadow-[0_8px_20px_rgba(22,50,79,0.20)]"
           />
           <span className="absolute inset-0 flex items-center justify-center pt-[4%]">
-            <span className="text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-ink/85 sm:text-[12px] lg:text-[13px]">
+            <span className="max-w-[62%] text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-ink/85 sm:text-[13px] lg:text-[14px]">
               {c.label}
             </span>
           </span>
@@ -265,11 +267,29 @@ function UslugeHero() {
             smaller" — the full SkyGap became one short breath. The 04 sheet CONTINUES
             past the stage floor as a static melt: solid at the floor, gone 220px later —
             during the lock it sits below the viewport, after release there is no edge. */}
+        {/* batch 34 (owner): the melt descends THROUGH the sky's own tones — a white
+            fade over blue read as a pale stripe (his red circle); now the sheet becomes
+            sky, not haze. His 70%-cloud technique rides on top: three real clouds cover
+            the band, their soft ink ending inside the section (the clip law). */}
         <div aria-hidden className="relative" style={{ height: 'max(12vh, 140px)' }}>
           <div
             className="absolute inset-0"
-            style={{ background: `linear-gradient(to bottom, ${CARD_BG} 0%, rgba(239,246,252,0) 100%)` }}
+            style={{
+              background: `linear-gradient(to bottom, ${CARD_BG} 0%, rgba(216,230,243,0.9) 40%, rgba(176,201,228,0.45) 75%, rgba(176,201,228,0) 100%)`,
+            }}
           />
+          <div className="pointer-events-none absolute inset-x-0 bottom-[8px] z-20 select-none">
+            {[
+              { cls: 'left-[-4%] w-[34%]', op: 'opacity-70' },
+              { cls: 'left-[30%] w-[38%] scale-x-[-1]', op: 'opacity-70' },
+              { cls: 'right-[-5%] w-[32%]', op: 'opacity-70' },
+            ].map((c, i) => (
+              <img
+                key={i} src="/media/cloud-real.webp" alt="" loading="eager"
+                className={`absolute bottom-0 h-auto max-w-none ${c.cls} ${c.op}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -530,6 +550,26 @@ function ServicesStack() {
     window.scrollTo({ top, behavior: 'smooth' })
   }
 
+  // batch 34 (owner): THE PARKED DECK — upcoming sheets rest at the viewport's bottom
+  // edge ("almost touching the endpoint"), giving the open card the whole stage. Only
+  // the NEXT sheet flies up to cover the previous one; the rest do not move until
+  // their own turn. Seats are measured px; the flight is pure transform (Bennett law).
+  // (Hooks live ABOVE the reduced-motion return — the Rules of Hooks.)
+  const N = SERVICES.length
+  const [g, setG] = useState({ vh: 900, head: 96, O: 80, P: 86 })
+  useEffect(() => {
+    const m = () => {
+      const vh = window.innerHeight, w = window.innerWidth
+      const short = vh <= 860
+      const head = (short ? 48 : w >= 640 ? 80 : 64) + 16
+      const O = short ? 56 : w >= 1024 ? Math.max(64, 0.08 * vh) : w >= 640 ? 64 : 48
+      setG({ vh, head, O, P: O + 6 })
+    }
+    m()
+    window.addEventListener('resize', m)
+    return () => window.removeEventListener('resize', m)
+  }, [])
+
   // reduced motion (or no JS-driven pin): the four cards as a plain stacked list
   if (reduced) {
     return (
@@ -540,55 +580,41 @@ function ServicesStack() {
   }
 
   return (
-    // batch 30 (owner): 420vh — "the user should scroll MUCH more for 01 to close and
-    // 02 to open"; every card now owns ~70-90vh of scroll instead of ~45, so there is
-    // time to read. The last card is still open by 78% — no dead scroll trailing it.
-    // batch 27 (owner): the OLD dress exactly — the base blanket whose top melts into the
-    // sky across 90px and runs solid to the stage foot, full width, big numerals, the
-    // sheet edges (border + upward shadow) between rows. Only the MECHANICS are new:
-    // the camera locks, the active row's body expands in place, every other row shows
-    // its title bar — nothing ever covers anything.
+    // batch 30 (owner): 420vh — much scroll per card, time to read. The sticky stage
+    // keeps the batch-29 blanket (head melt + foot fade) beneath the sheets.
     <div ref={ref} className="relative h-[420vh] w-full">
-      {/* batch 29: on SHORT viewports (≤860px tall) the head and row paddings tighten —
-          the content had outgrown the pinned frame by ~35px there, leaving the CTA pill
-          half-clipped at the stage foot in the released state. Taller screens unchanged. */}
-      <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden pt-16 sm:pt-20 [@media(max-height:860px)]:pt-12!">
-        {/* batch 29 (owner): the blanket's FOOT dissolves like its head — solid to 100%
-            put a full-width razor at the stage's resting edge the moment the pin
-            released (his four arrows). The fade lives in stage space, so the edge
-            cannot exist at any scroll position; the world's sky breathes through. */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
         <div
           aria-hidden
           className="absolute inset-0"
           style={{ background: `linear-gradient(to bottom, transparent 0%, ${CARD_BG} 90px, ${CARD_BG} calc(100% - 22vh), rgba(239,246,252,0) 100%)` }}
         />
-        {/* batch 32 (owner): THE HALF CUT — every sheet from 02 on rides UP over the
-            previous one and covers its lower half (his red line through 03's middle).
-            Each overlapping sheet carries its own plate: solid through the overlap
-            band, dissolving below it so no plate ever draws a bottom edge anywhere.
-            The accordion mechanics (lock, one active, bodies push down) are untouched. */}
-        <div className="relative flex min-h-0 flex-1 flex-col justify-start pt-4 sm:pt-6">
-          {SERVICES.map((_, i) => (
-            <div
+        {SERVICES.map((_, i) => {
+          const risenTop = g.head + i * g.O
+          const parkedY = g.vh - (N - i) * g.P - risenTop
+          return (
+            <motion.div
               key={i}
-              className={`relative ${i > 0
-                ? 'border-t border-ink/25 shadow-[0_-12px_28px_rgba(22,50,79,0.07)] -mt-12 sm:-mt-16 lg:-mt-[max(64px,8vh)] [@media(max-height:860px)]:-mt-14!'
-                : ''} ${i === SERVICES.length - 1 ? 'flex-1' : ''}`}
+              className={`absolute left-0 right-0 ${i > 0 ? 'border-t border-ink/25 shadow-[0_-12px_28px_rgba(22,50,79,0.07)]' : ''}`}
               style={{
+                top: risenTop,
                 zIndex: i + 1,
-                // batch 33 (owner): the LAST sheet runs solid to the stage floor — the
-                // locked viewport ends on the sheet itself, never on a line beneath 04
-                ...(i === SERVICES.length - 1
-                  ? { background: CARD_BG }
+                // the last sheet runs solid to the stage floor (batch 33, his order);
+                // parked sheets carry a plate solid through their visible bar
+                ...(i === N - 1
+                  ? { height: g.vh - risenTop, background: CARD_BG }
                   : i > 0
                     ? { background: `linear-gradient(to bottom, ${CARD_BG} 0px, ${CARD_BG} 110px, rgba(239,246,252,0) 250px)` }
                     : {}),
               }}
+              initial={false}
+              animate={{ y: i <= active ? 0 : parkedY }}
+              transition={{ duration: reduced ? 0 : 0.6, ease: [0.3, 0, 0.2, 1] }}
             >
               <StackCard i={i} active={active === i} onOpen={() => jump(i)} />
-            </div>
-          ))}
-        </div>
+            </motion.div>
+          )
+        })}
       </div>
     </div>
   )
@@ -600,17 +626,41 @@ function ServicesStack() {
    claims, no prices (factory law). */
 const PROCESS = [
   { n: '01', t: 'Upoznavanje', d: 'Prvi razgovor — cilj, obim i rok. Bez obaveza i bez žargona.',
-    g: 'M4 5h16v10H9l-5 4V5z M8 9h8 M8 12h5' },
+    g: 'M4 5h16v10H9l-5 4V5z M8 9h8 M8 12h5',
+    more: [
+      'Sve počinje razgovorom — uživo, telefonom ili porukom. Slušamo šta vam treba, gledamo gde ste sada i kažemo iskreno šta ima smisla raditi, a šta ne.',
+      'Iz tog razgovora izlazi jasna slika: cilj sajta, obim posla i realan rok. Ako se ne dogovorimo — ništa niste izgubili.',
+    ] },
   { n: '02', t: 'Ponuda i ugovor', d: 'Sve pismeno: šta se radi, do kada i za koliko. Bez skrivenih troškova.',
-    g: 'M6 3h9l4 4v14H6V3z M14 3v5h5 M9 13h6 M9 17h4' },
+    g: 'M6 3h9l4 4v14H6V3z M14 3v5h5 M9 13h6 M9 17h4',
+    more: [
+      'Dobijate ponudu u kojoj piše tačno šta se radi, do kada i za koliko. Bez sitnih slova i bez skrivenih stavki.',
+      'Ugovor potpisujemo pre početka — obim, rok i cena su fiksirani, a sajt i sadržaj od prvog dana pripadaju vama.',
+    ] },
   { n: '03', t: 'Pravac dizajna', d: 'Prvo početna strana — izgled odobravate pre nego što gradimo ostatak.',
-    g: 'M12 3a9 9 0 110 18 9 9 0 010-18z M15.5 8.5l-2.2 5-5 2.2 2.2-5 5-2.2z' },
+    g: 'M12 3a9 9 0 110 18 9 9 0 010-18z M15.5 8.5l-2.2 5-5 2.2 2.2-5 5-2.2z',
+    more: [
+      'Ne gradimo ceo sajt naslepo: prvo nastaje početna strana — izgled, boje, tipografija i ton celog sajta.',
+      'Vi je pregledate i kažete šta valja, a šta ne. Tek kada odobrite pravac, gradimo ostatak — bez lutanja i bez prerade na kraju.',
+    ] },
   { n: '04', t: 'Izrada sajta', d: 'Sekcija po sekcija, uz pregled napretka uživo tokom cele izrade.',
-    g: 'M3 5h18v14H3V5z M3 9h18 M6 7h.01 M8.5 7h.01 M11 7h.01' },
+    g: 'M3 5h18v14H3V5z M3 9h18 M6 7h.01 M8.5 7h.01 M11 7h.01',
+    more: [
+      'Sajt raste sekcija po sekcija, a napredak pratite uživo, na pravom linku — ne na slikama.',
+      'Svaka stranica se gradi i za telefon i za računar; tekstove i slike slažemo zajedno, da sve bude vaše.',
+    ] },
   { n: '05', t: 'Provere', d: 'Brzina, SEO, telefon i svaki klik — proveravamo sve pre lansiranja.',
-    g: 'M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z M9 12l2 2 4-4' },
+    g: 'M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z M9 12l2 2 4-4',
+    more: [
+      'Pre lansiranja sajt prolazi proveru brzine, SEO podešavanja, telefona i svakog klika — ništa ne ide napolje dok sve ne prođe.',
+      'Ako nešto ne valja, popravljamo dok ne bude kako treba.',
+    ] },
   { n: '06', t: 'Lansiranje i briga', d: 'Sajt kreće da radi za vas — a mi ostajemo uz njega i posle.',
-    g: 'M3 11l18-7-7 18-2.5-7L3 11z' },
+    g: 'M3 11l18-7-7 18-2.5-7L3 11z',
+    more: [
+      'Sajt izlazi na vaš domen, a vi dobijate pristup i uputstvo — od prvog dana sami menjate tekstove i slike.',
+      'Posle lansiranja ne nestajemo: ažuriranja, bezbednosne kopije i podrška direktno od ljudi koji su sajt gradili.',
+    ] },
 ]
 
 const WHEEL_STEP = 26 // degrees between seats on the arc
@@ -660,6 +710,7 @@ function ProcessWheel() {
   const ref = useRef<HTMLDivElement>(null)
   const { reduced } = useWorld()
   const [k, setK] = useState(0)
+  const [expanded, setExpanded] = useState(false)
   const [dim, setDim] = useState({ R: 300, cx: 24, fontPx: 64 })
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
   const N = PROCESS.length
@@ -709,13 +760,14 @@ function ProcessWheel() {
 
   const { R, cx, fontPx } = dim
   const textLeft = cx + R * 1.38 + 28
+  const narrow = typeof window !== 'undefined' && window.innerWidth < 640
   return (
     <div ref={ref} className="relative h-[340vh] w-full">
       {/* the whole six-step process, for readers and crawlers — the wheel itself is
           decorative motion (aria-hidden numbers, one visible text at a time) */}
       <ul className="sr-only">
         {PROCESS.map(s => (
-          <li key={s.n}>{s.n} — {s.t}: {s.d}</li>
+          <li key={s.n}>{s.n} — {s.t}: {s.d} {s.more.join(' ')}</li>
         ))}
       </ul>
       <div className="sticky top-0 h-screen w-full overflow-hidden">
@@ -732,58 +784,142 @@ function ProcessWheel() {
           animate={{ y: [0, -6, 0] }}
           transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
         />
-        <p className="absolute inset-x-0 top-24 text-center text-xs font-semibold uppercase tracking-[0.3em] text-ink/60 sm:top-28">
+        {/* batch 34 (owner): the section title in the PRIMARY face, big, centred */}
+        <h2 className="ink-gradient absolute left-1/2 top-24 w-max -translate-x-1/2 text-center text-3xl
+                       font-semibold uppercase tracking-tight sm:top-28 sm:text-5xl lg:text-6xl">
           Naš proces
-        </p>
+        </h2>
 
-        {/* wheel space: local (0,0) = left edge, mid-height */}
-        <div aria-hidden className="absolute left-0 top-1/2">
-          {/* the thin circle — the about section's ring, reseated (his order) */}
-          <div
-            className="absolute rounded-full border border-ink/25"
-            style={{ width: 2 * R, height: 2 * R, left: cx - R, top: -R }}
-          />
-          <span className="absolute h-1.5 w-1.5 rounded-full bg-ink/40" style={{ left: cx - 3, top: -3 }} />
-          {PROCESS.map((_, i) => (
-            <WheelNumber key={i} i={i} rot={rot} R={R} cx={cx} fontPx={fontPx} />
-          ))}
-        </div>
+        {/* batch 34 (owner): the wheel shrinks toward the left edge when a step opens —
+            "Saznajte više" pushes the cylinder aside and the story takes the right */}
+        <motion.div
+          initial={false}
+          animate={{ scale: expanded ? 0.55 : 1 }}
+          transition={{ duration: 0.6, ease: [0.3, 0, 0.2, 1] }}
+          className="absolute inset-0 origin-[0%_50%]"
+        >
+          {/* wheel space: local (0,0) = left edge, mid-height */}
+          <div aria-hidden className="absolute left-0 top-1/2">
+            {/* the ring's line DISSOLVES before its ends — his break points cannot exist
+                at any scroll position (the arc melts, never terminates) */}
+            <div
+              className="absolute"
+              style={{
+                width: 2 * R, height: 2 * R, left: cx - R, top: -R,
+                WebkitMaskImage: 'linear-gradient(to bottom, transparent 3%, black 22%, black 78%, transparent 97%)',
+                maskImage: 'linear-gradient(to bottom, transparent 3%, black 22%, black 78%, transparent 97%)',
+                // its own compositor layer — a masked 2R-square rastered on the shared
+                // layer taxes every scroll frame (the b13 shared-layer lesson)
+                transform: 'translateZ(0)',
+              }}
+            >
+              <div className="absolute inset-0 rounded-full border border-ink/25" />
+            </div>
+            <span className="absolute h-1.5 w-1.5 rounded-full bg-ink/40" style={{ left: cx - 3, top: -3 }} />
+            {PROCESS.map((_, i) => (
+              <WheelNumber key={i} i={i} rot={rot} R={R} cx={cx} fontPx={fontPx} />
+            ))}
+          </div>
+        </motion.div>
 
         {/* the active step's words, at the seat's right — swap per step. On phones the
             seat's right is too narrow: the words sit UNDER the seat instead. */}
-        <div
-          className="absolute max-sm:inset-x-6 max-sm:top-[64%] sm:top-1/2 sm:-translate-y-1/2 sm:pr-4"
-          style={
-            typeof window !== 'undefined' && window.innerWidth < 640
-              ? undefined
-              : { left: textLeft, maxWidth: `min(32rem, calc(100vw - ${Math.round(textLeft)}px - 1.5rem))` }
-          }
-        >
-          <AnimatePresence mode="wait">
+        <AnimatePresence>
+          {!expanded && (
             <motion.div
-              key={k}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -14 }}
-              transition={{ duration: 0.35, ease: [0.3, 0, 0.2, 1] }}
+              key="seat-text"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.35 }}
+              className="absolute max-sm:inset-x-6 max-sm:top-[64%] sm:top-1/2 sm:-translate-y-1/2 sm:pr-4"
+              style={narrow ? undefined : { left: textLeft, maxWidth: `min(32rem, calc(100vw - ${Math.round(textLeft)}px - 1.5rem))` }}
             >
-              <div className="flex items-center gap-4">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-ink/25 bg-white/55 shadow-sm sm:h-14 sm:w-14">
-                  <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-7 sm:w-7" fill="none" stroke="#16324F"
-                       strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d={PROCESS[k].g} />
-                  </svg>
-                </span>
-                <h3 className="ink-gradient text-2xl font-semibold uppercase tracking-tight sm:text-4xl lg:text-5xl">
-                  {PROCESS[k].t}
-                </h3>
-              </div>
-              <p className="mt-3 max-w-md text-sm leading-relaxed text-ink/75 sm:mt-4 sm:text-lg">
-                {PROCESS[k].d}
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={k}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -14 }}
+                  transition={{ duration: 0.35, ease: [0.3, 0, 0.2, 1] }}
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-ink/25 bg-white/55 shadow-sm sm:h-14 sm:w-14">
+                      <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-7 sm:w-7" fill="none" stroke="#16324F"
+                           strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <path d={PROCESS[k].g} />
+                      </svg>
+                    </span>
+                    <h3 className="ink-gradient text-2xl font-semibold uppercase tracking-tight sm:text-4xl lg:text-5xl">
+                      {PROCESS[k].t}
+                    </h3>
+                  </div>
+                  <p className="mt-3 max-w-md text-sm leading-relaxed text-ink/75 sm:mt-4 sm:text-lg">
+                    {PROCESS[k].d}
+                  </p>
+                  <button
+                    onClick={() => setExpanded(true)}
+                    className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-full border border-ink/30 bg-white/60
+                               px-5 py-2 text-xs font-semibold uppercase tracking-wider text-ink shadow-sm backdrop-blur-sm
+                               transition-all hover:scale-[1.03] hover:bg-white sm:mt-5"
+                  >
+                    Saznajte više <span aria-hidden>+</span>
+                  </button>
+                </motion.div>
+              </AnimatePresence>
             </motion.div>
-          </AnimatePresence>
-        </div>
+          )}
+        </AnimatePresence>
+
+        {/* batch 34 (owner): the STORY panel — the wheel steps aside, the step opens.
+            Scrolling on keeps turning the cylinder; the panel follows the active step. */}
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              key="story"
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 40 }}
+              transition={{ duration: 0.5, ease: [0.3, 0, 0.2, 1] }}
+              className="absolute max-sm:inset-x-6 max-sm:top-[38%] sm:left-[36%] sm:right-[7%] sm:top-1/2 sm:-translate-y-1/2 lg:left-[38%] lg:right-[10%]"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={k}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -14 }}
+                  transition={{ duration: 0.35, ease: [0.3, 0, 0.2, 1] }}
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-ink/25 bg-white/55 shadow-sm sm:h-16 sm:w-16">
+                      <svg viewBox="0 0 24 24" className="h-7 w-7 sm:h-8 sm:w-8" fill="none" stroke="#16324F"
+                           strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                        <path d={PROCESS[k].g} />
+                      </svg>
+                    </span>
+                    <h3 className="ink-gradient text-3xl font-semibold uppercase tracking-tight sm:text-5xl">
+                      {PROCESS[k].t}
+                    </h3>
+                  </div>
+                  {PROCESS[k].more.map(p => (
+                    <p key={p.slice(0, 12)} className="mt-4 max-w-xl text-sm leading-relaxed text-ink/85 sm:mt-5 sm:text-lg">
+                      {p}
+                    </p>
+                  ))}
+                  <button
+                    onClick={() => setExpanded(false)}
+                    className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-full border border-ink/30 bg-white/60
+                               px-5 py-2 text-xs font-semibold uppercase tracking-wider text-ink shadow-sm backdrop-blur-sm
+                               transition-all hover:scale-[1.03] hover:bg-white"
+                  >
+                    <span aria-hidden>←</span> Nazad
+                  </button>
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
