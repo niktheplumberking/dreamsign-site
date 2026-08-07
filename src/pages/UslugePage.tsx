@@ -6,7 +6,7 @@
 // clips with overflow-clip instead of overflow-hidden (sticky lives).
 // Faces, palette, sky and motion grammar stay ours; his red → signature blue.
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react'
+import { motion, useScroll, useTransform, AnimatePresence, type MotionValue } from 'motion/react'
 import { World, WorldLayer, SeamBridge, Beat, useWorld } from '../components/World'
 import LandingCTA from '../components/LandingCTA'
 import SveONama from '../components/SveONama'
@@ -270,24 +270,25 @@ function UslugeHero() {
         <SkyGap />
       </div>
 
-      {/* batch 31 (owner): HIS prescribed fix, verbatim — clouds from beneath OVERLAP
-          the stack's bottom edge as a ~40% OVERLAY (z-20, above the stage), blending
-          the foot line instead of trying to out-paint it. Full width, mass centred on
-          the foot (section bottom − SkyGap 310px), tops riding just under the CTA
-          pill's worst-case seat so they never touch it. */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-[130px] z-20 h-[350px] select-none overflow-hidden">
-        {[
-          { cls: 'left-[-6%] top-[38%] w-[44%]', px: 7, sec: 12, delay: 0 },
-          { cls: 'left-[29%] top-[30%] w-[42%] scale-x-[-1]', px: 8, sec: 10, delay: 1.1 },
-          { cls: 'right-[-5%] top-[36%] w-[40%]', px: 6, sec: 13, delay: 0.5 },
-        ].map((c, i) => (
-          <motion.img
-            key={i} src="/media/cloud-real.webp" alt="" loading="eager"
-            className={`absolute h-auto max-w-none opacity-40 ${c.cls}`}
-            animate={reduced ? undefined : { y: [0, -c.px, 0] }}
-            transition={reduced ? undefined : { duration: c.sec, repeat: Infinity, ease: 'easeInOut', delay: c.delay }}
-          />
-        ))}
+      {/* batch 32 (owner): HIS fix, exactly — the SAME background image that paints the
+          zone below the 04 box, duplicated as a TOP layer (z-20) at ~55% opacity across
+          the foot line. Above and below the boundary are now the same pixels, so no tone
+          step can exist. Masked so it has no edges of its own; its upper wisps thin to
+          nothing before the CTA pill's worst-case seat. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-[90px] z-20 h-[360px] select-none overflow-hidden"
+        style={{
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 38%, black 82%, transparent 100%)',
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 38%, black 82%, transparent 100%)',
+          opacity: 0.52,
+        }}
+      >
+        <img
+          src="/media/B3-square-sky.webp" alt="" loading="eager"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: '50% 68%' }}
+        />
       </div>
 
       {/* the world through this stretch: B3's quiet sky behind the stack + THE cloud
@@ -553,15 +554,202 @@ function ServicesStack() {
           className="absolute inset-0"
           style={{ background: `linear-gradient(to bottom, transparent 0%, ${CARD_BG} 90px, ${CARD_BG} calc(100% - 22vh), rgba(239,246,252,0) 100%)` }}
         />
+        {/* batch 32 (owner): THE HALF CUT — every sheet from 02 on rides UP over the
+            previous one and covers its lower half (his red line through 03's middle).
+            Each overlapping sheet carries its own plate: solid through the overlap
+            band, dissolving below it so no plate ever draws a bottom edge anywhere.
+            The accordion mechanics (lock, one active, bodies push down) are untouched. */}
         <div className="relative flex min-h-0 flex-1 flex-col justify-start pt-4 sm:pt-6">
           {SERVICES.map((_, i) => (
             <div
               key={i}
-              className={i > 0 ? 'border-t border-ink/25 shadow-[0_-12px_28px_rgba(22,50,79,0.07)]' : ''}
+              className={`relative ${i > 0
+                ? 'border-t border-ink/25 shadow-[0_-12px_28px_rgba(22,50,79,0.07)] -mt-12 sm:-mt-16 lg:-mt-[max(64px,8vh)] [@media(max-height:860px)]:-mt-14!'
+                : ''}`}
+              style={{
+                zIndex: i + 1,
+                ...(i > 0
+                  ? { background: `linear-gradient(to bottom, ${CARD_BG} 0px, ${CARD_BG} 110px, rgba(239,246,252,0) 250px)` }
+                  : {}),
+              }}
             >
               <StackCard i={i} active={active === i} onOpen={() => jump(i)} />
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------- the process wheel (his revolver, b32) */
+
+/* REAL process only — these are the pipeline's own client-facing stages; no invented
+   claims, no prices (factory law). */
+const PROCESS = [
+  { n: '01', t: 'Upoznavanje', d: 'Prvi razgovor — cilj, obim i rok. Bez obaveza i bez žargona.' },
+  { n: '02', t: 'Ponuda i ugovor', d: 'Sve pismeno: šta se radi, do kada i za koliko. Bez skrivenih troškova.' },
+  { n: '03', t: 'Pravac dizajna', d: 'Prvo početna strana — izgled odobravate pre nego što gradimo ostatak.' },
+  { n: '04', t: 'Izrada sajta', d: 'Sekcija po sekcija, uz pregled napretka uživo tokom cele izrade.' },
+  { n: '05', t: 'Provere', d: 'Brzina, SEO, telefon i svaki klik — proveravamo sve pre lansiranja.' },
+  { n: '06', t: 'Lansiranje i briga', d: 'Sajt kreće da radi za vas — a mi ostajemo uz njega i posle.' },
+]
+
+const WHEEL_STEP = 26 // degrees between seats on the arc
+
+/** one number riding the wheel: seat at 3 o'clock (θ=0), passed steps rotate up-left
+    and leave the viewport on the left — his revolver. All motion values, no re-render. */
+function WheelNumber({ i, rot, R, cx, fontPx }: {
+  i: number; rot: MotionValue<number>; R: number; cx: number; fontPx: number
+}) {
+  const rad = (d: number) => (d * Math.PI) / 180
+  const th = (v: number) => v - i * WHEEL_STEP
+  const numR = R * 1.19
+  const x = useTransform(rot, v => cx + numR * Math.cos(rad(th(v))))
+  const y = useTransform(rot, v => -numR * Math.sin(rad(th(v))))
+  const dotX = useTransform(rot, v => cx + R * Math.cos(rad(th(v))))
+  const dotY = useTransform(rot, v => -R * Math.sin(rad(th(v))))
+  const tilt = useTransform(rot, v => -th(v) * 0.8)
+  const op = useTransform(rot, v => {
+    const a = Math.abs(th(v))
+    if (a > 78) return 0
+    return a < 5 ? 1 : Math.max(0.16, 0.3 - a / 400)
+  })
+  const dotOp = useTransform(rot, v => (Math.abs(th(v)) > 78 ? 0 : Math.abs(th(v)) < 5 ? 0.9 : 0.35))
+  const scale = useTransform(rot, v => 1.45 - Math.min(Math.abs(th(v)) / WHEEL_STEP, 1) * 0.55)
+  return (
+    <>
+      <motion.span
+        aria-hidden
+        className="absolute select-none font-bold leading-none tracking-tight text-ink"
+        style={{ x, y, rotate: tilt, opacity: op, scale, fontSize: fontPx, translateX: '-50%', translateY: '-50%' }}
+      >
+        {PROCESS[i].n}
+      </motion.span>
+      <motion.span
+        aria-hidden
+        className="absolute h-2 w-2 rounded-full bg-ink"
+        style={{ x: dotX, y: dotY, opacity: dotOp, translateX: '-50%', translateY: '-50%' }}
+      />
+    </>
+  )
+}
+
+/** the pinned wheel: a half circle off the LEFT edge (the circle from the about
+    section, moved here on his order), six numbered seats, scroll turns the cylinder —
+    one step per breath, the active step's words at the seat's right. */
+function ProcessWheel() {
+  const ref = useRef<HTMLDivElement>(null)
+  const { reduced } = useWorld()
+  const [k, setK] = useState(0)
+  const [dim, setDim] = useState({ R: 300, cx: 24, fontPx: 64 })
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
+  const N = PROCESS.length
+  // the revolver CLICK: the cylinder dwells on each seat (~55% of its window) and turns
+  // between dwells — piecewise stops, so a resting scroll never parks between numbers
+  const stops: number[] = [], angles: number[] = []
+  const seg = (0.92 - 0.08) / (N - 1)
+  for (let j = 0; j < N; j++) {
+    const c = 0.08 + j * seg
+    stops.push(Math.max(0.08, c - seg * 0.28), Math.min(0.92, c + seg * 0.28))
+    angles.push(j * WHEEL_STEP, j * WHEEL_STEP)
+  }
+  const rot = useTransform(scrollYProgress, stops, angles, { clamp: true })
+
+  useEffect(() => rot.on('change', v => {
+    setK(Math.min(N - 1, Math.max(0, Math.round(v / WHEEL_STEP))))
+  }), [rot, N])
+
+  useEffect(() => {
+    const m = () => {
+      const R = Math.max(112, Math.min(window.innerHeight * 0.4, window.innerWidth * 0.3))
+      setDim({ R, cx: 24, fontPx: Math.max(30, R * 0.2) })
+    }
+    m()
+    window.addEventListener('resize', m)
+    return () => window.removeEventListener('resize', m)
+  }, [])
+
+  if (reduced) {
+    return (
+      <div className="mx-auto flex max-w-3xl flex-col gap-10 px-6 py-24">
+        <p className="text-center text-xs font-semibold uppercase tracking-[0.3em] text-ink/60">Naš proces</p>
+        {PROCESS.map(s => (
+          <div key={s.n} className="flex items-baseline gap-6">
+            <span className="text-4xl font-bold text-ink/30">{s.n}</span>
+            <div>
+              <h3 className="text-xl font-semibold text-ink">{s.t}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-ink/70">{s.d}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const { R, cx, fontPx } = dim
+  const textLeft = cx + R * 1.38 + 28
+  return (
+    <div ref={ref} className="relative h-[340vh] w-full">
+      {/* the whole six-step process, for readers and crawlers — the wheel itself is
+          decorative motion (aria-hidden numbers, one visible text at a time) */}
+      <ul className="sr-only">
+        {PROCESS.map(s => (
+          <li key={s.n}>{s.n} — {s.t}: {s.d}</li>
+        ))}
+      </ul>
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+        {/* weather rides INSIDE the pin — a runway layer would scroll past the stage */}
+        <motion.img
+          aria-hidden src="/media/cloud-real.webp" alt="" loading="eager"
+          className="pointer-events-none absolute right-[-7%] top-[12%] w-[30%] max-w-none select-none opacity-80"
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.img
+          aria-hidden src="/media/cloud-real.webp" alt="" loading="eager"
+          className="pointer-events-none absolute right-[16%] bottom-[6%] w-[24%] max-w-none select-none opacity-60 scale-x-[-1]"
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
+        />
+        <p className="absolute inset-x-0 top-24 text-center text-xs font-semibold uppercase tracking-[0.3em] text-ink/60 sm:top-28">
+          Naš proces
+        </p>
+
+        {/* wheel space: local (0,0) = left edge, mid-height */}
+        <div aria-hidden className="absolute left-0 top-1/2">
+          {/* the thin circle — the about section's ring, reseated (his order) */}
+          <div
+            className="absolute rounded-full border border-ink/25"
+            style={{ width: 2 * R, height: 2 * R, left: cx - R, top: -R }}
+          />
+          <span className="absolute h-1.5 w-1.5 rounded-full bg-ink/40" style={{ left: cx - 3, top: -3 }} />
+          {PROCESS.map((_, i) => (
+            <WheelNumber key={i} i={i} rot={rot} R={R} cx={cx} fontPx={fontPx} />
+          ))}
+        </div>
+
+        {/* the active step's words, at the seat's right — swap per step */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 pr-4"
+          style={{ left: textLeft, maxWidth: `min(28rem, calc(100vw - ${Math.round(textLeft)}px - 1rem))` }}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={k}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: 0.35, ease: [0.3, 0, 0.2, 1] }}
+            >
+              <h3 className="ink-gradient text-xl font-semibold uppercase tracking-tight sm:text-2xl lg:text-3xl">
+                {PROCESS[k].t}
+              </h3>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink/75 sm:text-base">
+                {PROCESS[k].d}
+              </p>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
@@ -588,6 +776,21 @@ export default function UslugePage() {
         <div className="relative z-20">
           <SeamBridge className="-top-[10vh] h-[50vh]" />
 
+          {/* batch 32 (owner): NAŠ PROCES — the revolver wheel between the stack and
+              KO SMO MI (his Pinterest references): six steps on a half circle off the
+              left edge, the camera locks, scroll turns the cylinder. */}
+          <Beat name="proces" layers={
+            <WorldLayer
+              src="/media/cloud-real.webp" eager
+              box="top-[20vh] h-[70vh]"
+              imgClass="absolute right-[-8%] top-[20%] w-[30%] h-auto max-w-none scale-x-[-1]"
+              y={['0%', '-9%']} base={0.75} float={{ px: 7, sec: 11 }}
+            />
+          }>
+            <ProcessWheel />
+            <div aria-hidden style={{ height: '16vh' }} />
+          </Beat>
+
           {/* batch 28 (owner): the about composition joins /usluge — the same layout, sea
               layer and grammar as /radovi, seated between the stack and the finale so the
               page closes exactly like the portfolio (his order; the FAQ deliberately
@@ -610,6 +813,7 @@ export default function UslugePage() {
             </>
           }>
             <SveONama
+              circle={false}
               wordTop="KO"
               wordFloat="SMO"
               wordBottom="MI"

@@ -12,22 +12,28 @@ export default function SveONama({
   wordBottom = 'NAMA',
   para1 = 'Naša strast je vođenje klijenata da pronađu svoj jedinstveni glas u svetu vizuelnih komunikacija, kreirajući brendove sa smislom i emocijom, bez da budemo samo još jedan u nizu. Otkrijte lepotu autentičnosti i snagu izuzetnog dizajna.',
   para2 = 'Kroz pažljivo osmišljene strategije i posvećenost detaljima, stvaramo vizuelne identitete i digitalna iskustva koja inspirišu i ostavljaju trajan utisak.',
+  circle = true,
 }: {
   wordTop?: string
   wordFloat?: string
   wordBottom?: string
   para1?: string
   para2?: string
+  /** batch 32 (owner): /usluge hands its ring to the process wheel — the circle is
+      deleted there and lives on the wheel instead; /radovi keeps it untouched */
+  circle?: boolean
 }) {
   return (
     <div className="relative flex h-screen max-h-screen min-h-screen w-full select-none flex-col justify-between px-6 text-ink sm:px-10 lg:px-14">
       {/* the thin decorative circle poking off the left edge */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute top-1/2 z-0 -translate-y-1/2 rounded-full border border-ink/25
-                   -left-[100px] h-[480px] w-[480px] sm:-left-[140px] sm:h-[680px] sm:w-[680px]
-                   md:-left-[180px] md:h-[850px] md:w-[850px] lg:-left-[200px] lg:h-[1020px] lg:w-[1020px]"
-      />
+      {circle && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 z-0 -translate-y-1/2 rounded-full border border-ink/25
+                     -left-[100px] h-[480px] w-[480px] sm:-left-[140px] sm:h-[680px] sm:w-[680px]
+                     md:-left-[180px] md:h-[850px] md:w-[850px] lg:-left-[200px] lg:h-[1020px] lg:w-[1020px]"
+        />
+      )}
 
       {/* the lone floating word, upper right */}
       <motion.span
