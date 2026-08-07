@@ -203,35 +203,34 @@ function UslugeHero() {
 
         {/* batch 19: the glow moved OFF the h1 — inherited onto the gradient-clipped rows
             it painted a glyph-shaped white halo OVER the ramp (text paints after
-            background) and frosted them silver. The script span carries its own glow. */}
+            background) and frosted them silver. The script span carries its own glow.
+            batch 29 (owner): the DUET — „MI SMO VAŠA" primary over „full-service
+            agencija" in the quill, the two rows width-matched (sizes tuned by browser
+            measurement, both in vw so the match holds at every viewport). */}
         <h1 className="flex w-full flex-col items-start text-left">
           <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                       className={`${row} text-[13vw] sm:text-[10.5vw] md:text-[9vw] xl:text-[8.2rem]`}>
-            Mi smo
+                       className={`${row} whitespace-nowrap text-[12.5vw] sm:text-[10vw] md:text-[8.5vw] xl:text-[7.8rem]`}>
+            Mi smo vaša
           </motion.span>
           <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                        transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                       className={`${row} whitespace-nowrap text-[12.5vw] sm:text-[10vw] md:text-[8.5vw] xl:text-[7.8rem]`}>
-            Full–service
-          </motion.span>
-          <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                       transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                       className="mt-1 flex w-full flex-col items-start justify-between gap-6 sm:mt-2 lg:flex-row lg:items-end lg:gap-12">
-            {/* the reference sets this row in a second face — ours is the quill */}
-            <span className="block font-script font-normal normal-case leading-none tracking-normal text-accent
-                             text-[13vw] sm:text-[10.5vw] md:text-[9vw] xl:text-[8.2rem]"
-                  style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
-              agencija
-            </span>
-            <span className="block max-w-xs pb-1 text-left text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-sm lg:pb-4 lg:text-base xl:max-w-md"
-                  style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
-              <EditableText k="usluge-uvod">
-                {bk('usluge-uvod', 'Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.')}
-              </EditableText>
-            </span>
+                       className="block whitespace-nowrap font-script font-normal normal-case tracking-normal text-accent
+                                  leading-[1.02] text-[13.9vw] sm:text-[11.1vw] md:text-[9.5vw] xl:text-[8.63rem]"
+                       style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
+            full-service agencija
           </motion.span>
         </h1>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="mt-2 flex w-full justify-end sm:mt-3">
+          <span className="block max-w-xs text-left text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-sm lg:text-base xl:max-w-md"
+                style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
+            <EditableText k="usluge-uvod">
+              {bk('usluge-uvod', 'Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.')}
+            </EditableText>
+          </span>
+        </motion.div>
 
         {/* the reviews — the train slider he approved, in the original seat, riding
             clear of the sea */}
@@ -272,6 +271,17 @@ function UslugeHero() {
         box="top-[125vh] h-[80vh]"
         imgClass="absolute right-[-8%] top-[10%] w-[34%] h-auto max-w-none scale-x-[-1]"
         y={['0%', '-8%']} base={0.8} float={{ px: 7, sec: 12, delay: 1.2 }}
+      />
+      {/* batch 29 (owner): the FULL-WIDTH soft bank across the stack-foot → o-nama
+          stretch — his four arrows sat on a pale, thinly-clouded centre field where the
+          two corner straddlers never reached. Real cloud texture spans the whole width
+          now; no tone step can survive under it. Masked both edges, parallax as ever. */}
+      <WorldLayer
+        src="/media/bank-soft.webp" eager
+        box="-bottom-[18vh] h-[86vh]"
+        imgClass="absolute left-[-25%] top-[6%] w-[150%] max-w-none"
+        y={['0%', '-6%']} base={0.9}
+        mask="linear-gradient(to bottom, transparent 2%, black 32%, black 72%, transparent 100%)"
       />
       <WorldLayer
         src="/media/cloud-real.webp" eager
@@ -376,7 +386,7 @@ const CARD_BG = '#EFF6FC'
 function StackCard({ i, active, onOpen }: { i: number; active: boolean; onOpen: () => void }) {
   const s = SERVICES[i]
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-8 sm:py-5 lg:px-12">
+    <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-8 sm:py-5 lg:px-12 [@media(max-height:860px)]:py-3!">
       <div className="grid w-full grid-cols-12 items-start gap-2 sm:gap-6 lg:gap-8">
         <div className="col-span-4 lg:col-span-3">
           {/* batch 28 (owner): MUCH bigger, with real depth — a white top-light and a deep
@@ -477,11 +487,18 @@ function ServicesStack() {
     // the camera locks, the active row's body expands in place, every other row shows
     // its title bar — nothing ever covers anything.
     <div ref={ref} className="relative h-[260vh] w-full">
-      <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden pt-16 sm:pt-20">
+      {/* batch 29: on SHORT viewports (≤860px tall) the head and row paddings tighten —
+          the content had outgrown the pinned frame by ~35px there, leaving the CTA pill
+          half-clipped at the stage foot in the released state. Taller screens unchanged. */}
+      <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden pt-16 sm:pt-20 [@media(max-height:860px)]:pt-12!">
+        {/* batch 29 (owner): the blanket's FOOT dissolves like its head — solid to 100%
+            put a full-width razor at the stage's resting edge the moment the pin
+            released (his four arrows). The fade lives in stage space, so the edge
+            cannot exist at any scroll position; the world's sky breathes through. */}
         <div
           aria-hidden
           className="absolute inset-0"
-          style={{ background: `linear-gradient(to bottom, transparent 0%, ${CARD_BG} 90px, ${CARD_BG} 100%)` }}
+          style={{ background: `linear-gradient(to bottom, transparent 0%, ${CARD_BG} 90px, ${CARD_BG} calc(100% - 22vh), rgba(239,246,252,0) 100%)` }}
         />
         <div className="relative flex min-h-0 flex-1 flex-col justify-start pt-4 sm:pt-6">
           {SERVICES.map((_, i) => (
@@ -518,9 +535,11 @@ export default function UslugePage() {
         <div className="relative z-20">
           <SeamBridge className="-top-[10vh] h-[50vh]" />
 
-          {/* batch 28 (owner): SVE O NAMA joins /usluge — the same composition, sea layer
-              and grammar as /radovi, seated between the stack and the finale so the page
-              closes exactly like the portfolio (his order; the FAQ deliberately absent) */}
+          {/* batch 28 (owner): the about composition joins /usluge — the same layout, sea
+              layer and grammar as /radovi, seated between the stack and the finale so the
+              page closes exactly like the portfolio (his order; the FAQ deliberately
+              absent). Batch 29 (owner): its OWN words — „KO SMO MI" and two new text
+              blocks — so the two pages rhyme without repeating. */}
           <Beat name="o-nama" layers={
             <>
               <WorldLayer
@@ -537,7 +556,14 @@ export default function UslugePage() {
               />
             </>
           }>
-            <SveONama />
+            <SveONama
+              wordTop="KO"
+              wordFloat="SMO"
+              wordBottom="MI"
+              para1="DreamSign je full-service agencija za dizajn i izradu sajtova. Od prve skice do lansiranja sve nastaje pod jednim krovom i jednim potpisom — direktno, bez posrednika, sa ljudima koji vaš projekat zaista grade."
+              para2="Verujemo u pismen dogovor, fiksan rok i sajt koji na kraju pripada vama. Tako se gradi poverenje — i radovi kojima se s ponosom potpisujemo."
+              floatSize="text-[3.25rem] sm:text-[4.75rem] md:text-[min(6rem,6.5vw)] lg:text-[min(7.25rem,6vw)] xl:text-[min(8.25rem,6.4vw)]"
+            />
             <SkyGap />
           </Beat>
 
