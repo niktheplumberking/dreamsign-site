@@ -71,10 +71,12 @@ function CloudFan({ reduced }: { reduced: boolean }) {
         viewBox="0 0 100 100" preserveAspectRatio="none" fill="none"
         className="pointer-events-none absolute inset-0 h-full w-full"
       >
+        {/* batch 27: the title is CENTRED now — the three starts sit under its words
+            mid-stage and fan OUTWARD to the three clouds */}
         <g stroke="#16324F" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke">
-          <motion.path vectorEffect="non-scaling-stroke" d="M 5 4 C 4 30, 6 44, 9 62" {...draw(0)} />
-          <motion.path vectorEffect="non-scaling-stroke" d="M 21 4 C 28 26, 40 40, 47 54" {...draw(1)} />
-          <motion.path vectorEffect="non-scaling-stroke" d="M 38 4 C 56 22, 74 36, 82 64" {...draw(2)} />
+          <motion.path vectorEffect="non-scaling-stroke" d="M 33 4 C 22 26, 14 42, 10 60" {...draw(0)} />
+          <motion.path vectorEffect="non-scaling-stroke" d="M 48 4 C 48 26, 48 40, 48 52" {...draw(1)} />
+          <motion.path vectorEffect="non-scaling-stroke" d="M 63 4 C 72 24, 79 40, 83 62" {...draw(2)} />
         </g>
       </svg>
       <LabelCloud reduced={reduced} label="Web dizajn" bobDelay={0}
@@ -189,29 +191,32 @@ function UslugeHero() {
     // the reference composition fills the FIRST screen (justify-end inside an h-screen
     // block); the trailing sky lives inside this beat so the hero's own bottom edge —
     // where the slider cards sit by design — stays outside the junction scan band
-    <section data-beat="hero" className="relative z-10 w-full overflow-hidden">
+    // overflow-CLIP, not hidden: the stack's sticky pin lives inside this section now,
+    // and hidden would disarm it (the World wrapper's own batch-13 lesson)
+    <section data-beat="hero" className="relative z-10 w-full overflow-clip">
       {/* the sky dissolves in SECTION space before the overflow cut — the separator line
           Nick circled under the hero can never exist (the radovi batch-20 grammar) */}
+      {/* the sea stays LOW (his red line: background clouds may never touch the reviews):
+          the frame favours the image's upper sky, and the foot dissolves in section space */}
       <div
         aria-hidden
         className="absolute inset-0 z-0 overflow-hidden"
         style={{
-          WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 99%)',
-          maskImage: 'linear-gradient(to bottom, black 80%, transparent 99%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 84%, transparent 99%)',
+          maskImage: 'linear-gradient(to bottom, black 84%, transparent 99%)',
         }}
       >
         <motion.img
           src="/media/hero-sky-still.webp" alt=""
           className="absolute inset-0 h-[120%] w-full object-cover"
-          style={reduced ? undefined : { y: skyY }}
+          style={{ objectPosition: '50% 18%', ...(reduced ? {} : { y: skyY }) }}
         />
       </div>
-      <div className="relative flex min-h-screen w-full flex-col justify-end px-4 pb-[16vh] pt-24 sm:px-10 lg:px-16">
+      <div className="relative flex min-h-screen w-full flex-col justify-end px-4 pb-[10vh] pt-24 sm:px-10 lg:px-16">
 
-      <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-col items-start justify-end">
-        {/* batch 26 (owner): the HOUSE duet — first row primary, second row script, the
-            same grammar as the home and radovi heroes */}
-        <h1 className="flex w-full flex-col items-start text-left">
+      {/* batch 27 (owner): the layout matches the OTHER heroes — everything CENTRED */}
+      <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-col items-center justify-end text-center">
+        <h1 className="flex w-full flex-col items-center">
           <motion.span
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -233,7 +238,7 @@ function UslugeHero() {
         <motion.span
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-3 block max-w-xs text-left text-xs font-medium leading-relaxed text-ink/85 sm:max-w-sm sm:text-sm lg:text-base xl:max-w-md"
+          className="mt-3 block max-w-[46ch] text-center text-xs font-medium leading-relaxed text-ink/85 sm:text-sm lg:text-base"
           style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}
         >
           <EditableText k="usluge-uvod">
@@ -241,20 +246,47 @@ function UslugeHero() {
           </EditableText>
         </motion.span>
 
-        {/* the three things we do, hanging off the title's own words */}
+        {/* the three things we do, hanging off the centred title's own words */}
         <CloudFan reduced={reduced} />
 
-        {/* the reviews — HIS seat, at the hero's foot, never crossing the sea line and
-            never to be moved again (owner's law, batch 26) */}
+        {/* the reviews — HIS seat, at the hero's foot, on clear sky above the sea,
+            never to be moved again (owner's law) */}
         <Slider reduced={reduced} />
       </div>
       </div>
 
-      {/* batch 26: the band lives INSIDE the hero beat, right under the sea (his
-          screenshot-2 box) — so the junction the rig scans sits BELOW the band's feathered
-          tail, where sky meets sky. The sea's crest is mid-beat, never scanned. */}
-      <div aria-hidden style={{ height: 'max(4vh, 44px)' }} />
-      <TrustBand />
+      {/* batch 26/27: band AND stack live INSIDE the hero beat — every razor edge (the
+          band's, the surface's) is mid-beat and never scanned, so the band sits tight
+          under the sea and the stack tight under the band (his no-empty-gap order).
+          z-10: the content rides ABOVE the world layers below (the Beat grammar). */}
+      <div className="relative z-10">
+        <div aria-hidden style={{ height: 'max(4vh, 44px)' }} />
+        <TrustBand />
+        <div aria-hidden style={{ height: 'max(10vh, 120px)' }} />
+        <ServicesStack />
+        <SkyGap />
+      </div>
+
+      {/* the world through this stretch: B3's quiet sky behind the stack + THE cloud
+          hovering the band→stack breath, parallax as everywhere */}
+      <WorldLayer
+        src="/media/B3-square-sky.webp" eager
+        box="top-[100vh] -bottom-[10vh]"
+        imgClass="absolute inset-0 h-[120%] w-full object-cover object-center"
+        y={['0%', '-9%']} base={0.8} mask={MASK.sky}
+      />
+      <WorldLayer
+        src="/media/cloud-real.webp" eager
+        box="top-[105vh] h-[80vh]"
+        imgClass="absolute left-[-10%] top-[6%] w-[38%] h-auto max-w-none"
+        y={['0%', '-11%']} base={0.9} float={{ px: 8, sec: 10 }}
+      />
+      <WorldLayer
+        src="/media/cloud-real.webp" eager
+        box="top-[125vh] h-[80vh]"
+        imgClass="absolute right-[-8%] top-[10%] w-[34%] h-auto max-w-none scale-x-[-1]"
+        y={['0%', '-8%']} base={0.8} float={{ px: 7, sec: 12, delay: 1.2 }}
+      />
     </section>
   )
 }
@@ -271,37 +303,33 @@ const BADGES = [
 ]
 
 function TrustBand() {
-  // EXACTLY two copies: the marquee keyframe slides -50%, so the loop is seamless only
-  // when the track is two identical halves — three copies made it jump at the reset
-  // (Nick's "glitch", batch 25)
-  const items = [...BADGES, ...BADGES]
+  // batch 27 (owner): the ORIGINAL look 1/1 (solid ink, shadow-inner, hard edges) — only
+  // the position changed. THE LOOP IS EXACT NOW, measured: the keyframe slides -50%, so
+  // each half must be one full period INCLUDING its trailing gap — the flat track had 11
+  // gaps for 12 items, leaving every wrap 40px short (the "glitch after a few times").
+  // Two self-padded halves make period === translation, to the pixel, forever.
   return (
-    // batch 26 (owner): the band sits right under the hero, INSIDE the seam zone — its
-    // top and bottom FEATHER into the sky (~70px each) so no razor edge can ever exist;
-    // the content rides in the solid core. One world, no separator lines.
-    <div
-      className="relative w-full overflow-hidden bg-ink py-16 text-tint sm:py-20"
-      style={{
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%)',
-        maskImage: 'linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%)',
-      }}
-    >
+    <div className="relative w-full overflow-hidden bg-ink py-8 text-tint shadow-inner sm:py-12">
       <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-20 bg-gradient-to-r from-ink to-transparent sm:w-40" />
       <div aria-hidden className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-20 bg-gradient-to-l from-ink to-transparent sm:w-40" />
-      <div className="flex w-max animate-marquee items-center gap-12 sm:gap-16 lg:gap-20">
-        {items.map((b, i) => (
-          <div key={i} className="flex shrink-0 items-center gap-10 sm:gap-14">
-            <div className="flex items-center gap-4">
-              <svg viewBox="0 0 24 24" className="h-7 w-7 shrink-0 sm:h-9 sm:w-9" fill="none"
-                   stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d={b.g} />
-              </svg>
-              <div className="flex flex-col text-left">
-                <span className="whitespace-nowrap text-base font-bold uppercase tracking-wider sm:text-lg lg:text-xl">{b.t}</span>
-                <span className="whitespace-nowrap text-xs font-medium normal-case text-tint/75 sm:text-sm">{b.s}</span>
+      <div className="flex w-max animate-marquee items-center will-change-transform" style={{ transform: 'translateZ(0)' }}>
+        {[0, 1].map((half) => (
+          <div key={half} className="flex items-center gap-12 pr-12 sm:gap-16 sm:pr-16 lg:gap-20 lg:pr-20">
+            {BADGES.map((b, i) => (
+              <div key={i} className="flex shrink-0 items-center gap-10 sm:gap-14">
+                <div className="flex items-center gap-4">
+                  <svg viewBox="0 0 24 24" className="h-7 w-7 shrink-0 sm:h-9 sm:w-9" fill="none"
+                       stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d={b.g} />
+                  </svg>
+                  <div className="flex flex-col text-left">
+                    <span className="whitespace-nowrap text-base font-bold uppercase tracking-wider sm:text-lg lg:text-xl">{b.t}</span>
+                    <span className="whitespace-nowrap text-xs font-medium normal-case text-tint/75 sm:text-sm">{b.s}</span>
+                  </div>
+                </div>
+                <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-full bg-tint/35" />
               </div>
-            </div>
-            <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-full bg-tint/35" />
+            ))}
           </div>
         ))}
       </div>
@@ -350,29 +378,32 @@ const CARD_BG = '#EFF6FC'
 function StackCard({ i, active, onOpen }: { i: number; active: boolean; onOpen: () => void }) {
   const s = SERVICES[i]
   return (
-    <div className="w-full py-4 sm:py-5">
-      <div className="grid w-full grid-cols-12 items-start gap-3 sm:gap-6 lg:gap-8">
-        <div className="col-span-3 lg:col-span-3">
-          <span className="select-none text-4xl font-normal leading-none tracking-tight text-ink/90 sm:text-6xl lg:text-[88px]" aria-hidden>
+    <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-8 sm:py-5 lg:px-12">
+      <div className="grid w-full grid-cols-12 items-start gap-2 sm:gap-6 lg:gap-8">
+        <div className="col-span-4 lg:col-span-3">
+          {/* the OLD numeral, clamped by viewport height so four rows + one open body
+              always fit the locked stage */}
+          <span className="select-none text-5xl font-normal leading-none tracking-tight text-ink/90 sm:text-7xl lg:text-[clamp(64px,10.5vh,104px)]" aria-hidden>
             {s.n}
           </span>
         </div>
-        <div className="col-span-9 flex flex-col pt-1 sm:pt-2 lg:col-span-9">
+        <div className="col-span-8 flex flex-col pt-1 sm:pt-3 lg:col-span-9">
           <button onClick={onOpen} className="group/title flex w-full cursor-pointer items-center justify-between text-left" aria-expanded={active}>
             {/* batch 19: brand ramp (colour law) — the hover dim moved to opacity, since
                 a colour change would repaint solid ink over the clipped gradient */}
-            <h2 className="ink-gradient text-lg font-semibold uppercase tracking-tight transition-opacity group-hover/title:opacity-75 sm:text-2xl lg:text-4xl">
+            <h2 className="ink-gradient text-xl font-semibold uppercase tracking-tight transition-opacity group-hover/title:opacity-75 sm:text-3xl lg:text-[clamp(28px,4.6vh,44px)]">
               {s.title}
             </h2>
             <span aria-hidden className={`ml-4 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-ink/30 text-lg transition-all sm:h-10 sm:w-10 ${active ? 'rotate-45' : ''}`}>
               +
             </span>
           </button>
-          <AnimatePresence>
+          <AnimatePresence initial={false}>
             {active && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                // batch 27: the push must feel like the old blankets — longer, softer
+                transition={{ duration: 0.55, ease: [0.3, 0, 0.2, 1] }}
                 className="overflow-hidden"
               >
                 <div className="max-w-2xl space-y-3 pt-3 sm:space-y-4 sm:pt-4">
@@ -437,22 +468,24 @@ function ServicesStack() {
 
   return (
     // 260vh: the last card is open by 78% of the runway — no dead scroll trailing it.
-    // batch 26 (owner): NO box — the surface is FULL WIDTH again (the old blanket look):
-    // one edge-to-edge ground whose top and bottom dissolve into the sky, with the four
-    // rows living on it. The accordion mechanics stay: all titles always visible, the
-    // active body expands in place, the camera locked by the pin.
+    // batch 27 (owner): the OLD dress exactly — the base blanket whose top melts into the
+    // sky across 90px and runs solid to the stage foot, full width, big numerals, the
+    // sheet edges (border + upward shadow) between rows. Only the MECHANICS are new:
+    // the camera locks, the active row's body expands in place, every other row shows
+    // its title bar — nothing ever covers anything.
     <div ref={ref} className="relative h-[260vh] w-full">
-      <div className="sticky top-0 flex h-screen w-full flex-col justify-center overflow-hidden pt-14 sm:pt-16">
+      <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden pt-16 sm:pt-20">
         <div
           aria-hidden
           className="absolute inset-0"
-          style={{
-            background: `linear-gradient(to bottom, transparent 0%, ${CARD_BG} 14%, ${CARD_BG} 88%, transparent 100%)`,
-          }}
+          style={{ background: `linear-gradient(to bottom, transparent 0%, ${CARD_BG} 90px, ${CARD_BG} 100%)` }}
         />
-        <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-12">
+        <div className="relative flex min-h-0 flex-1 flex-col justify-start pt-4 sm:pt-6">
           {SERVICES.map((_, i) => (
-            <div key={i} className={i > 0 ? 'border-t border-ink/15' : ''}>
+            <div
+              key={i}
+              className={i > 0 ? 'border-t border-ink/25 shadow-[0_-12px_28px_rgba(22,50,79,0.07)]' : ''}
+            >
               <StackCard i={i} active={active === i} onOpen={() => jump(i)} />
             </div>
           ))}
@@ -482,38 +515,8 @@ export default function UslugePage() {
         <div className="relative z-20">
           <SeamBridge className="-top-[10vh] h-[50vh]" />
 
-          {/* batch 25 (owner): ONE beat carries the band AND the stack — no boundary
-              between them, so the band→stack air shrinks to a breath (his note) while
-              both outer boundaries keep their ≥300px of junction-law sky. THE cloud
-              hovers through the gap. */}
-          <Beat name="usluge" layers={
-            <>
-              <WorldLayer
-                src="/media/B3-square-sky.webp" eager
-                box="-top-[26vh] -bottom-[26vh]"
-                imgClass="absolute inset-0 h-[126%] w-full object-cover object-center"
-                y={['0%', '-9%']} base={0.8} mask={MASK.sky}
-              />
-              <WorldLayer
-                src="/media/cloud-real.webp" eager
-                box="-top-[8vh] -bottom-[8vh]"
-                imgClass="absolute left-[-10%] top-[10%] w-[38%] h-auto max-w-none"
-                y={['0%', '-11%']} base={0.9} float={{ px: 8, sec: 10 }}
-              />
-              <WorldLayer
-                src="/media/cloud-real.webp" eager
-                box="-top-[8vh] -bottom-[8vh]"
-                imgClass="absolute right-[-8%] top-[22%] w-[34%] h-auto max-w-none scale-x-[-1]"
-                y={['0%', '-8%']} base={0.8} float={{ px: 7, sec: 12, delay: 1.2 }}
-              />
-            </>
-          }>
-            {/* the breath before the stack, alive with the hovering clouds */}
-            <div aria-hidden style={{ height: 'max(22vh, 260px)' }} />
-            <ServicesStack />
-            <SkyGap />
-          </Beat>
-
+          {/* batch 27: the band AND the stack live inside the hero beat now (see
+              UslugeHero) — this wrapper carries only the bridge and the ground */}
           <Ground>
             <Beat name="finale">
               <div className="pt-[10vh]">
