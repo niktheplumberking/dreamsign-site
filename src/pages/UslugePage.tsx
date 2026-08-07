@@ -35,49 +35,43 @@ function CloudMap() {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="pointer-events-none absolute right-0 z-10 w-[230px] sm:w-[340px] md:w-[420px] lg:w-[480px]
+      className="pointer-events-none absolute right-0 z-10 aspect-[500/240] w-[230px] sm:w-[340px] md:w-[420px] lg:w-[480px]
                  top-[-160px] sm:top-[-40px] md:top-[-56px] lg:top-[-76px]"
       aria-hidden
     >
-      {/* batch 31 (owner): a new dress, same seats — THREE SEPARATE pen lines, each
-          from its OWN origin on the title's side (his rule: never one shared point),
-          and the clouds carry body now: a sky-gradient fill, a soft ink shadow and the
-          pale-ink contour of our asset law instead of flat white outlines. */}
-      <svg viewBox="0 0 500 240" fill="none" className="h-auto w-full overflow-visible">
-        <defs>
-          <linearGradient id="cm-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#FFFFFF" stopOpacity="0.92" />
-            <stop offset="1" stopColor="#E7F1FB" stopOpacity="0.95" />
-          </linearGradient>
-          <filter id="cm-shadow" x="-20%" y="-20%" width="140%" height="160%">
-            <feDropShadow dx="0" dy="3" stdDeviation="4" floodColor="#16324F" floodOpacity="0.16" />
-          </filter>
-        </defs>
-        <g stroke="#16324F" strokeWidth="1.6" strokeLinecap="round" opacity="0.45">
-          <path d="M 2 58 C 42 46, 84 39, 126 34" />
-          <path d="M 0 132 C 100 122, 204 94, 308 64" />
-          <path d="M 12 205 C 82 201, 162 189, 240 174" />
+      {/* batch 33 (owner): the map wears OUR OWN clouds now — the cloud-button puff,
+          floating gently in place — and the pen lines became BEAD TRAILS (dotted, round
+          caps): three origins, three curves, a hand-plotted mind-map feel. Same seats. */}
+      <svg viewBox="0 0 500 240" fill="none" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
+        <g stroke="#16324F" strokeWidth="2.2" strokeLinecap="round" opacity="0.5"
+           strokeDasharray="0.1 9">
+          <path d="M 2 58 C 42 46, 84 39, 124 38" />
+          <path d="M 0 132 C 100 122, 204 96, 304 72" />
+          <path d="M 12 205 C 82 201, 162 191, 236 180" />
         </g>
-        {[
-          { t: 'translate(115, 12)', label: '1. Web dizajn', w: 140, tx: 70 },
-          { t: 'translate(300, 38)', label: '2. SEO', w: 140, tx: 70 },
-          { t: 'translate(230, 148)', label: '3. Marketing', w: 160, tx: 80 },
-        ].map((c) => (
-          <g key={c.label} transform={c.t} filter="url(#cm-shadow)">
-            <path
-              d={c.w === 160
-                ? 'M 20 40 C 8 40 2 28 12 18 C 8 5 30 -3 50 5 C 68 -5 102 -5 120 5 C 136 -3 158 5 152 18 C 166 28 158 40 142 40 Z'
-                : 'M 20 40 C 8 40 2 28 12 18 C 8 5 28 -3 44 5 C 58 -5 88 -5 102 5 C 116 -3 134 5 130 18 C 142 28 136 40 122 40 Z'}
-              fill="url(#cm-fill)" stroke="#16324F" strokeOpacity="0.5" strokeWidth="1.8"
-              strokeLinecap="round" strokeLinejoin="round"
-            />
-            <text x={c.tx} y="22" textAnchor="middle" dominantBaseline="middle"
-                  fill="#16324F" fontSize="13" fontWeight="600" fontFamily="'Inter Tight', system-ui, sans-serif">
-              {c.label}
-            </text>
-          </g>
-        ))}
       </svg>
+      {[
+        { label: '1. Web dizajn', cls: 'left-[22%] top-[1%] w-[30%]', sec: 5.4, delay: 0 },
+        { label: '2. SEO', cls: 'left-[59%] top-[14%] w-[29%]', sec: 6.2, delay: 0.9 },
+        { label: '3. Marketing', cls: 'left-[44%] top-[58%] w-[33%]', sec: 6.8, delay: 1.7 },
+      ].map((c) => (
+        <motion.span
+          key={c.label}
+          className={`absolute block ${c.cls}`}
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: c.sec, repeat: Infinity, ease: 'easeInOut', delay: c.delay }}
+        >
+          <img
+            src="/media/cloud-puff.webp" alt=""
+            className="w-full select-none drop-shadow-[0_8px_20px_rgba(22,50,79,0.20)]"
+          />
+          <span className="absolute inset-0 flex items-center justify-center pt-[4%]">
+            <span className="text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-ink/85 sm:text-[12px] lg:text-[13px]">
+              {c.label}
+            </span>
+          </span>
+        </motion.span>
+      ))}
     </motion.div>
   )
 }
@@ -267,7 +261,16 @@ function UslugeHero() {
         <TrustBand />
         <div aria-hidden style={{ height: 'max(10vh, 120px)' }} />
         <ServicesStack />
-        <SkyGap />
+        {/* batch 33 (owner): "the gap between 04 and our process is too big — much
+            smaller" — the full SkyGap became one short breath. The 04 sheet CONTINUES
+            past the stage floor as a static melt: solid at the floor, gone 220px later —
+            during the lock it sits below the viewport, after release there is no edge. */}
+        <div aria-hidden className="relative" style={{ height: 'max(12vh, 140px)' }}>
+          <div
+            className="absolute inset-0"
+            style={{ background: `linear-gradient(to bottom, ${CARD_BG} 0%, rgba(239,246,252,0) 100%)` }}
+          />
+        </div>
       </div>
 
       {/* batch 32 (owner): HIS fix, exactly — the SAME background image that paints the
@@ -277,7 +280,7 @@ function UslugeHero() {
           nothing before the CTA pill's worst-case seat. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-[90px] z-20 h-[360px] select-none overflow-hidden"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[300px] select-none overflow-hidden"
         style={{
           WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 38%, black 82%, transparent 100%)',
           maskImage: 'linear-gradient(to bottom, transparent 0%, black 38%, black 82%, transparent 100%)',
@@ -297,7 +300,7 @@ function UslugeHero() {
           on cloud, never on a tone step (his arrows, batch 28). */}
       <WorldLayer
         src="/media/B3-square-sky.webp" eager
-        box="top-[100vh] -bottom-[10vh]"
+        box="top-[100vh] bottom-0"
         imgClass="absolute inset-0 h-[120%] w-full object-cover object-center"
         y={['0%', '-9%']} base={0.8} mask={MASK.sky}
       />
@@ -317,33 +320,36 @@ function UslugeHero() {
           flat shadow WAS the line (an image's own horizon reads as a separator no matter
           how it is masked). The centre field is now a FIELD OF THE CLOUD — the real
           cumulus he loves, staggered across the width and depth like the hero sea. */}
+      {/* batch 33: every layer here now stops AT the section's edge (≤4vh lap) — clouds
+          that crossed into the wheel's runway slid on scroll while the stage was pinned
+          and broke the lock (his red circle). The veil owns the boundary alone. */}
       <WorldLayer
         src="/media/cloud-real.webp" eager
-        box="-bottom-[6vh] h-[70vh]"
+        box="bottom-0 h-[70vh]"
         imgClass="absolute left-[24%] top-[22%] w-[46%] h-auto max-w-none"
         y={['0%', '-9%']} base={0.95} float={{ px: 8, sec: 11 }}
       />
       <WorldLayer
         src="/media/cloud-real.webp" eager
-        box="-bottom-[14vh] h-[64vh]"
+        box="bottom-0 h-[64vh]"
         imgClass="absolute left-[2%] top-[38%] w-[34%] h-auto max-w-none scale-x-[-1]"
         y={['0%', '-7%']} base={0.85} float={{ px: 7, sec: 13, delay: 0.8 }}
       />
       <WorldLayer
         src="/media/cloud-real.webp" eager
-        box="-bottom-[10vh] h-[60vh]"
+        box="bottom-0 h-[60vh]"
         imgClass="absolute right-[6%] top-[30%] w-[30%] h-auto max-w-none"
         y={['0%', '-11%']} base={0.8} float={{ px: 6, sec: 9, delay: 1.5 }}
       />
       <WorldLayer
         src="/media/cloud-real.webp" eager
-        box="-bottom-[26vh] h-[60vh]"
+        box="bottom-0 h-[54vh]"
         imgClass="absolute left-[-8%] top-[16%] w-[36%] h-auto max-w-none"
         y={['0%', '-10%']} base={0.85}
       />
       <WorldLayer
         src="/media/cloud-real.webp" eager
-        box="-bottom-[38vh] h-[60vh]"
+        box="bottom-0 h-[54vh]"
         imgClass="absolute right-[-10%] top-[30%] w-[32%] h-auto max-w-none scale-x-[-1]"
         y={['0%', '-7%']} base={0.75}
       />
@@ -471,7 +477,9 @@ function StackCard({ i, active, onOpen }: { i: number; active: boolean; onOpen: 
                 transition={{ duration: 0.55, ease: [0.3, 0, 0.2, 1] }}
                 className="overflow-hidden"
               >
-                <div className="max-w-2xl space-y-3 pt-3 sm:space-y-4 sm:pt-4">
+                {/* batch 33 (owner): the body's foot clearance equals the next sheet's
+                    overlap — the active card's CTA is never swallowed by the half cut */}
+                <div className="max-w-2xl space-y-3 pt-3 pb-12 sm:space-y-4 sm:pt-4 sm:pb-16 lg:pb-[max(64px,8vh)]">
                   <span className="inline-block text-xs font-semibold uppercase tracking-wider text-ink/70 sm:text-sm">{s.sub}</span>
                   {s.paras.map((p) => (
                     <p key={p.slice(0, 16)} className="text-xs leading-relaxed text-ink/85 sm:text-sm lg:text-base">{p}</p>
@@ -565,12 +573,16 @@ function ServicesStack() {
               key={i}
               className={`relative ${i > 0
                 ? 'border-t border-ink/25 shadow-[0_-12px_28px_rgba(22,50,79,0.07)] -mt-12 sm:-mt-16 lg:-mt-[max(64px,8vh)] [@media(max-height:860px)]:-mt-14!'
-                : ''}`}
+                : ''} ${i === SERVICES.length - 1 ? 'flex-1' : ''}`}
               style={{
                 zIndex: i + 1,
-                ...(i > 0
-                  ? { background: `linear-gradient(to bottom, ${CARD_BG} 0px, ${CARD_BG} 110px, rgba(239,246,252,0) 250px)` }
-                  : {}),
+                // batch 33 (owner): the LAST sheet runs solid to the stage floor — the
+                // locked viewport ends on the sheet itself, never on a line beneath 04
+                ...(i === SERVICES.length - 1
+                  ? { background: CARD_BG }
+                  : i > 0
+                    ? { background: `linear-gradient(to bottom, ${CARD_BG} 0px, ${CARD_BG} 110px, rgba(239,246,252,0) 250px)` }
+                    : {}),
               }}
             >
               <StackCard i={i} active={active === i} onOpen={() => jump(i)} />
@@ -587,12 +599,18 @@ function ServicesStack() {
 /* REAL process only — these are the pipeline's own client-facing stages; no invented
    claims, no prices (factory law). */
 const PROCESS = [
-  { n: '01', t: 'Upoznavanje', d: 'Prvi razgovor — cilj, obim i rok. Bez obaveza i bez žargona.' },
-  { n: '02', t: 'Ponuda i ugovor', d: 'Sve pismeno: šta se radi, do kada i za koliko. Bez skrivenih troškova.' },
-  { n: '03', t: 'Pravac dizajna', d: 'Prvo početna strana — izgled odobravate pre nego što gradimo ostatak.' },
-  { n: '04', t: 'Izrada sajta', d: 'Sekcija po sekcija, uz pregled napretka uživo tokom cele izrade.' },
-  { n: '05', t: 'Provere', d: 'Brzina, SEO, telefon i svaki klik — proveravamo sve pre lansiranja.' },
-  { n: '06', t: 'Lansiranje i briga', d: 'Sajt kreće da radi za vas — a mi ostajemo uz njega i posle.' },
+  { n: '01', t: 'Upoznavanje', d: 'Prvi razgovor — cilj, obim i rok. Bez obaveza i bez žargona.',
+    g: 'M4 5h16v10H9l-5 4V5z M8 9h8 M8 12h5' },
+  { n: '02', t: 'Ponuda i ugovor', d: 'Sve pismeno: šta se radi, do kada i za koliko. Bez skrivenih troškova.',
+    g: 'M6 3h9l4 4v14H6V3z M14 3v5h5 M9 13h6 M9 17h4' },
+  { n: '03', t: 'Pravac dizajna', d: 'Prvo početna strana — izgled odobravate pre nego što gradimo ostatak.',
+    g: 'M12 3a9 9 0 110 18 9 9 0 010-18z M15.5 8.5l-2.2 5-5 2.2 2.2-5 5-2.2z' },
+  { n: '04', t: 'Izrada sajta', d: 'Sekcija po sekcija, uz pregled napretka uživo tokom cele izrade.',
+    g: 'M3 5h18v14H3V5z M3 9h18 M6 7h.01 M8.5 7h.01 M11 7h.01' },
+  { n: '05', t: 'Provere', d: 'Brzina, SEO, telefon i svaki klik — proveravamo sve pre lansiranja.',
+    g: 'M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z M9 12l2 2 4-4' },
+  { n: '06', t: 'Lansiranje i briga', d: 'Sajt kreće da radi za vas — a mi ostajemo uz njega i posle.',
+    g: 'M3 11l18-7-7 18-2.5-7L3 11z' },
 ]
 
 const WHEEL_STEP = 26 // degrees between seats on the arc
@@ -662,8 +680,10 @@ function ProcessWheel() {
 
   useEffect(() => {
     const m = () => {
-      const R = Math.max(112, Math.min(window.innerHeight * 0.4, window.innerWidth * 0.3))
-      setDim({ R, cx: 24, fontPx: Math.max(30, R * 0.2) })
+      // batch 33 (owner): ENORMOUS — the seat (θ=0, at radius 1.19R) lands at the
+      // viewport's horizontal centre: cx + 1.19R ≈ 0.49·vw on desktop
+      const R = Math.max(130, Math.min(window.innerHeight * 0.72, window.innerWidth * 0.41))
+      setDim({ R, cx: 24, fontPx: Math.max(34, R * 0.2) })
     }
     m()
     window.addEventListener('resize', m)
@@ -729,10 +749,15 @@ function ProcessWheel() {
           ))}
         </div>
 
-        {/* the active step's words, at the seat's right — swap per step */}
+        {/* the active step's words, at the seat's right — swap per step. On phones the
+            seat's right is too narrow: the words sit UNDER the seat instead. */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 pr-4"
-          style={{ left: textLeft, maxWidth: `min(28rem, calc(100vw - ${Math.round(textLeft)}px - 1rem))` }}
+          className="absolute max-sm:inset-x-6 max-sm:top-[64%] sm:top-1/2 sm:-translate-y-1/2 sm:pr-4"
+          style={
+            typeof window !== 'undefined' && window.innerWidth < 640
+              ? undefined
+              : { left: textLeft, maxWidth: `min(32rem, calc(100vw - ${Math.round(textLeft)}px - 1.5rem))` }
+          }
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -742,10 +767,18 @@ function ProcessWheel() {
               exit={{ opacity: 0, y: -14 }}
               transition={{ duration: 0.35, ease: [0.3, 0, 0.2, 1] }}
             >
-              <h3 className="ink-gradient text-xl font-semibold uppercase tracking-tight sm:text-2xl lg:text-3xl">
-                {PROCESS[k].t}
-              </h3>
-              <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink/75 sm:text-base">
+              <div className="flex items-center gap-4">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-ink/25 bg-white/55 shadow-sm sm:h-14 sm:w-14">
+                  <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-7 sm:w-7" fill="none" stroke="#16324F"
+                       strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d={PROCESS[k].g} />
+                  </svg>
+                </span>
+                <h3 className="ink-gradient text-2xl font-semibold uppercase tracking-tight sm:text-4xl lg:text-5xl">
+                  {PROCESS[k].t}
+                </h3>
+              </div>
+              <p className="mt-3 max-w-md text-sm leading-relaxed text-ink/75 sm:mt-4 sm:text-lg">
                 {PROCESS[k].d}
               </p>
             </motion.div>
@@ -776,17 +809,11 @@ export default function UslugePage() {
         <div className="relative z-20">
           <SeamBridge className="-top-[10vh] h-[50vh]" />
 
-          {/* batch 32 (owner): NAŠ PROCES — the revolver wheel between the stack and
-              KO SMO MI (his Pinterest references): six steps on a half circle off the
-              left edge, the camera locks, scroll turns the cylinder. */}
-          <Beat name="proces" layers={
-            <WorldLayer
-              src="/media/cloud-real.webp" eager
-              box="top-[20vh] h-[70vh]"
-              imgClass="absolute right-[-8%] top-[20%] w-[30%] h-auto max-w-none scale-x-[-1]"
-              y={['0%', '-9%']} base={0.75} float={{ px: 7, sec: 11 }}
-            />
-          }>
+          {/* batch 32/33 (owner): NAŠ PROCES — the revolver wheel between the stack and
+              KO SMO MI. NO world layers on this beat: a parallax cloud slid across the
+              pinned stage and broke the lock (his red circle) — all weather rides
+              INSIDE the sticky stage now. */}
+          <Beat name="proces">
             <ProcessWheel />
             <div aria-hidden style={{ height: '16vh' }} />
           </Beat>
