@@ -1,13 +1,10 @@
 // SVE O NAMA — Nick's own composition, shared by /radovi and /usluge (batch 28).
 // THE DEFAULT COPY IS HIS, VERBATIM, AND LOCKED (owner's instruction 2026-08-03: "dont
-// touch SVE O NAMA") — /radovi renders it untouched. Batch 29 (owner): /usluge wears the
-// SAME layout with ITS OWN words — „KO SMO MI" and two new text blocks — "keep it a bit
-// different from the original section". Only the words travel through props; every
-// coordinate, size and motion stays one composition.
+// touch SVE O NAMA") — /radovi renders it untouched. Batch 30 (owner): ONLY the words
+// may differ between pages — "revert to the layout we used to have and just change the
+// text. Nothing else, period." Every class below is identical for both pages; no size
+// or position override exists.
 import { motion } from 'motion/react'
-
-const FLOAT_SIZE =
-  'text-[5.25rem] sm:text-[7.75rem] md:text-[min(9.75rem,10.4vw)] lg:text-[min(11.75rem,9.6vw)] xl:text-[min(13.25rem,10.2vw)]'
 
 export default function SveONama({
   wordTop = 'SVE',
@@ -15,15 +12,12 @@ export default function SveONama({
   wordBottom = 'NAMA',
   para1 = 'Naša strast je vođenje klijenata da pronađu svoj jedinstveni glas u svetu vizuelnih komunikacija, kreirajući brendove sa smislom i emocijom, bez da budemo samo još jedan u nizu. Otkrijte lepotu autentičnosti i snagu izuzetnog dizajna.',
   para2 = 'Kroz pažljivo osmišljene strategije i posvećenost detaljima, stvaramo vizuelne identitete i digitalna iskustva koja inspirišu i ostavljaju trajan utisak.',
-  floatSize = FLOAT_SIZE,
 }: {
   wordTop?: string
   wordFloat?: string
   wordBottom?: string
   para1?: string
   para2?: string
-  /** the lone floating word's size classes — a longer word (SMO) needs a smaller cut */
-  floatSize?: string
 }) {
   return (
     <div className="relative flex h-screen max-h-screen min-h-screen w-full select-none flex-col justify-between px-6 text-ink sm:px-10 lg:px-14">
@@ -41,8 +35,9 @@ export default function SveONama({
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className={`pointer-events-none absolute z-10 block -translate-y-1/2 font-bold uppercase leading-none tracking-tight text-ink
-                   top-[28%] right-[14%] sm:top-[32%] sm:right-[18%] md:right-[22%] lg:top-[35%] lg:right-[25%] ${floatSize}`}
+        className="pointer-events-none absolute z-10 block -translate-y-1/2 font-bold uppercase leading-none tracking-tight text-ink
+                   top-[28%] right-[14%] text-[5.25rem] sm:top-[32%] sm:right-[18%] sm:text-[7.75rem]
+                   md:right-[22%] md:text-[min(9.75rem,10.4vw)] lg:top-[35%] lg:right-[25%] lg:text-[min(11.75rem,9.6vw)] xl:text-[min(13.25rem,10.2vw)]"
         aria-hidden
       >
         {wordFloat}

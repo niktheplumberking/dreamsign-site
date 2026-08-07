@@ -194,9 +194,9 @@ function UslugeHero() {
           style={{ objectPosition: '50% 42%', ...(reduced ? {} : { y: skyY }) }}
         />
       </div>
-      {/* pb seats the review cards ABOVE the sea's crest (his red rule: the background
-          clouds never touch the reviews) — verified against the rendered crest */}
-      <div className="relative flex min-h-screen w-full flex-col justify-end px-4 pb-[27vh] pt-28 sm:px-10 lg:px-16">
+      {/* batch 30 (owner): the whole block rides LOWER — his red line seats the review
+          cards' bottom edge on the crest's foam (supersedes the batch-26 clearance) */}
+      <div className="relative flex min-h-screen w-full flex-col justify-end px-4 pb-[23.5vh] pt-28 sm:px-10 lg:px-16">
 
       <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-col items-center justify-end">
         <CloudMap />
@@ -213,24 +213,25 @@ function UslugeHero() {
                        className={`${row} whitespace-nowrap text-[12.5vw] sm:text-[10vw] md:text-[8.5vw] xl:text-[7.8rem]`}>
             Mi smo vaša
           </motion.span>
+          {/* batch 30 (owner): the script row and the subtitle share ONE bottom-aligned
+              row (his blue line) — the title comes down to meet the subtext, the
+              original third-row grammar with the new duet words */}
           <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                        transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                       className="block whitespace-nowrap font-script font-normal normal-case tracking-normal text-accent
-                                  leading-[1.02] text-[13.9vw] sm:text-[11.1vw] md:text-[9.5vw] xl:text-[8.63rem]"
-                       style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
-            full-service agencija
+                       className="mt-1 flex w-full flex-col items-start justify-between gap-6 sm:mt-2 lg:flex-row lg:items-end lg:gap-12">
+            <span className="block whitespace-nowrap font-script font-normal normal-case tracking-normal text-accent
+                             leading-[1.02] text-[13.9vw] sm:text-[11.1vw] md:text-[9.5vw] xl:text-[8.63rem]"
+                  style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
+              full-service agencija
+            </span>
+            <span className="block max-w-xs pb-1 text-left text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-sm lg:pb-4 lg:text-base xl:max-w-md"
+                  style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
+              <EditableText k="usluge-uvod">
+                {bk('usluge-uvod', 'Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.')}
+              </EditableText>
+            </span>
           </motion.span>
         </h1>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="mt-2 flex w-full justify-end sm:mt-3">
-          <span className="block max-w-xs text-left text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-sm lg:text-base xl:max-w-md"
-                style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
-            <EditableText k="usluge-uvod">
-              {bk('usluge-uvod', 'Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.')}
-            </EditableText>
-          </span>
-        </motion.div>
 
         {/* the reviews — the train slider he approved, in the original seat, riding
             clear of the sea */}
@@ -272,16 +273,27 @@ function UslugeHero() {
         imgClass="absolute right-[-8%] top-[10%] w-[34%] h-auto max-w-none scale-x-[-1]"
         y={['0%', '-8%']} base={0.8} float={{ px: 7, sec: 12, delay: 1.2 }}
       />
-      {/* batch 29 (owner): the FULL-WIDTH soft bank across the stack-foot → o-nama
-          stretch — his four arrows sat on a pale, thinly-clouded centre field where the
-          two corner straddlers never reached. Real cloud texture spans the whole width
-          now; no tone step can survive under it. Masked both edges, parallax as ever. */}
+      {/* batch 30 (owner): the bank-soft blanket is GONE — he circled it; its internal
+          flat shadow WAS the line (an image's own horizon reads as a separator no matter
+          how it is masked). The centre field is now a FIELD OF THE CLOUD — the real
+          cumulus he loves, staggered across the width and depth like the hero sea. */}
       <WorldLayer
-        src="/media/bank-soft.webp" eager
-        box="-bottom-[18vh] h-[86vh]"
-        imgClass="absolute left-[-25%] top-[6%] w-[150%] max-w-none"
-        y={['0%', '-6%']} base={0.9}
-        mask="linear-gradient(to bottom, transparent 2%, black 32%, black 72%, transparent 100%)"
+        src="/media/cloud-real.webp" eager
+        box="-bottom-[6vh] h-[70vh]"
+        imgClass="absolute left-[24%] top-[22%] w-[46%] h-auto max-w-none"
+        y={['0%', '-9%']} base={0.95} float={{ px: 8, sec: 11 }}
+      />
+      <WorldLayer
+        src="/media/cloud-real.webp" eager
+        box="-bottom-[14vh] h-[64vh]"
+        imgClass="absolute left-[2%] top-[38%] w-[34%] h-auto max-w-none scale-x-[-1]"
+        y={['0%', '-7%']} base={0.85} float={{ px: 7, sec: 13, delay: 0.8 }}
+      />
+      <WorldLayer
+        src="/media/cloud-real.webp" eager
+        box="-bottom-[10vh] h-[60vh]"
+        imgClass="absolute right-[6%] top-[30%] w-[30%] h-auto max-w-none"
+        y={['0%', '-11%']} base={0.8} float={{ px: 6, sec: 9, delay: 1.5 }}
       />
       <WorldLayer
         src="/media/cloud-real.webp" eager
@@ -480,13 +492,15 @@ function ServicesStack() {
   }
 
   return (
-    // 260vh: the last card is open by 78% of the runway — no dead scroll trailing it.
+    // batch 30 (owner): 420vh — "the user should scroll MUCH more for 01 to close and
+    // 02 to open"; every card now owns ~70-90vh of scroll instead of ~45, so there is
+    // time to read. The last card is still open by 78% — no dead scroll trailing it.
     // batch 27 (owner): the OLD dress exactly — the base blanket whose top melts into the
     // sky across 90px and runs solid to the stage foot, full width, big numerals, the
     // sheet edges (border + upward shadow) between rows. Only the MECHANICS are new:
     // the camera locks, the active row's body expands in place, every other row shows
     // its title bar — nothing ever covers anything.
-    <div ref={ref} className="relative h-[260vh] w-full">
+    <div ref={ref} className="relative h-[420vh] w-full">
       {/* batch 29: on SHORT viewports (≤860px tall) the head and row paddings tighten —
           the content had outgrown the pinned frame by ~35px there, leaving the CTA pill
           half-clipped at the stage foot in the released state. Taller screens unchanged. */}
@@ -562,7 +576,6 @@ export default function UslugePage() {
               wordBottom="MI"
               para1="DreamSign je full-service agencija za dizajn i izradu sajtova. Od prve skice do lansiranja sve nastaje pod jednim krovom i jednim potpisom — direktno, bez posrednika, sa ljudima koji vaš projekat zaista grade."
               para2="Verujemo u pismen dogovor, fiksan rok i sajt koji na kraju pripada vama. Tako se gradi poverenje — i radovi kojima se s ponosom potpisujemo."
-              floatSize="text-[3.25rem] sm:text-[4.75rem] md:text-[min(6rem,6.5vw)] lg:text-[min(7.25rem,6vw)] xl:text-[min(8.25rem,6.4vw)]"
             />
             <SkyGap />
           </Beat>
