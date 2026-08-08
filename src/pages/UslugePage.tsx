@@ -35,7 +35,7 @@ function CloudMap() {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="pointer-events-none absolute right-0 z-10 aspect-[500/240] w-[230px] sm:w-[340px] md:w-[420px] lg:w-[480px]
+      className="pointer-events-none absolute right-0 z-10 aspect-[500/240] w-[230px] sm:w-[340px] md:w-[420px] lg:w-[480px] xl:w-[560px]
                  top-[-160px] sm:top-[-40px] md:top-[-56px] lg:top-[-76px]"
       aria-hidden
     >
@@ -46,18 +46,43 @@ function CloudMap() {
           like his sketch (never near-straight); the puffs grew so the words sit deep
           inside the cloud body. */}
       {/* batch 35 (owner): every line ARRIVES FROM UNDERNEATH, hooking up into the
-          cloud's bottom-centre — never from the left (his red drawing) */}
+          cloud's bottom-centre — never from the left (his red drawing).
+          batch 36 (owner): each line BECOMES HANDWRITING mid-flow — the stroke breaks,
+          „dreamsign" runs in the quill as part of the line, then the stroke resumes and
+          dives under its cloud (his sketch). Words are HTML (no SVG stretch), seated in
+          the gaps, tilted to the line's local slope. */}
       <svg viewBox="0 0 500 240" fill="none" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
         <g stroke="#2E5F9E" strokeWidth="2" strokeLinecap="round" opacity="0.6">
-          <path d="M 2 78 C 40 52, 88 96, 128 84 C 156 76, 166 72, 170 58" />
-          <path d="M 0 148 C 70 160, 170 128, 250 132 C 330 136, 372 122, 380 98" />
-          <path d="M 10 214 C 70 230, 160 214, 230 212 C 276 210, 296 206, 300 190" />
+          {/* to Web dizajn: lead-in off the grid → word gap → hook into the belly */}
+          <path d="M -44 90 C -22 82, 4 86, 26 82" />
+          <path d="M 158 70 C 165 66, 169 62, 170 58" />
+          {/* to SEO: the long sweep → word gap → rise into the belly (routed ABOVE the
+              Marketing cloud's fluff) */}
+          <path d="M 0 140 C 60 150, 130 122, 200 118" />
+          <path d="M 336 110 C 358 106, 372 102, 380 96" />
+          {/* to Marketing: → word gap → into the belly */}
+          <path d="M 10 220 C 60 232, 110 220, 150 216" />
+          <path d="M 282 206 C 291 203, 297 200, 300 196" />
         </g>
       </svg>
       {[
+        { x: 24.4, y: 31.5, rot: -6 },
+        { x: 53.6, y: 47.0, rot: -4 },
+        { x: 43.2, y: 88.0, rot: -3 },
+      ].map((w, i) => (
+        <span
+          key={i}
+          className="absolute block whitespace-nowrap font-script font-normal leading-none text-[#2E5F9E] opacity-80
+                     text-[19px] sm:text-[28px] md:text-[34px] lg:text-[40px] xl:text-[46px]"
+          style={{ left: `${w.x}%`, top: `${w.y}%`, transform: `translate(-50%,-50%) rotate(${w.rot}deg)` }}
+        >
+          dreamsign
+        </span>
+      ))}
+      {[
         { label: '1. Web dizajn', cls: 'left-[13%] top-[-9%] w-[42%]', sec: 5.4, delay: 0 },
         { label: '2. SEO', cls: 'left-[56%] top-[7%] w-[40%]', sec: 6.2, delay: 0.9 },
-        { label: '3. Marketing', cls: 'left-[37%] top-[47%] w-[46%]', sec: 6.8, delay: 1.7 },
+        { label: '3. Marketing', cls: 'left-[37%] top-[53%] w-[46%]', sec: 6.8, delay: 1.7 },
       ].map((c) => (
         <motion.span
           key={c.label}
@@ -733,15 +758,14 @@ function ProcessWheel() {
 
   useEffect(() => {
     const m = () => {
-      // batch 35 (owner): THE ENDLESS ARC — geometry, not masks. The circle must never
-      // cross the stage's top or bottom edge (a crossing becomes a mid-air break the
-      // moment the stage edge sits inside the viewport), so R ≤ ~vh/2; and it must
-      // poke out through the LEFT screen edge (cx − R < 0), so its line enters and
-      // leaves only through the edge of the screen — infinite at every scroll.
+      // batch 36 (owner): the BIG circle back (the b34 radius — numbers and words at
+      // their full size), but its CENTRE pushed off-screen-left so the arc's crossings
+      // with the top and bottom stage edges happen at x < 0 — never visible. The line
+      // enters and leaves ONLY through the left screen edge (y = cy ± 0.48vh), at
+      // every scroll: no break up, no break down, infinity to the left. His words.
       const vh = window.innerHeight, vw = window.innerWidth
-      const R = Math.max(104, Math.min(vh * 0.467, vw * 0.3))
-      let cx = vw * 0.47 - 1.19 * R
-      if (cx > R - 30) cx = R - 30 // guarantee the left poke on odd aspect ratios
+      const R = Math.max(140, Math.min(vh * 0.72, vw * 0.41))
+      const cx = R > vh * 0.46 ? -Math.sqrt(R * R - Math.pow(vh * 0.48, 2)) : 24
       setDim({ R, cx, fontPx: Math.max(34, R * 0.2) })
     }
     m()
@@ -793,11 +817,13 @@ function ProcessWheel() {
           transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
         />
         {/* batch 34 (owner): the section title in the PRIMARY face, big, centred */}
-        {/* batch 35 (owner): DISPLAY size, the house ramp — the same dark-to-light blue
-            gradient the homepage's giant service line wears, "much much bigger" */}
-        <h2 className="ink-gradient absolute left-1/2 top-20 w-max -translate-x-1/2 text-center
-                       font-semibold uppercase leading-none tracking-tight
-                       text-[clamp(2.75rem,9vw,4.5rem)] sm:top-24 lg:text-[clamp(4rem,7.5vw,7rem)]">
+        {/* batch 36 (owner): a touch smaller, a touch lower, and CENTRED OVER THE STEP
+            WORDS' column — never near the nav. Same house ramp. */}
+        <h2
+          className="ink-gradient absolute top-24 w-max text-center font-semibold uppercase leading-none tracking-tight
+                     max-sm:left-1/2 sm:top-28 text-[clamp(2.5rem,8vw,3.75rem)] lg:text-[clamp(3.25rem,6vw,5.25rem)]"
+          style={narrow ? { transform: 'translateX(-50%)' } : { left: textLeft + 240, transform: 'translateX(-50%)' }}
+        >
           Naš proces
         </h2>
 
