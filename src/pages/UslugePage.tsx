@@ -73,22 +73,32 @@ function CloudMap() {
           s.y = Math.min(PLAY_CLOUDS[i].seat[1] * r.height, maxY)
           s.gx = s.x; s.gy = s.y
         }
-        // idle wander: a new gentle destination every few seconds
+        // batch 43 (owner): CALM — the wander picks NEARBY destinations (never a
+        // cross-box dash) and its pull is capped, so no sudden push ever appears
         if (t > s.next) {
-          s.gx = 10 + Math.random() * Math.max(1, maxX - 20)
-          s.gy = 10 + Math.random() * Math.max(1, maxY - 20)
-          s.next = t + 2800 + Math.random() * 2800
+          s.gx = Math.min(Math.max(s.x + (Math.random() - 0.5) * 280, 10), Math.max(10, maxX - 10))
+          s.gy = Math.min(Math.max(s.y + (Math.random() - 0.5) * 200, 10), Math.max(10, maxY - 10))
+          s.next = t + 3600 + Math.random() * 3200
         }
-        let ax = (s.gx - s.x) * 0.0014, ay = (s.gy - s.y) * 0.0014
-        // the ESCAPE: run from the cursor, harder the closer it comes
+        const gdx = s.gx - s.x, gdy = s.gy - s.y
+        const gd = Math.hypot(gdx, gdy) || 1
+        const pull = Math.min(0.045, gd * 0.0009)
+        let ax = (gdx / gd) * pull, ay = (gdy / gd) * pull
+        // the ESCAPE: still runs from the cursor, but composed — a quarter of the old
+        // force, so it slips away instead of exploding (his note)
         const cx = r.left + s.x + w / 2, cy = r.top + s.y + h / 2
         const dx = cx - mouse.x, dy = cy - mouse.y
         const d = Math.hypot(dx, dy)
-        const R = 270
-        if (d < R && d > 1) {
-          const f = 1.35 * Math.pow(1 - d / R, 2)
-          ax += (dx / d) * f
-          ay += (dy / d) * f
+        const R = 240
+        if (d < R) {
+          // dead-centre guard: a cursor parked EXACTLY on the centre has no direction
+          // to flee from — push outward from the fence's middle instead, never freeze
+          let ux = dx, uy = dy
+          if (d < 1) { ux = cx - (r.left + r.width / 2); uy = cy - (r.top + r.height / 2) }
+          const um = Math.hypot(ux, uy) || 1
+          const f = 0.5 * Math.pow(1 - d / R, 2)
+          ax += (ux / um) * f
+          ay += (uy / um) * f
         }
         // the border: a soft spring near the fence, a hard clamp on it
         const M = 14
@@ -96,10 +106,10 @@ function CloudMap() {
         if (s.x > maxX - M) ax -= (s.x - (maxX - M)) * 0.012
         if (s.y < M) ay += (M - s.y) * 0.012
         if (s.y > maxY - M) ay -= (s.y - (maxY - M)) * 0.012
-        s.vx = (s.vx + ax) * 0.9
-        s.vy = (s.vy + ay) * 0.9
+        s.vx = (s.vx + ax) * 0.93
+        s.vy = (s.vy + ay) * 0.93
         const sp = Math.hypot(s.vx, s.vy)
-        if (sp > 5.5) { s.vx *= 5.5 / sp; s.vy *= 5.5 / sp }
+        if (sp > 2.4) { s.vx *= 2.4 / sp; s.vy *= 2.4 / sp }
         s.x = Math.min(Math.max(s.x + s.vx, 0), maxX)
         s.y = Math.min(Math.max(s.y + s.vy, 0), maxY)
         xs[i].set(s.x)
