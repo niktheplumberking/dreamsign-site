@@ -1,191 +1,183 @@
-// /kontakt — batch 13: no reference existed, so per the owner's instruction the page
-// adopts the /radovi aesthetic: script into a giant condensed title, then one ink-framed
-// bento carrying everything a visitor needs — the two-click conversation, the brand-drawn
-// sky-map (never a third-party map), and the real contact facts. Whole page = the CTA.
-import { useRef } from 'react'
-import { motion, useTransform } from 'motion/react'
-import { World, WorldLayer, SeamBridge, Beat, useWorld, useWorldRange } from '../components/World'
+// /kontakt — batch 44 (owner): the page rebuilt to his sitemap — hero (the duet, fonts
+// swapped) → the review section (his Trustpilot-layout reference, carried by our REAL
+// references: invented testimonials never ship, D62/D70) → the homepage's past-work
+// beat → the FAQ (the radovi section, shared) → the standing finale. One world, one
+// descent, the house parallax grammar throughout.
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { motion } from 'motion/react'
+import { World, WorldLayer, SeamBridge, Beat, useWorld } from '../components/World'
 import PageHero from '../components/PageHero'
+import Radovi from '../components/sections/Radovi'
+import FaqSekcija from '../components/FaqSekcija'
+import LandingCTA from '../components/LandingCTA'
 import Ground from '../components/Ground'
-import { GlossyPill } from '../components/Nav'
 import { MASK } from '../lib/masks'
 import { WA_LINK } from '../lib/hooks'
 import { bk } from '../lib/content'
-import { LEGAL, SIGNATURE_STROKE, SIGNATURE_SWEEP, SIGNATURE_VIEWBOX } from '../lib/marks'
 import { usePageMeta } from '../lib/meta'
 import { PAGE_SCHEMA } from '../lib/schema'
 
-const SkyGap = () => <div aria-hidden style={{ height: 'max(38vh, 466px)' }} />
+/* ------------------------------------------------- the review section (his reference) */
 
-const fadeUp = (i: number) => ({
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-80px' },
-  transition: { duration: 0.6, delay: 0.12 * i },
-})
+/* REAL references only — these are our live projects with OUR descriptions of the work;
+   client quotes take these seats the day real ones exist (D62/D70). */
+const RECENZIJE = [
+  {
+    thumb: '/media/radovi/bennett.webp', name: 'Bennett & Co', meta: 'bennettndco.com', href: 'https://www.bennettndco.com',
+    line: 'Kompletan identitet i korporativni sajt — od logotipa i vizuala do lansiranja na sopstvenom domenu.',
+  },
+  {
+    thumb: '/media/radovi/metalkolor.webp', name: 'Metal Kolor', meta: 'metal-kolor.rs', href: 'https://metal-kolor.rs/',
+    line: 'Katalog, galerija i kontakt za majstore Srema — sajt koji zanatu daje izlog kakav zaslužuje.',
+  },
+  {
+    thumb: '/media/radovi/pizzdarija.webp', name: 'Pizzdarija', meta: 'pizzdarija.rs', href: 'https://www.pizzdarija.rs/',
+    line: 'Meni, priča i porudžbina na dva klika — u duhu lokala koji miriše na vatru.',
+  },
+  {
+    thumb: '/media/brand/cloud-d.webp', name: 'Vaš projekat', meta: 'Započnite razgovor', href: WA_LINK,
+    line: 'Sledeći rad kojim se hvalimo može biti vaš — dva klika i razgovaramo.',
+  },
+]
 
-/** the pen circles the pill once, at arrival — kept from the approved first cut */
-function CircledPill({ reduced }: { reduced: boolean }) {
-  return (
-    <div className="relative inline-block">
-      <svg
-        viewBox="0 0 340 110" aria-hidden
-        className="absolute -inset-x-8 -inset-y-6 h-[calc(100%+3rem)] w-[calc(100%+4rem)] overflow-visible"
-      >
-        <motion.path
-          d="M 170 8 C 268 6, 330 24, 330 54 C 330 86, 258 102, 168 102 C 78 102, 10 88, 10 56 C 10 28, 74 10, 150 10"
-          stroke="#2458A6" strokeWidth="3.5" strokeLinecap="round" fill="none" opacity="0.9"
-          initial={{ pathLength: reduced ? 1 : 0 }}
-          whileInView={{ pathLength: 1 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ delay: 0.4, duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-        />
-      </svg>
-      <motion.div
-        animate={reduced ? undefined : { y: [0, -7, 0] }}
-        transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <GlossyPill href={WA_LINK} className="px-8 py-3 text-[16px] font-semibold sm:px-12 sm:py-4 sm:text-xl">
-          Započnite razgovor
-        </GlossyPill>
-      </motion.div>
-    </div>
+function ReviewSekcija({ reduced }: { reduced: boolean }) {
+  // the usluge train, widened to a three-card stage on desktop: every step the whole
+  // row slides one seat left, connected — the approved slider grammar
+  const N = RECENZIJE.length
+  const [idx, setIdx] = useState(0)
+  const next = useCallback(() => setIdx((v) => v + 1), [])
+  const prev = useCallback(() => setIdx((v) => v - 1), [])
+  useEffect(() => {
+    if (reduced) return
+    const t = setInterval(next, 8000)
+    return () => clearInterval(t)
+  }, [next, reduced])
+
+  const viewRef = useRef<HTMLDivElement>(null)
+  const [slotW, setSlotW] = useState(0)
+  const [slots, setSlots] = useState(3)
+  useEffect(() => {
+    const measure = () => {
+      const el = viewRef.current
+      if (!el) return
+      const n = window.matchMedia('(min-width: 1024px)').matches ? 3 : window.matchMedia('(min-width: 640px)').matches ? 2 : 1
+      setSlots(n)
+      setSlotW((el.clientWidth - (n - 1) * 16) / n + 16)
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+
+  const mod = (v: number, m: number) => ((v % m) + m) % m
+  const Btn = ({ onClick, label, children }: { onClick: () => void; label: string; children: React.ReactNode }) => (
+    <button
+      onClick={onClick} aria-label={label}
+      className="grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-full border border-ink/20
+                 bg-white/60 text-ink shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white"
+    >
+      {children}
+    </button>
   )
-}
-
-/** the ink-framed contact bento — the /radovi frame texture carrying the whole page */
-function KontaktBento({ reduced }: { reduced: boolean }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const { p: world } = useWorld()
-  const [enter, exit] = useWorldRange(ref, 0.9, 0.3)
-  const route = useTransform(world, [enter, exit], [0, 1], { clamp: true })
-  const tel = bk('kontakt-telefon', LEGAL.phone)
 
   return (
-    <div ref={ref} className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-      <div className="grid w-full transform-gpu grid-cols-1 gap-3 overflow-hidden rounded-3xl bg-ink p-3 shadow-xl sm:gap-4 sm:p-4 lg:grid-cols-2 lg:p-5">
-
-        {/* TILE 1 — the conversation (the whole page's reason) */}
-        <motion.div
-          {...fadeUp(0)}
-          className="flex min-h-[380px] transform-gpu flex-col items-center justify-center rounded-2xl border border-white/70 bg-bg p-8 text-center shadow-md sm:min-h-[440px] sm:p-10"
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-12">
+      {/* the reference's centred head — ours in the house faces, with a TRUE fact where
+          the rating badge sat (we claim no stars we don't have) */}
+      <div className="text-center">
+        <motion.p
+          initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6 }}
+          className="text-2xl font-medium leading-tight text-ink/85 sm:text-3xl"
         >
-          <p aria-hidden className="font-script leading-none text-accent text-[clamp(2rem,4vw,3rem)]">
-            Dobar dan.
-          </p>
-          {/* batch 19: the brand ramp, never flat ink (colour law) */}
-          <h2 className="ink-gradient mt-2 text-2xl font-semibold tracking-tight sm:text-[34px] sm:leading-[1.1]">
-            {bk('kontakt-naslov', 'Dva klika i razgovaramo.')}
-          </h2>
-          <p className="mt-3 max-w-[34ch] text-[14.5px] leading-relaxed text-ink/65">
-            Bez formulara i bez čekanja — poruka stiže direktno vlasniku.
-          </p>
-          <div className="mt-10">
-            <CircledPill reduced={reduced} />
+          Pogledajte radove,
+        </motion.p>
+        <motion.h2
+          initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6, delay: 0.08 }}
+          className="ink-gradient mx-auto w-max max-w-full text-3xl font-bold leading-tight tracking-tight sm:text-4xl"
+          // the gradient class's horizontal guard (negative margins) defeats mx-auto —
+          // zero it so the line centres like its sibling (the b40 title lesson)
+          style={{ paddingLeft: 0, paddingRight: 0, marginLeft: 'auto', marginRight: 'auto' }}
+        >
+          sarađujte sa poverenjem.
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6, delay: 0.18 }}
+          className="mx-auto mt-4 flex max-w-full items-center justify-center gap-2 text-[13px] font-medium text-ink/60 sm:text-sm"
+        >
+          <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="#2E5F9E" strokeWidth="1.8"
+               strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" />
+          </svg>
+          Svaki projekat uz ugovor — obim, rok i cena, pismeno.
+        </motion.p>
+      </div>
+
+      {/* the reference's body: quote block left, the cards right */}
+      <div className="mt-12 grid grid-cols-1 items-start gap-8 sm:mt-14 lg:grid-cols-12 lg:gap-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-row items-center justify-between gap-6 lg:col-span-3 lg:flex-col lg:items-start lg:justify-start"
+        >
+          <div>
+            <span aria-hidden className="block font-serif text-6xl leading-none text-ink/20 sm:text-7xl">„</span>
+            <p className="mt-2 max-w-[16ch] text-lg font-semibold leading-snug text-ink sm:text-xl">
+              Šta stoji iza naših projekata
+            </p>
           </div>
-          <p className="mt-9 text-[14px] font-medium text-ink/60">
-            ili pozovite{' '}
-            <a href={'tel:' + tel.replace(/[^+\d]/g, '')} className="font-semibold text-accent/85 hover:text-accent">
-              {tel}
-            </a>
-          </p>
+          <div className="flex items-center gap-3 lg:mt-8">
+            <Btn onClick={prev} label="Prethodna referenca">‹</Btn>
+            <span aria-hidden className="hidden h-px w-10 bg-ink/30 sm:block" />
+            <Btn onClick={next} label="Sledeća referenca">›</Btn>
+          </div>
         </motion.div>
 
-        {/* RIGHT COLUMN — the sky-map + the facts */}
-        <div className="flex flex-col gap-3 sm:gap-4">
-          {/* TILE 2 — the brand-drawn map, the pen travelling vi → mi */}
-          <motion.div {...fadeUp(1)} className="flex-1 transform-gpu rounded-2xl border border-white/70 bg-tint p-4 shadow-md sm:p-5">
-            {/* own compositor layer: the per-frame route repaint otherwise re-rasters the
-                big masked sky it shares a layer with (the /usluge pen-line scar, 192ms) */}
-            <svg viewBox="0 0 420 320" className="h-auto w-full rounded-xl" role="img" aria-label="Stilizovana mapa — od vas do nas"
-                 style={{ transform: 'translateZ(0)', willChange: 'transform' }}>
-              <rect width="420" height="320" rx="16" fill="#DCEBF8" />
-              <path d="M30 240 C 90 200, 150 228, 210 208 S 340 180, 396 214 L 396 300 L 30 300 Z" fill="#A8CEF0" opacity="0.45" />
-              <path d="M20 268 C 100 240, 210 260, 300 244 S 390 236, 404 246 L 404 304 L 20 304 Z" fill="#6FA5D8" opacity="0.30" />
-              <path d="M0 190 C 80 178, 130 210, 200 196 S 330 168, 420 188" stroke="#F5F9FD" strokeWidth="10" fill="none" strokeLinecap="round" opacity="0.9" />
-              <g fill="#F5F9FD">
-                <ellipse cx="86" cy="66" rx="34" ry="16" /><ellipse cx="110" cy="56" rx="22" ry="12" />
-                <ellipse cx="322" cy="84" rx="30" ry="14" /><ellipse cx="344" cy="74" rx="18" ry="10" />
-              </g>
-              <motion.path
-                d="M70 232 C 130 150, 240 260, 342 128"
-                stroke="#2458A6" strokeWidth="4" strokeLinecap="round" strokeDasharray="1 14"
-                fill="none" style={{ pathLength: reduced ? 1 : route }}
-              />
-              <circle cx="70" cy="232" r="7" fill="#2458A6" />
-              <text x="70" y="262" textAnchor="middle" fontFamily="Inter Tight" fontWeight="600" fontSize="15" fill="#16324F">vi</text>
-              <g>
-                <circle cx="342" cy="128" r="8" fill="#F5F9FD" stroke="#2458A6" strokeWidth="3.5" />
-                <text x="342" y="104" textAnchor="middle" fontFamily="Inter Tight" fontWeight="600" fontSize="15" fill="#16324F">mi</text>
-              </g>
-            </svg>
-            <p className="mt-3 px-1 text-[13px] leading-relaxed text-ink/70">
-              Kad zatreba, sedimo za vašim stolom — u vašoj firmi, <span className="font-semibold text-accent">uživo</span>.
-              Ruma · Srbija, a put do vas je kratak.
-            </p>
-          </motion.div>
-
-          {/* TILE 3 — the facts, black on white, no decoration */}
-          <motion.div {...fadeUp(2)} className="transform-gpu rounded-2xl border border-white/70 bg-bg p-6 shadow-md sm:p-7">
-            <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-[14px] sm:grid-cols-2">
-              <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/50">Adresa</dt>
-                <dd className="mt-0.5 font-medium text-ink/85">{bk('kontakt-adresa', LEGAL.seat)}</dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/50">Telefon</dt>
-                <dd className="mt-0.5 font-medium text-ink/85">
-                  <a href={'tel:' + tel.replace(/[^+\d]/g, '')} className="hover:text-accent">{tel}</a>
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/50">E-mail</dt>
-                <dd className="mt-0.5 font-medium text-ink/85">
-                  <a href={`mailto:${LEGAL.email}`} className="break-all hover:text-accent">{LEGAL.email}</a>
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink/50">Registar</dt>
-                <dd className="mt-0.5 font-medium text-ink/85">PIB {LEGAL.pib} · MB {LEGAL.registrationNo}</dd>
-              </div>
-            </dl>
-          </motion.div>
+        <div className="lg:col-span-9">
+          <div ref={viewRef} className="relative h-[240px] overflow-hidden py-1 sm:h-[230px]">
+            {RECENZIJE.map((r, i) => {
+              const s = mod(i - mod(idx, N), N)
+              const off = s === N - 1 ? -1 : s
+              return (
+                <motion.div
+                  key={r.name}
+                  className="absolute left-0 top-1 h-[calc(100%-8px)]"
+                  style={{ width: slots === 1 ? '100%' : `calc((100% - ${(slots - 1) * 16}px) / ${slots})` }}
+                  initial={false}
+                  animate={{ x: off * slotW }}
+                  transition={{ duration: reduced || !slotW ? 0 : 0.7, ease: [0.3, 0, 0.2, 1] }}
+                >
+                  <a
+                    href={r.href} target="_blank" rel="noopener"
+                    className="flex h-full w-full flex-col rounded-2xl border border-white/80 bg-white p-5 text-left shadow-[0_10px_30px_rgba(22,50,79,0.08)] transition-transform hover:scale-[1.02] sm:p-6"
+                  >
+                    <p className="text-[13.5px] font-medium leading-relaxed text-ink/80 sm:text-sm">{r.line}</p>
+                    <div className="mt-auto flex items-center gap-3 border-t border-ink/10 pt-4">
+                      <img
+                        src={r.thumb} alt={r.name}
+                        className="h-10 w-10 shrink-0 rounded-full border border-ink/15 bg-white object-cover object-top"
+                      />
+                      <span className="flex min-w-0 flex-col">
+                        <span className="truncate text-[13.5px] font-semibold text-ink">{r.name}</span>
+                        <span className="truncate text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">
+                          {r.meta} ↗
+                        </span>
+                      </span>
+                    </div>
+                  </a>
+                </motion.div>
+              )
+            })}
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-/** the mini landing: a short page still lands — the pen signs, no second pill */
-function MiniFinale() {
-  const ref = useRef<HTMLDivElement>(null)
-  const { p, reduced } = useWorld()
-  const [enter, exit] = useWorldRange(ref)
-  const drawn = useTransform(p, [enter, exit], [0, 1], { clamp: true })
-  const inked = useTransform(drawn, (v) => SIGNATURE_SWEEP * v)
-
-  return (
-    <div ref={ref} className="relative px-5 pb-24 pt-4 text-center sm:px-6">
-      <p
-        aria-hidden
-        className="font-script leading-tight text-accent text-[clamp(2.2rem,5vw,3.4rem)]"
-        style={{ textShadow: '0 1px 0 currentColor' }}
-      >
-        Potpišite svoj san
-      </p>
-      <svg viewBox={SIGNATURE_VIEWBOX} className="mx-auto -mt-2 w-[min(72%,420px)] overflow-visible" aria-hidden>
-        <defs>
-          <clipPath id="ds-sign-kontakt">
-            <motion.rect x="-8" y="-16" height="92" width={reduced ? SIGNATURE_SWEEP : inked} />
-          </clipPath>
-        </defs>
-        <g clipPath="url(#ds-sign-kontakt)" fill="#2458A6">
-          <path d={SIGNATURE_STROKE} />
-        </g>
-      </svg>
-    </div>
-  )
-}
+/* -------------------------------------------------------------------- the page */
 
 export default function KontaktPage() {
   usePageMeta({
@@ -209,33 +201,86 @@ function KontaktBody() {
   const { reduced } = useWorld()
   return (
     <>
+      {/* batch 44 (owner): the duet — row 1 in the PRIMARY face, row 2 in the quill
+          (fonts and sizes swapped from the old classic hero); the side texts deleted */}
       <PageHero
+        flip
+        trust
         script="Dobar dan."
-        title="Kontakt"
-        left="Ruma · Srbija"
-        right={bk('kontakt-telefon', LEGAL.phone)}
+        title="Dva klika i razgovaramo."
+        titleK="kontakt-naslov"
+        scriptSize="text-[clamp(2rem,7.4vw,6rem)]"
       />
 
       <div className="pointer-events-none relative z-20 -mt-[18vh]">
         <SeamBridge className="top-0 h-[62vh]" />
 
-        <Beat name="kontakt" layers={
+        {/* the reviews — his reference layout on the world's quiet sky */}
+        <Beat name="utisci" layers={
+          <>
+            <WorldLayer
+              src="/media/B3-square-sky.webp" eager
+              box="-top-[26vh] -bottom-[30vh]"
+              imgClass="absolute inset-0 h-[126%] w-full object-cover object-center"
+              y={['0%', '-9%']} base={0.85} mask={MASK.sky}
+            />
+            <WorldLayer
+              src="/media/cloud-real.webp" eager
+              box="top-[6vh] h-[70vh]"
+              imgClass="absolute left-[-9%] top-[14%] w-[34%] h-auto max-w-none"
+              y={['0%', '-11%']} base={0.85} float={{ px: 8, sec: 10 }}
+            />
+          </>
+        }>
+          <div aria-hidden style={{ height: 'max(30vh, 360px)' }} />
+          <ReviewSekcija reduced={reduced} />
+          <div aria-hidden style={{ height: 'max(34vh, 390px)' }} />
+        </Beat>
+
+        {/* the past work — the homepage's own beat, verbatim grammar */}
+        <Beat name="radovi" layers={
+          <>
+            <WorldLayer
+              src="/media/B7-vertical-sea.webp"
+              box="-top-[24vh] -bottom-[30vh]"
+              imgClass="absolute inset-0 h-[126%] w-full object-cover object-center"
+              y={['0%', '-10%']} base={0.5} mask={MASK.sea}
+            />
+            <WorldLayer
+              src="/media/cloud-real.webp" eager
+              box="top-[10vh] h-[70vh]"
+              imgClass="absolute right-[-8%] top-[10%] w-[30%] h-auto max-w-none scale-x-[-1]"
+              y={['0%', '-9%']} base={0.8} float={{ px: 7, sec: 12, delay: 0.9 }}
+            />
+          </>
+        }>
+          <Radovi />
+          <div aria-hidden style={{ height: 'max(34vh, 390px)' }} />
+        </Beat>
+
+        {/* the FAQ — the radovi section, shared */}
+        <Beat name="faq" layers={
           <WorldLayer
-            src="/media/B3-square-sky.webp" eager
-            box="-top-[26vh] -bottom-[26vh]"
-            imgClass="absolute inset-0 h-[126%] w-full object-cover object-center"
-            y={['0%', '-9%']} base={0.85} mask={MASK.sky}
+            src="/media/cloud-real.webp" eager
+            box="top-[4vh] h-[60vh]"
+            imgClass="absolute left-[-7%] top-[20%] w-[28%] h-auto max-w-none"
+            y={['0%', '-8%']} base={0.7} float={{ px: 6, sec: 11 }}
           />
         }>
-          <SkyGap />
-          <KontaktBento reduced={reduced} />
-          <div aria-hidden style={{ height: 'max(30vh, 340px)' }} />
+          <div aria-hidden style={{ height: 'max(16vh, 330px)' }} />
+          <FaqSekcija />
+          <div aria-hidden style={{ height: 'max(32vh, 370px)' }} />
         </Beat>
 
         <Ground>
           <Beat name="finale">
             <div className="pt-[10vh]">
-              <MiniFinale />
+              <LandingCTA
+                lead={bk('kontakt-cta', 'Bez formulara i bez čekanja — poruka stiže direktno vlasniku.')}
+                leadK="kontakt-cta"
+                script="Potpišite svoj san"
+                clipId="ds-sign-kontakt"
+              />
             </div>
           </Beat>
         </Ground>

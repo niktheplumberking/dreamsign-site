@@ -54,12 +54,12 @@ function CloudMap() {
     const mouse = { x: -1e4, y: -1e4 }
     const onMove = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = e.clientY }
     window.addEventListener('mousemove', onMove, { passive: true })
-    const st = PLAY_CLOUDS.map(() => ({ x: 0, y: 0, vx: 0, vy: 0, gx: 0, gy: 0, next: 0 }))
+    const st = PLAY_CLOUDS.map(() => ({ x: 0, y: 0, vx: 0, vy: 0, h: Math.random() * Math.PI * 2 }))
     let raf = 0, run = true, seeded = false
     const io = new IntersectionObserver(([e]) => { run = e.isIntersecting })
     io.observe(box)
 
-    const step = (t: number) => {
+    const step = () => {
       raf = requestAnimationFrame(step)
       if (!run) return
       const r = box.getBoundingClientRect()
@@ -71,19 +71,19 @@ function CloudMap() {
         if (!seeded) {
           s.x = Math.min(PLAY_CLOUDS[i].seat[0] * r.width, maxX)
           s.y = Math.min(PLAY_CLOUDS[i].seat[1] * r.height, maxY)
-          s.gx = s.x; s.gy = s.y
         }
-        // batch 43 (owner): CALM — the wander picks NEARBY destinations (never a
-        // cross-box dash) and its pull is capped, so no sudden push ever appears
-        if (t > s.next) {
-          s.gx = Math.min(Math.max(s.x + (Math.random() - 0.5) * 280, 10), Math.max(10, maxX - 10))
-          s.gy = Math.min(Math.max(s.y + (Math.random() - 0.5) * 200, 10), Math.max(10, maxY - 10))
-          s.next = t + 3600 + Math.random() * 3200
+        // batch 44 (owner): PERPETUAL — no destinations, no arrivals, no parking. Each
+        // cloud cruises on a slowly wandering heading at one constant, very slow speed;
+        // near the fence the heading bends back toward the middle.
+        s.h += (Math.random() - 0.5) * 0.045
+        if (s.x < 44 || s.x > maxX - 44 || s.y < 30 || s.y > maxY - 30) {
+          const toC = Math.atan2(maxY / 2 - s.y, maxX / 2 - s.x)
+          let dh = toC - s.h
+          while (dh > Math.PI) dh -= 2 * Math.PI
+          while (dh < -Math.PI) dh += 2 * Math.PI
+          s.h += dh * 0.055
         }
-        const gdx = s.gx - s.x, gdy = s.gy - s.y
-        const gd = Math.hypot(gdx, gdy) || 1
-        const pull = Math.min(0.045, gd * 0.0009)
-        let ax = (gdx / gd) * pull, ay = (gdy / gd) * pull
+        let ax = Math.cos(s.h) * 0.018, ay = Math.sin(s.h) * 0.018
         // the ESCAPE: still runs from the cursor, but composed — a quarter of the old
         // force, so it slips away instead of exploding (his note)
         const cx = r.left + s.x + w / 2, cy = r.top + s.y + h / 2
@@ -110,6 +110,12 @@ function CloudMap() {
         s.vy = (s.vy + ay) * 0.93
         const sp = Math.hypot(s.vx, s.vy)
         if (sp > 2.4) { s.vx *= 2.4 / sp; s.vy *= 2.4 / sp }
+        // never park: below cruise speed the cloud keeps sliding along its heading
+        const MIN = 0.34
+        if (sp < MIN) {
+          if (sp > 0.02) { s.vx *= MIN / sp; s.vy *= MIN / sp }
+          else { s.vx = Math.cos(s.h) * MIN; s.vy = Math.sin(s.h) * MIN }
+        }
         s.x = Math.min(Math.max(s.x + s.vx, 0), maxX)
         s.y = Math.min(Math.max(s.y + s.vy, 0), maxY)
         xs[i].set(s.x)
