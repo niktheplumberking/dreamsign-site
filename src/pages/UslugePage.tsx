@@ -49,10 +49,12 @@ function CloudMap() {
           mid-flight and thins to a nib-flick at both ends. Same ink (#2458A6), same
           technique (out-rail and return-rail closing into one shape), his routes. */}
       <svg viewBox="0 0 500 240" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
-        <g fill="#2458A6" opacity="0.85">
-          <path d="M 44 115 C 72 110, 102 98, 122 84 C 136 74, 142 68, 145 62 C 141 71, 134 80, 124 89 C 105 104, 74 114, 44 115 Z" />
-          <path d="M 70 149 C 122 156, 172 136, 222 138 C 267 140, 295 115, 312 90 C 298 119, 270 144, 223 143 C 173 145, 121 161, 70 149 Z" />
-          <path d="M 84 191 C 140 202, 200 186, 262 194 C 322 201, 382 194, 417 186 C 383 199, 322 206, 261 199 C 200 191, 141 207, 84 191 Z" />
+        {/* batch 41 (owner): THIN — the finale underline's true weight (~2 units between
+            the rails at the swell, needle tips), not the fat ribbon */}
+        <g fill="#2458A6" opacity="0.9">
+          <path d="M 44 115 C 72 110, 102 98, 122 84 C 136 74, 142 68, 145 62 C 142 69.5, 136 77.5, 125 86 C 106 100.5, 74 113, 44 115 Z" />
+          <path d="M 70 149 C 122 156, 172 136, 222 138 C 267 140, 295 115, 312 90 C 297.5 117, 269.5 141.5, 222.5 140 C 172 142, 121.5 158, 70 149 Z" />
+          <path d="M 84 191 C 140 202, 200 186, 262 194 C 322 201, 382 194, 417 186 C 382 196, 322 203, 261.5 196 C 200 188, 140.5 204, 84 191 Z" />
         </g>
       </svg>
       {[
@@ -592,7 +594,7 @@ function ServicesStack() {
   return (
     // batch 30 (owner): 420vh — much scroll per card, time to read. The sticky stage
     // keeps the batch-29 blanket (head melt + foot fade) beneath the sheets.
-    <div ref={ref} className="relative h-[420vh] w-full">
+    <div ref={ref} className="relative h-[340vh] w-full">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <div
           aria-hidden
@@ -881,10 +883,11 @@ function ProcessWheel() {
           {!expanded && (
             <motion.div
               key="seat-text"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.35 }}
+              // batch 41 (owner): a clean HANDOVER, never an overlap — the leaving text
+              // finishes its exit before the arriving one begins (0.35s stagger both ways)
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0, transition: { delay: 0.38, duration: 0.4, ease: [0.3, 0, 0.2, 1] } }}
+              exit={{ opacity: 0, x: -30, transition: { duration: 0.3, ease: [0.3, 0, 0.2, 1] } }}
               className="absolute max-sm:inset-x-6 max-sm:top-[64%] sm:top-1/2 sm:-translate-y-1/2 sm:pr-4"
               style={narrow ? undefined : { left: textLeft, maxWidth: `min(32rem, calc(100vw - ${Math.round(textLeft)}px - 1.5rem))` }}
             >
@@ -930,10 +933,10 @@ function ProcessWheel() {
           {expanded && (
             <motion.div
               key="story"
+              // batch 41 (owner): arrives only AFTER the seat text has left (handover)
               initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 40 }}
-              transition={{ duration: 0.5, ease: [0.3, 0, 0.2, 1] }}
+              animate={{ opacity: 1, x: 0, transition: { delay: 0.38, duration: 0.5, ease: [0.3, 0, 0.2, 1] } }}
+              exit={{ opacity: 0, x: 40, transition: { duration: 0.3, ease: [0.3, 0, 0.2, 1] } }}
               className="absolute max-sm:inset-x-6 max-sm:top-[38%] sm:top-1/2 sm:-translate-y-1/2"
               // batch 40 (owner): the story sits INSIDE the title's two edges — same
               // left, same width, centred against the main title by construction

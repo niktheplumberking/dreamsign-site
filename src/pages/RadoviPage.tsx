@@ -43,10 +43,15 @@ function Drift({ children, amp = 16, className = '' }: { children: React.ReactNo
     batch 21: the asset is the caller's choice too — the corner clouds wear the two NEW
     fluffy watercolour clouds (owner's variety note) while the old seats keep bank-soft. */
 function CornerCloud({ className, src = '/media/bank-soft.webp' }: { className: string; src?: string }) {
+  // batch 41 (owner): the corner clouds FLOAT in place now — a slow idle bob, off under
+  // reduced motion like all weather
+  const { reduced } = useWorld()
   return (
-    <img
+    <motion.img
       src={src} alt="" aria-hidden decoding="async" loading="lazy"
       className={`pointer-events-none absolute max-w-none select-none ${className}`}
+      animate={reduced ? undefined : { y: [0, -7, 0] }}
+      transition={reduced ? undefined : { duration: 7.5, repeat: Infinity, ease: 'easeInOut' }}
     />
   )
 }
@@ -485,15 +490,15 @@ function EdgeColumn({ side, shots }: { side: 'left' | 'right'; shots: [string, s
         {/* batch 22: vertical overhang eased to 38% — the cloud still rides its corner but
             its crown always fits inside the centred stage's top gap (no more half clouds
             under the lock, his screenshot 4) */}
-        {/* batch 23 (owner): the two clouds SWAPPED seats — the tall cauliflower now rides
-            the left frame, the wide bank the right one; each seat keeps its rotation
-            (left leans right +25°, right leans left −30°) */}
+        {/* batch 23 (owner): the two clouds SWAPPED seats — each keeps its rotation.
+            batch 41 (owner): MUCH smaller and BEHIND the content boxes (z-0 under the
+            z-10 frames), floating in place. */}
         <CornerCloud
           src={side === 'left' ? '/media/cloud-corner-r.webp' : '/media/cloud-corner-l.webp'}
           className={
             side === 'left'
-              ? 'right-0 top-0 z-20 w-[46%] translate-x-[38%] -translate-y-[38%] rotate-[25deg]'
-              : 'left-0 top-0 z-20 w-[54%] -translate-x-[38%] -translate-y-[38%] rotate-[-30deg]'
+              ? 'right-0 top-0 z-0 w-[26%] translate-x-[34%] -translate-y-[34%] rotate-[25deg]'
+              : 'left-0 top-0 z-0 w-[30%] -translate-x-[34%] -translate-y-[34%] rotate-[-30deg]'
           }
         />
         {/* fixed tile heights below lg: an unconstrained h-full chain resolves from the IMAGE
