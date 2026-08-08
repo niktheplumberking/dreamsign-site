@@ -44,37 +44,16 @@ function CloudMap() {
           are ONE CONTINUOUS stroke each: pen → „dreamsign" → pen, the segments tucked
           into the word's first and last glyph, no dash and no gap. Origins start clear
           of the title's right edge — the lines never touch the display text. */}
-      {/* batch 38 (owner): the lines ARE the secondary font's pen now — same ink, same
-          weight and opacity as the word, short calligraphic swashes that butt straight
-          into the first and last glyph and always flow FORWARD into the cloud. Words a
-          step smaller so the whole scene breathes inside the hero. */}
+      {/* batch 39 (owner): HIS DRAWING, nothing else — three plain curvy strokes, no
+          words, no arrows. Each starts where he marked and ends at the middle-centre
+          underneath its cloud. */}
       <svg viewBox="0 0 500 240" fill="none" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
-        <g stroke="#2E5F9E" strokeWidth="1.8" strokeLinecap="round" opacity="0.75">
-          {/* Web dizajn: swash in → dreamsign → tail curls up into the belly */}
-          <path d="M 66 114 C 84 110, 98 104, 110 97" />
-          <path d="M 176 86 C 172 76, 162 66, 150 60" />
-          {/* SEO: swash in → dreamsign → rises into the belly */}
-          <path d="M 140 150 C 158 146, 176 142, 192 135" />
-          <path d="M 272 119 C 290 111, 304 98, 312 86" />
-          {/* Marketing: swash in → dreamsign → long run right into the belly */}
-          <path d="M 150 212 C 168 208, 190 204, 208 199" />
-          <path d="M 288 183 C 330 183, 380 187, 404 188 C 411 187, 415 186, 417 183" />
+        <g stroke="#2E5F9E" strokeWidth="2" strokeLinecap="round" opacity="0.7">
+          <path d="M 44 115 C 72 112, 102 100, 122 86 C 136 76, 142 70, 145 62" />
+          <path d="M 70 149 C 122 158, 172 138, 222 140 C 268 142, 296 116, 312 90" />
+          <path d="M 84 191 C 140 204, 200 188, 262 196 C 322 203, 382 196, 417 186" />
         </g>
       </svg>
-      {[
-        { x: 28.6, y: 38.3, rot: -6 },
-        { x: 46.4, y: 52.9, rot: -6 },
-        { x: 49.6, y: 79.6, rot: -4 },
-      ].map((w, i) => (
-        <span
-          key={i}
-          className="absolute block whitespace-nowrap font-script font-normal leading-none text-[#2E5F9E] opacity-75
-                     text-[20px] sm:text-[30px] md:text-[38px] lg:text-[3vw]"
-          style={{ left: `${w.x}%`, top: `${w.y}%`, transform: `translate(-50%,-50%) rotate(${w.rot}deg)` }}
-        >
-          dreamsign
-        </span>
-      ))}
       {[
         { label: '1. Web dizajn', cls: 'left-[13%] top-[-2%] w-[32%]', sec: 5.4, delay: 0 },
         { label: '2. SEO', cls: 'left-[47%] top-[9%] w-[31%]', sec: 6.2, delay: 0.9 },
@@ -737,6 +716,7 @@ function WheelNumber({ i, rot, R, cx, fontPx, numOff, step }: {
     one step per breath, the active step's words at the seat's right. */
 function ProcessWheel() {
   const ref = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
   const { reduced } = useWorld()
   const [k, setK] = useState(0)
   const [expanded, setExpanded] = useState(false)
@@ -770,11 +750,11 @@ function ProcessWheel() {
       // seat lands at the viewport's CENTRE, words to its right. The step angle now
       // derives from the radius (same ~370px seat spacing at any R); clouds sit on the
       // two edge-crossing points so the line always emerges from behind a cloud.
-      // batch 38 (owner): the circle back to its previous size ("one prompt ago it was
-      // perfect") — a FULL circle whose left half lives off-screen: the arc's meetings
-      // with the top and bottom happen at x < 0, so the visible line bows in from the
-      // left edge and returns to it. No stage clip can break it (the stage is
-      // overflow-visible now); it simply goes to the left and disappears.
+      // batch 39 (owner): HIS drawing, measured — the step content's left edge sits
+      // exactly on the TITLE's left edge (his vertical blue line); the numbers seat
+      // just left of it, and the ring rides where his red arc runs. The whole assembly
+      // derives from the title's real rendered edge, not a guess. The stage is
+      // overflow-visible + top layer, so the arc closes off-screen — never a break.
       const vh = window.innerHeight, vw = window.innerWidth
       if (vw < 640) {
         const R = Math.max(104, Math.min(vh * 0.467, vw * 0.3))
@@ -783,10 +763,16 @@ function ProcessWheel() {
         setDim({ R, cx, fontPx: Math.max(30, R * 0.2), numOff: R * 0.19, step: 26, xTop: -999, textLeft: cx + R * 1.38 + 28 })
       } else {
         const R = Math.max(140, Math.min(vh * 0.72, vw * 0.41))
-        const cx = -Math.sqrt(Math.max(R * R - Math.pow(vh * 0.48, 2), 100))
         const fontPx = Math.max(34, R * 0.2)
-        setDim({ R, cx, fontPx, numOff: R * 0.19, step: 26, xTop: -999, textLeft: cx + R * 1.38 + 28 })
+        const titleLeft = titleRef.current ? titleRef.current.getBoundingClientRect().left : vw * 0.34
+        const seat = titleLeft - fontPx * 1.05
+        const cx = seat - 1.19 * R
+        setDim({ R, cx, fontPx, numOff: R * 0.19, step: 26, xTop: -999, textLeft: titleLeft })
       }
+    }
+    // the title's rendered width shifts once the display font arrives — re-measure
+    if (typeof document !== 'undefined' && document.fonts?.ready) {
+      document.fonts.ready.then(() => m()).catch(() => {})
     }
     m()
     window.addEventListener('resize', m)
@@ -840,6 +826,7 @@ function ProcessWheel() {
         />
         {/* batch 37 (owner): bigger, a touch lower, CENTRED under the nav */}
         <h2
+          ref={titleRef}
           className="ink-gradient absolute left-1/2 top-28 w-max -translate-x-1/2 text-center font-semibold uppercase
                      leading-none tracking-tight sm:top-32 text-[clamp(2.75rem,8.5vw,4rem)] lg:text-[clamp(4rem,7vw,6.25rem)]"
         >
