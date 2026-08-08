@@ -6,7 +6,7 @@
 // clips with overflow-clip instead of overflow-hidden (sticky lives).
 // Faces, palette, sky and motion grammar stay ours; his red → signature blue.
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { motion, useScroll, useTransform, AnimatePresence, type MotionValue } from 'motion/react'
+import { motion, useScroll, useTransform, useMotionValue, AnimatePresence, type MotionValue } from 'motion/react'
 import { World, WorldLayer, SeamBridge, Beat, useWorld } from '../components/World'
 import LandingCTA from '../components/LandingCTA'
 import SveONama from '../components/SveONama'
@@ -27,11 +27,94 @@ const SkyGap = () => <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
    how it was before we started doing any changes on hero section... then I will give you
    better instructions"). The mind-map below is the ORIGINAL, restored verbatim. */
 
-/** the mind-map: three outlined clouds — OUR real services — tied by thin pen lines to
-    one origin. Geometry from the reference SVG; stroke and faces ours. */
+/* batch 42 (owner): THE CLOUD PLAYGROUND — the lines retired. The three service clouds
+   share one INVISIBLE fence (his red box = this wrapper) and live in it: they wander
+   idly, FLEE the approaching cursor, may overlap in any order, and never cross the
+   border. Physics on one rAF loop writing motion values — zero React re-renders; the
+   loop sleeps while the fence is off-screen; reduced motion gets calm static seats. */
+const PLAY_CLOUDS = [
+  { label: '1. Web dizajn', wPct: 32, seat: [0.06, 0.02] },
+  { label: '2. SEO', wPct: 31, seat: [0.55, 0.12] },
+  { label: '3. Marketing', wPct: 33, seat: [0.6, 0.54] },
+]
+
 function CloudMap() {
+  const { reduced } = useWorld()
+  const boxRef = useRef<HTMLDivElement>(null)
+  const cloudRefs = useRef<(HTMLDivElement | null)[]>([])
+  const x0 = useMotionValue(0), y0 = useMotionValue(0)
+  const x1 = useMotionValue(0), y1 = useMotionValue(0)
+  const x2 = useMotionValue(0), y2 = useMotionValue(0)
+  const xs = [x0, x1, x2], ys = [y0, y1, y2]
+
+  useEffect(() => {
+    if (reduced) return
+    const box = boxRef.current
+    if (!box) return
+    const mouse = { x: -1e4, y: -1e4 }
+    const onMove = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = e.clientY }
+    window.addEventListener('mousemove', onMove, { passive: true })
+    const st = PLAY_CLOUDS.map(() => ({ x: 0, y: 0, vx: 0, vy: 0, gx: 0, gy: 0, next: 0 }))
+    let raf = 0, run = true, seeded = false
+    const io = new IntersectionObserver(([e]) => { run = e.isIntersecting })
+    io.observe(box)
+
+    const step = (t: number) => {
+      raf = requestAnimationFrame(step)
+      if (!run) return
+      const r = box.getBoundingClientRect()
+      st.forEach((s, i) => {
+        const el = cloudRefs.current[i]
+        if (!el) return
+        const w = el.offsetWidth, h = el.offsetHeight
+        const maxX = Math.max(0, r.width - w), maxY = Math.max(0, r.height - h)
+        if (!seeded) {
+          s.x = Math.min(PLAY_CLOUDS[i].seat[0] * r.width, maxX)
+          s.y = Math.min(PLAY_CLOUDS[i].seat[1] * r.height, maxY)
+          s.gx = s.x; s.gy = s.y
+        }
+        // idle wander: a new gentle destination every few seconds
+        if (t > s.next) {
+          s.gx = 10 + Math.random() * Math.max(1, maxX - 20)
+          s.gy = 10 + Math.random() * Math.max(1, maxY - 20)
+          s.next = t + 2800 + Math.random() * 2800
+        }
+        let ax = (s.gx - s.x) * 0.0014, ay = (s.gy - s.y) * 0.0014
+        // the ESCAPE: run from the cursor, harder the closer it comes
+        const cx = r.left + s.x + w / 2, cy = r.top + s.y + h / 2
+        const dx = cx - mouse.x, dy = cy - mouse.y
+        const d = Math.hypot(dx, dy)
+        const R = 270
+        if (d < R && d > 1) {
+          const f = 1.35 * Math.pow(1 - d / R, 2)
+          ax += (dx / d) * f
+          ay += (dy / d) * f
+        }
+        // the border: a soft spring near the fence, a hard clamp on it
+        const M = 14
+        if (s.x < M) ax += (M - s.x) * 0.012
+        if (s.x > maxX - M) ax -= (s.x - (maxX - M)) * 0.012
+        if (s.y < M) ay += (M - s.y) * 0.012
+        if (s.y > maxY - M) ay -= (s.y - (maxY - M)) * 0.012
+        s.vx = (s.vx + ax) * 0.9
+        s.vy = (s.vy + ay) * 0.9
+        const sp = Math.hypot(s.vx, s.vy)
+        if (sp > 5.5) { s.vx *= 5.5 / sp; s.vy *= 5.5 / sp }
+        s.x = Math.min(Math.max(s.x + s.vx, 0), maxX)
+        s.y = Math.min(Math.max(s.y + s.vy, 0), maxY)
+        xs[i].set(s.x)
+        ys[i].set(s.y)
+      })
+      seeded = true
+    }
+    raf = requestAnimationFrame(step)
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('mousemove', onMove); io.disconnect() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduced])
+
   return (
     <motion.div
+      ref={boxRef}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
@@ -39,34 +122,16 @@ function CloudMap() {
                  top-[13vh] sm:top-[9vh] lg:top-[10vh]"
       aria-hidden
     >
-      {/* batch 37 (owner): OFF THE GRID — the map hangs from the SECTION, its right
-          edge = the viewport's right edge (Marketing rides all the way out). The lines
-          are ONE CONTINUOUS stroke each: pen → „dreamsign" → pen, the segments tucked
-          into the word's first and last glyph, no dash and no gap. Origins start clear
-          of the title's right edge — the lines never touch the display text. */}
-      {/* batch 40 (owner): the lines wear the SIGNATURE's own dress — the tapered
-          ribbon from the finale's underline he circled: a filled stroke that swells
-          mid-flight and thins to a nib-flick at both ends. Same ink (#2458A6), same
-          technique (out-rail and return-rail closing into one shape), his routes. */}
-      <svg viewBox="0 0 500 240" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
-        {/* batch 41 (owner): THIN — the finale underline's true weight (~2 units between
-            the rails at the swell, needle tips), not the fat ribbon */}
-        <g fill="#2458A6" opacity="0.9">
-          <path d="M 44 115 C 72 110, 102 98, 122 84 C 136 74, 142 68, 145 62 C 142 69.5, 136 77.5, 125 86 C 106 100.5, 74 113, 44 115 Z" />
-          <path d="M 70 149 C 122 156, 172 136, 222 138 C 267 140, 295 115, 312 90 C 297.5 117, 269.5 141.5, 222.5 140 C 172 142, 121.5 158, 70 149 Z" />
-          <path d="M 84 191 C 140 202, 200 186, 262 194 C 322 201, 382 194, 417 186 C 382 196, 322 203, 261.5 196 C 200 188, 140.5 204, 84 191 Z" />
-        </g>
-      </svg>
-      {[
-        { label: '1. Web dizajn', cls: 'left-[13%] top-[-2%] w-[32%]', sec: 5.4, delay: 0 },
-        { label: '2. SEO', cls: 'left-[47%] top-[9%] w-[31%]', sec: 6.2, delay: 0.9 },
-        { label: '3. Marketing', cls: 'left-[67%] top-[52%] w-[33%]', sec: 6.8, delay: 1.7 },
-      ].map((c) => (
-        <motion.span
+      {PLAY_CLOUDS.map((c, i) => (
+        <motion.div
           key={c.label}
-          className={`absolute block ${c.cls}`}
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: c.sec, repeat: Infinity, ease: 'easeInOut', delay: c.delay }}
+          ref={(el) => { cloudRefs.current[i] = el }}
+          className="absolute left-0 top-0"
+          style={
+            reduced
+              ? { left: `${c.seat[0] * 100}%`, top: `${c.seat[1] * 100}%`, width: `${c.wPct}%` }
+              : { x: xs[i], y: ys[i], width: `${c.wPct}%` }
+          }
         >
           <img
             src="/media/cloud-puff.webp" alt=""
@@ -77,7 +142,7 @@ function CloudMap() {
               {c.label}
             </span>
           </span>
-        </motion.span>
+        </motion.div>
       ))}
     </motion.div>
   )
