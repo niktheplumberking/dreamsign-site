@@ -44,14 +44,15 @@ function CloudMap() {
           are ONE CONTINUOUS stroke each: pen → „dreamsign" → pen, the segments tucked
           into the word's first and last glyph, no dash and no gap. Origins start clear
           of the title's right edge — the lines never touch the display text. */}
-      {/* batch 39 (owner): HIS DRAWING, nothing else — three plain curvy strokes, no
-          words, no arrows. Each starts where he marked and ends at the middle-centre
-          underneath its cloud. */}
-      <svg viewBox="0 0 500 240" fill="none" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
-        <g stroke="#2E5F9E" strokeWidth="2" strokeLinecap="round" opacity="0.7">
-          <path d="M 44 115 C 72 112, 102 100, 122 86 C 136 76, 142 70, 145 62" />
-          <path d="M 70 149 C 122 158, 172 138, 222 140 C 268 142, 296 116, 312 90" />
-          <path d="M 84 191 C 140 204, 200 188, 262 196 C 322 203, 382 196, 417 186" />
+      {/* batch 40 (owner): the lines wear the SIGNATURE's own dress — the tapered
+          ribbon from the finale's underline he circled: a filled stroke that swells
+          mid-flight and thins to a nib-flick at both ends. Same ink (#2458A6), same
+          technique (out-rail and return-rail closing into one shape), his routes. */}
+      <svg viewBox="0 0 500 240" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
+        <g fill="#2458A6" opacity="0.85">
+          <path d="M 44 115 C 72 110, 102 98, 122 84 C 136 74, 142 68, 145 62 C 141 71, 134 80, 124 89 C 105 104, 74 114, 44 115 Z" />
+          <path d="M 70 149 C 122 156, 172 136, 222 138 C 267 140, 295 115, 312 90 C 298 119, 270 144, 223 143 C 173 145, 121 161, 70 149 Z" />
+          <path d="M 84 191 C 140 202, 200 186, 262 194 C 322 201, 382 194, 417 186 C 383 199, 322 206, 261 199 C 200 191, 141 207, 84 191 Z" />
         </g>
       </svg>
       {[
@@ -720,7 +721,7 @@ function ProcessWheel() {
   const { reduced } = useWorld()
   const [k, setK] = useState(0)
   const [expanded, setExpanded] = useState(false)
-  const [dim, setDim] = useState({ R: 2000, cx: -1200, fontPx: 120, numOff: 120, step: 10, xTop: -999, textLeft: 1100 })
+  const [dim, setDim] = useState({ R: 2000, cx: -1200, fontPx: 120, numOff: 120, step: 10, xTop: -999, textLeft: 1100, titleW: 560 })
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
   const N = PROCESS.length
   // the revolver CLICK: the cylinder dwells on each seat (~55% of its window) and turns
@@ -760,14 +761,26 @@ function ProcessWheel() {
         const R = Math.max(104, Math.min(vh * 0.467, vw * 0.3))
         let cx = vw * 0.47 - 1.19 * R
         if (cx > R - 30) cx = R - 30
-        setDim({ R, cx, fontPx: Math.max(30, R * 0.2), numOff: R * 0.19, step: 26, xTop: -999, textLeft: cx + R * 1.38 + 28 })
+        setDim({ R, cx, fontPx: Math.max(30, R * 0.2), numOff: R * 0.19, step: 26, xTop: -999, textLeft: cx + R * 1.38 + 28, titleW: 320 })
       } else {
         const R = Math.max(140, Math.min(vh * 0.72, vw * 0.41))
         const fontPx = Math.max(34, R * 0.2)
-        const titleLeft = titleRef.current ? titleRef.current.getBoundingClientRect().left : vw * 0.34
+        // batch 40: align to the title's VISUAL glyph edge, not its box — the
+        // ink-gradient class carries descender-guard padding (offset by negative
+        // margins), so rect.left sits ~0.1em left of the first glyph. rect.left +
+        // paddingLeft = where the ink actually starts. Same for the right edge.
+        let titleLeft = vw * 0.34, titleW = vw * 0.31
+        if (titleRef.current) {
+          const r = titleRef.current.getBoundingClientRect()
+          const cs = window.getComputedStyle(titleRef.current)
+          const padL = parseFloat(cs.paddingLeft) || 0
+          const padR = parseFloat(cs.paddingRight) || 0
+          titleLeft = r.left + padL
+          titleW = r.width - padL - padR
+        }
         const seat = titleLeft - fontPx * 1.05
         const cx = seat - 1.19 * R
-        setDim({ R, cx, fontPx, numOff: R * 0.19, step: 26, xTop: -999, textLeft: titleLeft })
+        setDim({ R, cx, fontPx, numOff: R * 0.19, step: 26, xTop: -999, textLeft: titleLeft, titleW })
       }
     }
     // the title's rendered width shifts once the display font arrives — re-measure
@@ -796,7 +809,7 @@ function ProcessWheel() {
     )
   }
 
-  const { R, cx, fontPx, numOff, step, textLeft } = dim
+  const { R, cx, fontPx, numOff, step, textLeft, titleW } = dim
   const narrow = typeof window !== 'undefined' && window.innerWidth < 640
   return (
     <div ref={ref} className="relative h-[340vh] w-full">
@@ -829,6 +842,11 @@ function ProcessWheel() {
           ref={titleRef}
           className="ink-gradient absolute left-1/2 top-28 w-max -translate-x-1/2 text-center font-semibold uppercase
                      leading-none tracking-tight sm:top-32 text-[clamp(2.75rem,8.5vw,4rem)] lg:text-[clamp(4rem,7vw,6.25rem)]"
+          // batch 40: the gradient class's HORIZONTAL guard (padding + negative margin)
+          // shifted the translate-centred box 0.1em left of true centre — the vertical
+          // guard stays (descenders), the horizontal one is zeroed so the glyphs centre
+          // exactly on the nav's own centreline
+          style={{ paddingLeft: 0, paddingRight: 0, marginLeft: 0, marginRight: 0 }}
         >
           Naš proces
         </h2>
@@ -916,7 +934,10 @@ function ProcessWheel() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 40 }}
               transition={{ duration: 0.5, ease: [0.3, 0, 0.2, 1] }}
-              className="absolute max-sm:inset-x-6 max-sm:top-[38%] sm:left-[36%] sm:right-[7%] sm:top-1/2 sm:-translate-y-1/2 lg:left-[38%] lg:right-[10%]"
+              className="absolute max-sm:inset-x-6 max-sm:top-[38%] sm:top-1/2 sm:-translate-y-1/2"
+              // batch 40 (owner): the story sits INSIDE the title's two edges — same
+              // left, same width, centred against the main title by construction
+              style={narrow ? undefined : { left: textLeft, width: titleW }}
             >
               <AnimatePresence mode="wait">
                 <motion.div
