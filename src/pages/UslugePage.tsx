@@ -35,54 +35,46 @@ function CloudMap() {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="pointer-events-none absolute right-0 z-10 aspect-[500/240] w-[230px] sm:w-[340px] md:w-[420px] lg:w-[480px] xl:w-[560px]
-                 top-[-160px] sm:top-[-40px] md:top-[-56px] lg:top-[-76px]"
+      className="pointer-events-none absolute right-0 z-10 aspect-[500/240] w-[300px] sm:w-[440px] md:w-[560px] lg:w-[46vw] lg:max-w-[900px]
+                 top-[13vh] sm:top-[9vh] lg:top-[10vh]"
       aria-hidden
     >
-      {/* batch 33 (owner): the map wears OUR OWN clouds now — the cloud-button puff,
-          floating gently in place — and the pen lines became BEAD TRAILS (dotted, round
-          caps): three origins, three curves, a hand-plotted mind-map feel. Same seats. */}
-      {/* batch 34 (owner): the trails became REAL pen lines — solid, BLUE, and wandering
-          like his sketch (never near-straight); the puffs grew so the words sit deep
-          inside the cloud body. */}
-      {/* batch 35 (owner): every line ARRIVES FROM UNDERNEATH, hooking up into the
-          cloud's bottom-centre — never from the left (his red drawing).
-          batch 36 (owner): each line BECOMES HANDWRITING mid-flow — the stroke breaks,
-          „dreamsign" runs in the quill as part of the line, then the stroke resumes and
-          dives under its cloud (his sketch). Words are HTML (no SVG stretch), seated in
-          the gaps, tilted to the line's local slope. */}
+      {/* batch 37 (owner): OFF THE GRID — the map hangs from the SECTION, its right
+          edge = the viewport's right edge (Marketing rides all the way out). The lines
+          are ONE CONTINUOUS stroke each: pen → „dreamsign" → pen, the segments tucked
+          into the word's first and last glyph, no dash and no gap. Origins start clear
+          of the title's right edge — the lines never touch the display text. */}
       <svg viewBox="0 0 500 240" fill="none" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
         <g stroke="#2E5F9E" strokeWidth="2" strokeLinecap="round" opacity="0.6">
-          {/* to Web dizajn: lead-in off the grid → word gap → hook into the belly */}
-          <path d="M -44 90 C -22 82, 4 86, 26 82" />
-          <path d="M 158 70 C 165 66, 169 62, 170 58" />
-          {/* to SEO: the long sweep → word gap → rise into the belly (routed ABOVE the
-              Marketing cloud's fluff) */}
-          <path d="M 0 140 C 60 150, 130 122, 200 118" />
-          <path d="M 336 110 C 358 106, 372 102, 380 96" />
-          {/* to Marketing: → word gap → into the belly */}
-          <path d="M 10 220 C 60 232, 110 220, 150 216" />
-          <path d="M 282 206 C 291 203, 297 200, 300 196" />
+          {/* to Web dizajn: in from mid-air → the word → hook back up into the belly */}
+          <path d="M 56 104 C 70 98, 84 96, 100 96" />
+          <path d="M 196 84 C 168 74, 138 66, 122 60" />
+          {/* to SEO: sweep → the word → rise into the belly */}
+          <path d="M 52 148 C 90 156, 140 142, 182 135" />
+          <path d="M 282 122 C 296 116, 306 104, 312 88" />
+          {/* to Marketing: low sweep → the word → long run right into the belly */}
+          <path d="M 60 190 C 108 204, 168 200, 198 198" />
+          <path d="M 298 186 C 340 188, 384 192, 406 190 C 412 189, 415 188, 417 185" />
         </g>
       </svg>
       {[
-        { x: 24.4, y: 31.5, rot: -6 },
-        { x: 53.6, y: 47.0, rot: -4 },
-        { x: 43.2, y: 88.0, rot: -3 },
+        { x: 29.6, y: 37.5, rot: -5 },
+        { x: 46.4, y: 53.3, rot: -5 },
+        { x: 49.6, y: 80.0, rot: -4 },
       ].map((w, i) => (
         <span
           key={i}
           className="absolute block whitespace-nowrap font-script font-normal leading-none text-[#2E5F9E] opacity-80
-                     text-[19px] sm:text-[28px] md:text-[34px] lg:text-[40px] xl:text-[46px]"
+                     text-[24px] sm:text-[36px] md:text-[46px] lg:text-[3.75vw] lg:max-[1960px]:text-[3.75vw] min-[1960px]:text-[74px]"
           style={{ left: `${w.x}%`, top: `${w.y}%`, transform: `translate(-50%,-50%) rotate(${w.rot}deg)` }}
         >
           dreamsign
         </span>
       ))}
       {[
-        { label: '1. Web dizajn', cls: 'left-[13%] top-[-9%] w-[42%]', sec: 5.4, delay: 0 },
-        { label: '2. SEO', cls: 'left-[56%] top-[7%] w-[40%]', sec: 6.2, delay: 0.9 },
-        { label: '3. Marketing', cls: 'left-[37%] top-[53%] w-[46%]', sec: 6.8, delay: 1.7 },
+        { label: '1. Web dizajn', cls: 'left-[8%] top-[-2%] w-[32%]', sec: 5.4, delay: 0 },
+        { label: '2. SEO', cls: 'left-[47%] top-[9%] w-[31%]', sec: 6.2, delay: 0.9 },
+        { label: '3. Marketing', cls: 'left-[67%] top-[52%] w-[33%]', sec: 6.8, delay: 1.7 },
       ].map((c) => (
         <motion.span
           key={c.label}
@@ -232,10 +224,13 @@ function UslugeHero() {
       </div>
       {/* batch 30 (owner): the whole block rides LOWER — his red line seats the review
           cards' bottom edge on the crest's foam (supersedes the batch-26 clearance) */}
+      {/* batch 37 (owner): the map hangs from the SECTION so its right edge is the
+          VIEWPORT's right edge — off the content grid entirely, per his order */}
+      <CloudMap />
+
       <div className="relative flex min-h-screen w-full flex-col justify-end px-4 pb-[23.5vh] pt-28 sm:px-10 lg:px-16">
 
       <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-col items-center justify-end">
-        <CloudMap />
 
         {/* batch 19: the glow moved OFF the h1 — inherited onto the gradient-clipped rows
             it painted a glyph-shaped white halo OVER the ramp (text paints after
@@ -690,16 +685,15 @@ const PROCESS = [
     ] },
 ]
 
-const WHEEL_STEP = 26 // degrees between seats on the arc
-
-/** one number riding the wheel: seat at 3 o'clock (θ=0), passed steps rotate up-left
-    and leave the viewport on the left — his revolver. All motion values, no re-render. */
-function WheelNumber({ i, rot, R, cx, fontPx }: {
-  i: number; rot: MotionValue<number>; R: number; cx: number; fontPx: number
+/** one number riding the wheel: seat at 3 o'clock (θ=0), passed steps rotate up along
+    the arc and leave through the screen edge — his revolver. The step angle comes from
+    the RADIUS (batch 37): a giant circle needs a small angle for the same spacing. */
+function WheelNumber({ i, rot, R, cx, fontPx, numOff, step }: {
+  i: number; rot: MotionValue<number>; R: number; cx: number; fontPx: number; numOff: number; step: number
 }) {
   const rad = (d: number) => (d * Math.PI) / 180
-  const th = (v: number) => v - i * WHEEL_STEP
-  const numR = R * 1.19
+  const th = (v: number) => v - i * step
+  const numR = R + numOff
   const x = useTransform(rot, v => cx + numR * Math.cos(rad(th(v))))
   const y = useTransform(rot, v => -numR * Math.sin(rad(th(v))))
   const dotX = useTransform(rot, v => cx + R * Math.cos(rad(th(v))))
@@ -707,11 +701,11 @@ function WheelNumber({ i, rot, R, cx, fontPx }: {
   const tilt = useTransform(rot, v => -th(v) * 0.8)
   const op = useTransform(rot, v => {
     const a = Math.abs(th(v))
-    if (a > 78) return 0
-    return a < 5 ? 1 : Math.max(0.16, 0.3 - a / 400)
+    if (a > 2.6 * step) return 0
+    return a < step * 0.2 ? 1 : Math.max(0.16, 0.3 - a / (15 * step))
   })
-  const dotOp = useTransform(rot, v => (Math.abs(th(v)) > 78 ? 0 : Math.abs(th(v)) < 5 ? 0.9 : 0.35))
-  const scale = useTransform(rot, v => 1.45 - Math.min(Math.abs(th(v)) / WHEEL_STEP, 1) * 0.55)
+  const dotOp = useTransform(rot, v => (Math.abs(th(v)) > 2.6 * step ? 0 : Math.abs(th(v)) < step * 0.2 ? 0.9 : 0.35))
+  const scale = useTransform(rot, v => 1.45 - Math.min(Math.abs(th(v)) / step, 1) * 0.55)
   return (
     <>
       <motion.span
@@ -738,7 +732,7 @@ function ProcessWheel() {
   const { reduced } = useWorld()
   const [k, setK] = useState(0)
   const [expanded, setExpanded] = useState(false)
-  const [dim, setDim] = useState({ R: 300, cx: 24, fontPx: 64 })
+  const [dim, setDim] = useState({ R: 2000, cx: -1200, fontPx: 120, numOff: 120, step: 10, xTop: -999, textLeft: 1100 })
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
   const N = PROCESS.length
   // the revolver CLICK: the cylinder dwells on each seat (~55% of its window) and turns
@@ -748,25 +742,37 @@ function ProcessWheel() {
   for (let j = 0; j < N; j++) {
     const c = 0.08 + j * seg
     stops.push(Math.max(0.08, c - seg * 0.28), Math.min(0.92, c + seg * 0.28))
-    angles.push(j * WHEEL_STEP, j * WHEEL_STEP)
+    angles.push(j * dim.step, j * dim.step)
   }
   const rot = useTransform(scrollYProgress, stops, angles, { clamp: true })
 
   useEffect(() => rot.on('change', v => {
-    setK(Math.min(N - 1, Math.max(0, Math.round(v / WHEEL_STEP))))
-  }), [rot, N])
+    setK(Math.min(N - 1, Math.max(0, Math.round(v / dim.step))))
+  }), [rot, N, dim.step])
 
   useEffect(() => {
     const m = () => {
-      // batch 36 (owner): the BIG circle back (the b34 radius — numbers and words at
-      // their full size), but its CENTRE pushed off-screen-left so the arc's crossings
-      // with the top and bottom stage edges happen at x < 0 — never visible. The line
-      // enters and leaves ONLY through the left screen edge (y = cy ± 0.48vh), at
-      // every scroll: no break up, no break down, infinity to the left. His words.
+      // batch 37 (owner): "imagine a fully drawn circle but OUTSIDE the viewport" — a
+      // giant radius (2.2·vh), centre far off-left, so the visible line is a near-
+      // vertical arc entering the top edge and leaving the bottom edge; the numbers'
+      // seat lands at the viewport's CENTRE, words to its right. The step angle now
+      // derives from the radius (same ~370px seat spacing at any R); clouds sit on the
+      // two edge-crossing points so the line always emerges from behind a cloud.
       const vh = window.innerHeight, vw = window.innerWidth
-      const R = Math.max(140, Math.min(vh * 0.72, vw * 0.41))
-      const cx = R > vh * 0.46 ? -Math.sqrt(R * R - Math.pow(vh * 0.48, 2)) : 24
-      setDim({ R, cx, fontPx: Math.max(34, R * 0.2) })
+      if (vw < 640) {
+        const R = Math.max(104, Math.min(vh * 0.467, vw * 0.3))
+        let cx = vw * 0.47 - 1.19 * R
+        if (cx > R - 30) cx = R - 30
+        setDim({ R, cx, fontPx: Math.max(30, R * 0.2), numOff: R * 0.19, step: 26, xTop: -999, textLeft: cx + R * 1.38 + 28 })
+      } else {
+        const R = vh * 2.2
+        const numOff = 120
+        const cx = vw / 2 - numOff - R
+        const fontPx = Math.max(34, Math.min(vh * 0.72, vw * 0.41) * 0.2)
+        const step = Math.min(30, Math.max(8, (370 / (R + numOff)) * (180 / Math.PI)))
+        const xTop = cx + Math.sqrt(R * R - (vh / 2) * (vh / 2))
+        setDim({ R, cx, fontPx, numOff, step, xTop, textLeft: vw / 2 + fontPx * 1.15 })
+      }
     }
     m()
     window.addEventListener('resize', m)
@@ -790,8 +796,7 @@ function ProcessWheel() {
     )
   }
 
-  const { R, cx, fontPx } = dim
-  const textLeft = cx + R * 1.38 + 28
+  const { R, cx, fontPx, numOff, step, xTop, textLeft } = dim
   const narrow = typeof window !== 'undefined' && window.innerWidth < 640
   return (
     <div ref={ref} className="relative h-[340vh] w-full">
@@ -816,13 +821,10 @@ function ProcessWheel() {
           animate={{ y: [0, -6, 0] }}
           transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
         />
-        {/* batch 34 (owner): the section title in the PRIMARY face, big, centred */}
-        {/* batch 36 (owner): a touch smaller, a touch lower, and CENTRED OVER THE STEP
-            WORDS' column — never near the nav. Same house ramp. */}
+        {/* batch 37 (owner): bigger, a touch lower, CENTRED under the nav */}
         <h2
-          className="ink-gradient absolute top-24 w-max text-center font-semibold uppercase leading-none tracking-tight
-                     max-sm:left-1/2 sm:top-28 text-[clamp(2.5rem,8vw,3.75rem)] lg:text-[clamp(3.25rem,6vw,5.25rem)]"
-          style={narrow ? { transform: 'translateX(-50%)' } : { left: textLeft + 240, transform: 'translateX(-50%)' }}
+          className="ink-gradient absolute left-1/2 top-28 w-max -translate-x-1/2 text-center font-semibold uppercase
+                     leading-none tracking-tight sm:top-32 text-[clamp(2.75rem,8.5vw,4rem)] lg:text-[clamp(4rem,7vw,6.25rem)]"
         >
           Naš proces
         </h2>
@@ -837,19 +839,39 @@ function ProcessWheel() {
         >
           {/* wheel space: local (0,0) = left edge, mid-height */}
           <div aria-hidden className="absolute left-0 top-1/2">
-            {/* batch 35: NO mask — the batch-34 end-fade itself manufactured the visible
-                ends he circled. The circle now lives entirely inside the stage's height
-                and leaves only through the left screen edge: nothing to hide. */}
+            {/* batch 37: the arc of a circle whose body lives OUTSIDE the viewport —
+                no forced layer (a 2R square at this radius would be a giant GPU alloc;
+                only the visible sliver rasters on the shared layer) */}
             <div
               className="absolute rounded-full border border-ink/25"
-              style={{ width: 2 * R, height: 2 * R, left: cx - R, top: -R, transform: 'translateZ(0)' }}
+              style={{ width: 2 * R, height: 2 * R, left: cx - R, top: -R }}
             />
-            <span className="absolute h-1.5 w-1.5 rounded-full bg-ink/40" style={{ left: cx - 3, top: -3 }} />
             {PROCESS.map((_, i) => (
-              <WheelNumber key={i} i={i} rot={rot} R={R} cx={cx} fontPx={fontPx} />
+              <WheelNumber key={i} i={i} rot={rot} R={R} cx={cx} fontPx={fontPx} numOff={numOff} step={step} />
             ))}
           </div>
         </motion.div>
+
+        {/* batch 37: clouds seated ON the arc's two edge-crossing points — the line
+            always emerges from behind a cloud, never from a cut (approach included) */}
+        {xTop > 0 && (
+          <>
+            <motion.img
+              aria-hidden src="/media/cloud-real.webp" alt="" loading="eager"
+              className="pointer-events-none absolute w-[240px] max-w-none select-none opacity-90"
+              style={{ left: xTop - 130, top: -46 }}
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
+            />
+            <motion.img
+              aria-hidden src="/media/cloud-real.webp" alt="" loading="eager"
+              className="pointer-events-none absolute w-[260px] max-w-none select-none opacity-85 scale-x-[-1]"
+              style={{ left: xTop - 150, bottom: -52 }}
+              animate={{ y: [0, -7, 0] }}
+              transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }}
+            />
+          </>
+        )}
 
         {/* the active step's words, at the seat's right — swap per step. On phones the
             seat's right is too narrow: the words sit UNDER the seat instead. */}
