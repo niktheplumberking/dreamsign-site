@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { World, WorldLayer, SeamBridge, Beat, useWorld } from '../components/World'
 import PageHero from '../components/PageHero'
-import Radovi from '../components/sections/Radovi'
+import Radovi, { TrustPills } from '../components/sections/Radovi'
 import FaqSekcija from '../components/FaqSekcija'
 import LandingCTA from '../components/LandingCTA'
 import Ground from '../components/Ground'
@@ -73,7 +73,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
   const Btn = ({ onClick, label, children }: { onClick: () => void; label: string; children: React.ReactNode }) => (
     <button
       onClick={onClick} aria-label={label}
-      className="grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-full border border-ink/20
+      className="grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-full border border-ink/20 text-xl
                  bg-white/60 text-ink shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white"
     >
       {children}
@@ -81,62 +81,51 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
   )
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-12">
+    <div className="mx-auto w-full max-w-[1520px] px-4 sm:px-8 lg:px-12">
       {/* the reference's centred head — ours in the house faces, with a TRUE fact where
           the rating badge sat (we claim no stars we don't have) */}
+      {/* batch 45 (owner): the head MUCH bigger, on the house duet rule — row 1 primary,
+          row 2 in the quill; the fact subtitle deleted (his order) */}
       <div className="text-center">
-        <motion.p
-          initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6 }}
-          className="text-2xl font-medium leading-tight text-ink/85 sm:text-3xl"
-        >
-          Pogledajte radove,
-        </motion.p>
         <motion.h2
           initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6, delay: 0.08 }}
-          className="ink-gradient mx-auto w-max max-w-full text-3xl font-bold leading-tight tracking-tight sm:text-4xl"
-          // the gradient class's horizontal guard (negative margins) defeats mx-auto —
-          // zero it so the line centres like its sibling (the b40 title lesson)
-          style={{ paddingLeft: 0, paddingRight: 0, marginLeft: 'auto', marginRight: 'auto' }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="leading-none"
         >
-          sarađujte sa poverenjem.
+          <span
+            className="ink-gradient mx-auto block w-max max-w-full font-semibold tracking-tight text-[clamp(2.4rem,5.4vw,5rem)]"
+            style={{ paddingLeft: 0, paddingRight: 0, marginLeft: 'auto', marginRight: 'auto' }}
+          >
+            Pogledajte radove,
+          </span>
+          <span className="mt-1 block font-script font-normal leading-[1.05] text-accent text-[clamp(2.4rem,5.4vw,4.9rem)]">
+            sarađujte sa poverenjem.
+          </span>
         </motion.h2>
-        <motion.p
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6, delay: 0.18 }}
-          className="mx-auto mt-4 flex max-w-full items-center justify-center gap-2 text-[13px] font-medium text-ink/60 sm:text-sm"
-        >
-          <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="#2E5F9E" strokeWidth="1.8"
-               strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" />
-          </svg>
-          Svaki projekat uz ugovor — obim, rok i cena, pismeno.
-        </motion.p>
       </div>
 
       {/* the reference's body: quote block left, the cards right */}
-      <div className="mt-12 grid grid-cols-1 items-start gap-8 sm:mt-14 lg:grid-cols-12 lg:gap-10">
+      <div className="mt-14 grid grid-cols-1 items-start gap-10 sm:mt-16 lg:grid-cols-12 lg:gap-14">
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
           className="flex flex-row items-center justify-between gap-6 lg:col-span-3 lg:flex-col lg:items-start lg:justify-start"
         >
           <div>
-            <span aria-hidden className="block font-serif text-6xl leading-none text-ink/20 sm:text-7xl">„</span>
-            <p className="mt-2 max-w-[16ch] text-lg font-semibold leading-snug text-ink sm:text-xl">
+            <span aria-hidden className="block font-serif text-8xl leading-none text-ink/20 sm:text-[7rem]">„</span>
+            <p className="mt-3 max-w-[14ch] text-2xl font-semibold leading-snug text-ink sm:text-3xl">
               Šta stoji iza naših projekata
             </p>
           </div>
-          <div className="flex items-center gap-3 lg:mt-8">
+          <div className="flex items-center gap-4 lg:mt-10">
             <Btn onClick={prev} label="Prethodna referenca">‹</Btn>
-            <span aria-hidden className="hidden h-px w-10 bg-ink/30 sm:block" />
+            <span aria-hidden className="hidden h-px w-14 bg-ink/30 sm:block" />
             <Btn onClick={next} label="Sledeća referenca">›</Btn>
           </div>
         </motion.div>
 
         <div className="lg:col-span-9">
-          <div ref={viewRef} className="relative h-[240px] overflow-hidden py-1 sm:h-[230px]">
+          <div ref={viewRef} className="relative h-[360px] overflow-hidden py-1 sm:h-[340px]">
             {RECENZIJE.map((r, i) => {
               const s = mod(i - mod(idx, N), N)
               const off = s === N - 1 ? -1 : s
@@ -151,17 +140,17 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
                 >
                   <a
                     href={r.href} target="_blank" rel="noopener"
-                    className="flex h-full w-full flex-col rounded-2xl border border-white/80 bg-white p-5 text-left shadow-[0_10px_30px_rgba(22,50,79,0.08)] transition-transform hover:scale-[1.02] sm:p-6"
+                    className="flex h-full w-full flex-col rounded-2xl border border-white/80 bg-white p-6 text-left shadow-[0_10px_30px_rgba(22,50,79,0.08)] transition-transform hover:scale-[1.02] sm:p-8"
                   >
-                    <p className="text-[13.5px] font-medium leading-relaxed text-ink/80 sm:text-sm">{r.line}</p>
+                    <p className="text-[15px] font-medium leading-relaxed text-ink/80 sm:text-[17px] sm:leading-relaxed">{r.line}</p>
                     <div className="mt-auto flex items-center gap-3 border-t border-ink/10 pt-4">
                       <img
                         src={r.thumb} alt={r.name}
-                        className="h-10 w-10 shrink-0 rounded-full border border-ink/15 bg-white object-cover object-top"
+                        className="h-12 w-12 shrink-0 rounded-full border border-ink/15 bg-white object-cover object-top"
                       />
                       <span className="flex min-w-0 flex-col">
-                        <span className="truncate text-[13.5px] font-semibold text-ink">{r.name}</span>
-                        <span className="truncate text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">
+                        <span className="truncate text-[15.5px] font-semibold text-ink">{r.name}</span>
+                        <span className="truncate text-[12px] font-semibold uppercase tracking-[0.12em] text-accent">
                           {r.meta} ↗
                         </span>
                       </span>
@@ -203,9 +192,10 @@ function KontaktBody() {
     <>
       {/* batch 44 (owner): the duet — row 1 in the PRIMARY face, row 2 in the quill
           (fonts and sizes swapped from the old classic hero); the side texts deleted */}
+      {/* no trust text row here — the four GLASS cards carry those exact facts in the
+          hero's sea now (batch 45); doubling them read as noise */}
       <PageHero
         flip
-        trust
         script="Dobar dan."
         title="Dva klika i razgovaramo."
         titleK="kontakt-naslov"
@@ -215,13 +205,22 @@ function KontaktBody() {
       <div className="pointer-events-none relative z-20 -mt-[18vh]">
         <SeamBridge className="top-0 h-[62vh]" />
 
-        {/* the reviews — his reference layout on the world's quiet sky */}
-        <Beat name="utisci" layers={
+        {/* batch 45 (owner): the four trust cards moved INTO the hero's cloud sea (his
+            red circle) — the same shy glass pills, pulled up over the hero's foot */}
+        <div className="pointer-events-auto relative z-30 mx-auto -mt-[13vh] w-full max-w-6xl px-5 sm:px-6">
+          <TrustPills reduced={reduced} />
+        </div>
+
+        {/* batch 45 (owner): ONE content beat — reviews, past work and FAQ live in the
+            same beat now, so the junction law stops demanding a sky field between them
+            (mid-beat razors are never scanned — the usluge mega-beat precedent). The
+            gaps shrank to breaths. */}
+        <Beat name="sadrzaj" layers={
           <>
             <WorldLayer
               src="/media/B3-square-sky.webp" eager
-              box="-top-[26vh] -bottom-[30vh]"
-              imgClass="absolute inset-0 h-[126%] w-full object-cover object-center"
+              box="-top-[26vh] h-[150vh]"
+              imgClass="absolute inset-0 h-[120%] w-full object-cover object-center"
               y={['0%', '-9%']} base={0.85} mask={MASK.sky}
             />
             <WorldLayer
@@ -230,46 +229,33 @@ function KontaktBody() {
               imgClass="absolute left-[-9%] top-[14%] w-[34%] h-auto max-w-none"
               y={['0%', '-11%']} base={0.85} float={{ px: 8, sec: 10 }}
             />
-          </>
-        }>
-          <div aria-hidden style={{ height: 'max(30vh, 360px)' }} />
-          <ReviewSekcija reduced={reduced} />
-          <div aria-hidden style={{ height: 'max(34vh, 390px)' }} />
-        </Beat>
-
-        {/* the past work — the homepage's own beat, verbatim grammar */}
-        <Beat name="radovi" layers={
-          <>
             <WorldLayer
               src="/media/B7-vertical-sea.webp"
-              box="-top-[24vh] -bottom-[30vh]"
-              imgClass="absolute inset-0 h-[126%] w-full object-cover object-center"
+              box="top-[110vh] h-[220vh]"
+              imgClass="absolute inset-0 h-[118%] w-full object-cover object-center"
               y={['0%', '-10%']} base={0.5} mask={MASK.sea}
             />
             <WorldLayer
               src="/media/cloud-real.webp" eager
-              box="top-[10vh] h-[70vh]"
+              box="top-[150vh] h-[70vh]"
               imgClass="absolute right-[-8%] top-[10%] w-[30%] h-auto max-w-none scale-x-[-1]"
               y={['0%', '-9%']} base={0.8} float={{ px: 7, sec: 12, delay: 0.9 }}
             />
+            <WorldLayer
+              src="/media/cloud-real.webp" eager
+              box="bottom-[26vh] h-[60vh]"
+              imgClass="absolute left-[-7%] top-[20%] w-[28%] h-auto max-w-none"
+              y={['0%', '-8%']} base={0.7} float={{ px: 6, sec: 11 }}
+            />
           </>
         }>
-          <Radovi />
-          <div aria-hidden style={{ height: 'max(34vh, 390px)' }} />
-        </Beat>
-
-        {/* the FAQ — the radovi section, shared */}
-        <Beat name="faq" layers={
-          <WorldLayer
-            src="/media/cloud-real.webp" eager
-            box="top-[4vh] h-[60vh]"
-            imgClass="absolute left-[-7%] top-[20%] w-[28%] h-auto max-w-none"
-            y={['0%', '-8%']} base={0.7} float={{ px: 6, sec: 11 }}
-          />
-        }>
-          <div aria-hidden style={{ height: 'max(16vh, 330px)' }} />
+          <div aria-hidden style={{ height: 'max(22vh, 260px)' }} />
+          <ReviewSekcija reduced={reduced} />
+          <div aria-hidden style={{ height: 'max(12vh, 150px)' }} />
+          <Radovi trust={false} />
+          <div aria-hidden style={{ height: 'max(9vh, 110px)' }} />
           <FaqSekcija />
-          <div aria-hidden style={{ height: 'max(32vh, 370px)' }} />
+          <div aria-hidden style={{ height: 'max(30vh, 350px)' }} />
         </Beat>
 
         <Ground>

@@ -215,7 +215,18 @@ function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
   )
 }
 
-export default function Radovi() {
+export function TrustPills({ reduced }: { reduced: boolean }) {
+  return (
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 items-start">
+      {TRUST.map((b, i) => (
+        <TrustPill key={b.t} b={b} i={i} reduced={reduced} />
+      ))}
+    </div>
+  )
+}
+
+/* batch 45 (owner): trust may be switched off — /kontakt moved the pills into its hero */
+export default function Radovi({ trust = true }: { trust?: boolean } = {}) {
   const ref = useRef<HTMLDivElement>(null)
   const { p: world, reduced } = useWorld()
   const [enter, exit] = useWorldRange(ref, 1.05, 0.15)
@@ -279,11 +290,11 @@ export default function Radovi() {
           place, and they shy away from the cursor — approach one and it drifts off, capped
           so it never leaves its seat. Springs do the settling; reduced motion gets them
           still and seated. */}
-      <div className="mt-14 md:mt-20 grid grid-cols-2 gap-4 lg:grid-cols-4 items-start">
-        {TRUST.map((b, i) => (
-          <TrustPill key={b.t} b={b} i={i} reduced={reduced} />
-        ))}
-      </div>
+      {trust && (
+        <div className="mt-14 md:mt-20">
+          <TrustPills reduced={reduced} />
+        </div>
+      )}
     </div>
   )
 }
