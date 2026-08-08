@@ -44,35 +44,39 @@ function CloudMap() {
           are ONE CONTINUOUS stroke each: pen → „dreamsign" → pen, the segments tucked
           into the word's first and last glyph, no dash and no gap. Origins start clear
           of the title's right edge — the lines never touch the display text. */}
+      {/* batch 38 (owner): the lines ARE the secondary font's pen now — same ink, same
+          weight and opacity as the word, short calligraphic swashes that butt straight
+          into the first and last glyph and always flow FORWARD into the cloud. Words a
+          step smaller so the whole scene breathes inside the hero. */}
       <svg viewBox="0 0 500 240" fill="none" className="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none">
-        <g stroke="#2E5F9E" strokeWidth="2" strokeLinecap="round" opacity="0.6">
-          {/* to Web dizajn: in from mid-air → the word → hook back up into the belly */}
-          <path d="M 56 104 C 70 98, 84 96, 100 96" />
-          <path d="M 196 84 C 168 74, 138 66, 122 60" />
-          {/* to SEO: sweep → the word → rise into the belly */}
-          <path d="M 52 148 C 90 156, 140 142, 182 135" />
-          <path d="M 282 122 C 296 116, 306 104, 312 88" />
-          {/* to Marketing: low sweep → the word → long run right into the belly */}
-          <path d="M 60 190 C 108 204, 168 200, 198 198" />
-          <path d="M 298 186 C 340 188, 384 192, 406 190 C 412 189, 415 188, 417 185" />
+        <g stroke="#2E5F9E" strokeWidth="1.8" strokeLinecap="round" opacity="0.75">
+          {/* Web dizajn: swash in → dreamsign → tail curls up into the belly */}
+          <path d="M 66 114 C 84 110, 98 104, 110 97" />
+          <path d="M 176 86 C 172 76, 162 66, 150 60" />
+          {/* SEO: swash in → dreamsign → rises into the belly */}
+          <path d="M 140 150 C 158 146, 176 142, 192 135" />
+          <path d="M 272 119 C 290 111, 304 98, 312 86" />
+          {/* Marketing: swash in → dreamsign → long run right into the belly */}
+          <path d="M 150 212 C 168 208, 190 204, 208 199" />
+          <path d="M 288 183 C 330 183, 380 187, 404 188 C 411 187, 415 186, 417 183" />
         </g>
       </svg>
       {[
-        { x: 29.6, y: 37.5, rot: -5 },
-        { x: 46.4, y: 53.3, rot: -5 },
-        { x: 49.6, y: 80.0, rot: -4 },
+        { x: 28.6, y: 38.3, rot: -6 },
+        { x: 46.4, y: 52.9, rot: -6 },
+        { x: 49.6, y: 79.6, rot: -4 },
       ].map((w, i) => (
         <span
           key={i}
-          className="absolute block whitespace-nowrap font-script font-normal leading-none text-[#2E5F9E] opacity-80
-                     text-[24px] sm:text-[36px] md:text-[46px] lg:text-[3.75vw] lg:max-[1960px]:text-[3.75vw] min-[1960px]:text-[74px]"
+          className="absolute block whitespace-nowrap font-script font-normal leading-none text-[#2E5F9E] opacity-75
+                     text-[20px] sm:text-[30px] md:text-[38px] lg:text-[3vw]"
           style={{ left: `${w.x}%`, top: `${w.y}%`, transform: `translate(-50%,-50%) rotate(${w.rot}deg)` }}
         >
           dreamsign
         </span>
       ))}
       {[
-        { label: '1. Web dizajn', cls: 'left-[8%] top-[-2%] w-[32%]', sec: 5.4, delay: 0 },
+        { label: '1. Web dizajn', cls: 'left-[13%] top-[-2%] w-[32%]', sec: 5.4, delay: 0 },
         { label: '2. SEO', cls: 'left-[47%] top-[9%] w-[31%]', sec: 6.2, delay: 0.9 },
         { label: '3. Marketing', cls: 'left-[67%] top-[52%] w-[33%]', sec: 6.8, delay: 1.7 },
       ].map((c) => (
@@ -578,14 +582,18 @@ function ServicesStack() {
   // their own turn. Seats are measured px; the flight is pure transform (Bennett law).
   // (Hooks live ABOVE the reduced-motion return — the Rules of Hooks.)
   const N = SERVICES.length
-  const [g, setG] = useState({ vh: 900, head: 96, O: 80, P: 86 })
+  // batch 38 (owner): O grew (~15%) so a covered sheet stops LOWER and shows more of
+  // the row beneath (his red line); the parked deck rides LIFT px higher so the last
+  // number is fully readable at the viewport's foot ("until you can see 04 clearly").
+  const [g, setG] = useState({ vh: 900, head: 96, O: 92, P: 86, lift: 90 })
   useEffect(() => {
     const m = () => {
       const vh = window.innerHeight, w = window.innerWidth
       const short = vh <= 860
       const head = (short ? 48 : w >= 640 ? 80 : 64) + 16
-      const O = short ? 56 : w >= 1024 ? Math.max(64, 0.08 * vh) : w >= 640 ? 64 : 48
-      setG({ vh, head, O, P: O + 6 })
+      const O = short ? 64 : w >= 1024 ? Math.max(88, 0.11 * vh) : w >= 640 ? 84 : 60
+      const P = short ? 64 : w >= 640 ? 86 : 62
+      setG({ vh, head, O, P, lift: short ? 70 : 90 })
     }
     m()
     window.addEventListener('resize', m)
@@ -613,7 +621,7 @@ function ServicesStack() {
         />
         {SERVICES.map((_, i) => {
           const risenTop = g.head + i * g.O
-          const parkedY = g.vh - (N - i) * g.P - risenTop
+          const parkedY = g.vh - (N - i) * g.P - g.lift - risenTop
           return (
             <motion.div
               key={i}
@@ -746,9 +754,13 @@ function ProcessWheel() {
   }
   const rot = useTransform(scrollYProgress, stops, angles, { clamp: true })
 
-  useEffect(() => rot.on('change', v => {
-    setK(Math.min(N - 1, Math.max(0, Math.round(v / dim.step))))
-  }), [rot, N, dim.step])
+  useEffect(() => {
+    // sync IMMEDIATELY too — when the geometry (step) re-derives after mount, waiting
+    // for the next scroll event left k pointing at the wrong seat (number↔text desync)
+    const update = (v: number) => setK(Math.min(N - 1, Math.max(0, Math.round(v / dim.step))))
+    update(rot.get())
+    return rot.on('change', update)
+  }, [rot, N, dim.step])
 
   useEffect(() => {
     const m = () => {
@@ -758,6 +770,11 @@ function ProcessWheel() {
       // seat lands at the viewport's CENTRE, words to its right. The step angle now
       // derives from the radius (same ~370px seat spacing at any R); clouds sit on the
       // two edge-crossing points so the line always emerges from behind a cloud.
+      // batch 38 (owner): the circle back to its previous size ("one prompt ago it was
+      // perfect") — a FULL circle whose left half lives off-screen: the arc's meetings
+      // with the top and bottom happen at x < 0, so the visible line bows in from the
+      // left edge and returns to it. No stage clip can break it (the stage is
+      // overflow-visible now); it simply goes to the left and disappears.
       const vh = window.innerHeight, vw = window.innerWidth
       if (vw < 640) {
         const R = Math.max(104, Math.min(vh * 0.467, vw * 0.3))
@@ -765,13 +782,10 @@ function ProcessWheel() {
         if (cx > R - 30) cx = R - 30
         setDim({ R, cx, fontPx: Math.max(30, R * 0.2), numOff: R * 0.19, step: 26, xTop: -999, textLeft: cx + R * 1.38 + 28 })
       } else {
-        const R = vh * 2.2
-        const numOff = 120
-        const cx = vw / 2 - numOff - R
-        const fontPx = Math.max(34, Math.min(vh * 0.72, vw * 0.41) * 0.2)
-        const step = Math.min(30, Math.max(8, (370 / (R + numOff)) * (180 / Math.PI)))
-        const xTop = cx + Math.sqrt(R * R - (vh / 2) * (vh / 2))
-        setDim({ R, cx, fontPx, numOff, step, xTop, textLeft: vw / 2 + fontPx * 1.15 })
+        const R = Math.max(140, Math.min(vh * 0.72, vw * 0.41))
+        const cx = -Math.sqrt(Math.max(R * R - Math.pow(vh * 0.48, 2), 100))
+        const fontPx = Math.max(34, R * 0.2)
+        setDim({ R, cx, fontPx, numOff: R * 0.19, step: 26, xTop: -999, textLeft: cx + R * 1.38 + 28 })
       }
     }
     m()
@@ -796,7 +810,7 @@ function ProcessWheel() {
     )
   }
 
-  const { R, cx, fontPx, numOff, step, xTop, textLeft } = dim
+  const { R, cx, fontPx, numOff, step, textLeft } = dim
   const narrow = typeof window !== 'undefined' && window.innerWidth < 640
   return (
     <div ref={ref} className="relative h-[340vh] w-full">
@@ -807,7 +821,10 @@ function ProcessWheel() {
           <li key={s.n}>{s.n} — {s.t}: {s.d} {s.more.join(' ')}</li>
         ))}
       </ul>
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+      {/* batch 38 (owner): NO overflow clip and a raised layer — the ring may run into
+          the sections above and beneath and stays on top of everything, so no boundary
+          can ever cut its line */}
+      <div className="sticky top-0 z-30 h-screen w-full">
         {/* weather rides INSIDE the pin — a runway layer would scroll past the stage */}
         <motion.img
           aria-hidden src="/media/cloud-real.webp" alt="" loading="eager"
@@ -852,26 +869,6 @@ function ProcessWheel() {
           </div>
         </motion.div>
 
-        {/* batch 37: clouds seated ON the arc's two edge-crossing points — the line
-            always emerges from behind a cloud, never from a cut (approach included) */}
-        {xTop > 0 && (
-          <>
-            <motion.img
-              aria-hidden src="/media/cloud-real.webp" alt="" loading="eager"
-              className="pointer-events-none absolute w-[240px] max-w-none select-none opacity-90"
-              style={{ left: xTop - 130, top: -46 }}
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut', delay: 0.6 }}
-            />
-            <motion.img
-              aria-hidden src="/media/cloud-real.webp" alt="" loading="eager"
-              className="pointer-events-none absolute w-[260px] max-w-none select-none opacity-85 scale-x-[-1]"
-              style={{ left: xTop - 150, bottom: -52 }}
-              animate={{ y: [0, -7, 0] }}
-              transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 1.8 }}
-            />
-          </>
-        )}
 
         {/* the active step's words, at the seat's right — swap per step. On phones the
             seat's right is too narrow: the words sit UNDER the seat instead. */}
