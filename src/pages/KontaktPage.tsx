@@ -4,7 +4,7 @@
 // beat → the FAQ (the radovi section, shared) → the standing finale. One world, one
 // descent, the house parallax grammar throughout.
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { motion } from 'motion/react'
+import { motion, useScroll } from 'motion/react'
 import { World, WorldLayer, SeamBridge, Beat, useWorld } from '../components/World'
 import PageHero from '../components/PageHero'
 import Radovi, { TrustPills } from '../components/sections/Radovi'
@@ -21,37 +21,51 @@ import { PAGE_SCHEMA } from '../lib/schema'
 
 /* REAL references only — these are our live projects with OUR descriptions of the work;
    client quotes take these seats the day real ones exist (D62/D70). */
+/* batch 46 (owner): longer, warmer copy — still OURS about the work (some professional,
+   some friendlier), never words put in a client's mouth; real quotes and real faces take
+   these seats the day they exist (D62/D70). */
 const RECENZIJE = [
   {
     thumb: '/media/radovi/bennett.webp', name: 'Bennett & Co', meta: 'bennettndco.com', href: 'https://www.bennettndco.com',
-    line: 'Kompletan identitet i korporativni sajt — od logotipa i vizuala do lansiranja na sopstvenom domenu.',
+    line: 'Kompletan identitet i korporativni sajt — od logotipa i vizuala do lansiranja na sopstvenom domenu. Miran, precizan nastup za firmu kojoj se veruje na reč: sve na jednom mestu, sve potpisano.',
   },
   {
     thumb: '/media/radovi/metalkolor.webp', name: 'Metal Kolor', meta: 'metal-kolor.rs', href: 'https://metal-kolor.rs/',
-    line: 'Katalog, galerija i kontakt za majstore Srema — sajt koji zanatu daje izlog kakav zaslužuje.',
+    line: 'Katalog, galerija i kontakt za majstore Srema. Zanat je dobio izlog kakav zaslužuje — jasan, brz i bez komplikacija, da mušterija za tri klika stigne do telefona.',
   },
   {
     thumb: '/media/radovi/pizzdarija.webp', name: 'Pizzdarija', meta: 'pizzdarija.rs', href: 'https://www.pizzdarija.rs/',
-    line: 'Meni, priča i porudžbina na dva klika — u duhu lokala koji miriše na vatru.',
+    line: 'Meni, priča i porudžbina na dva klika — u duhu lokala koji miriše na vatru. Toplo i direktno, po meri gostiju koji tačno znaju šta hoće: picu na drva, bez zaobilaženja.',
   },
   {
     thumb: '/media/brand/cloud-d.webp', name: 'Vaš projekat', meta: 'Započnite razgovor', href: WA_LINK,
-    line: 'Sledeći rad kojim se hvalimo može biti vaš — dva klika i razgovaramo.',
+    line: 'Sledeći rad kojim se hvalimo može biti vaš. Dva klika i razgovaramo — bez formulara, bez čekanja, direktno sa ljudima koji će vaš sajt zaista graditi. Razgovor ništa ne košta.',
   },
 ]
 
 function ReviewSekcija({ reduced }: { reduced: boolean }) {
-  // the usluge train, widened to a three-card stage on desktop: every step the whole
-  // row slides one seat left, connected — the approved slider grammar
+  // batch 46 (owner): the section PINS — the camera locks and scroll turns the train,
+  // one review per breath, time to read (the stack's lock grammar). Arrows jump the
+  // runway; reduced motion keeps the flat row with clickable arrows.
   const N = RECENZIJE.length
   const [idx, setIdx] = useState(0)
-  const next = useCallback(() => setIdx((v) => v + 1), [])
-  const prev = useCallback(() => setIdx((v) => v - 1), [])
+  const runRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: runRef, offset: ['start start', 'end end'] })
   useEffect(() => {
     if (reduced) return
-    const t = setInterval(next, 8000)
-    return () => clearInterval(t)
-  }, [next, reduced])
+    return scrollYProgress.on('change', (p) => {
+      setIdx(p < 0.28 ? 0 : p < 0.52 ? 1 : p < 0.76 ? 2 : 3)
+    })
+  }, [scrollYProgress, reduced])
+  const jump = useCallback((to: number) => {
+    const el = runRef.current
+    if (!el) { setIdx(Math.min(N - 1, Math.max(0, to))); return }
+    const targets = [0.12, 0.4, 0.64, 0.9]
+    const k = Math.min(N - 1, Math.max(0, to))
+    window.scrollTo({ top: el.offsetTop + targets[k] * (el.offsetHeight - window.innerHeight), behavior: 'smooth' })
+  }, [N])
+  const next = useCallback(() => jump(idx + 1), [jump, idx])
+  const prev = useCallback(() => jump(idx - 1), [jump, idx])
 
   const viewRef = useRef<HTMLDivElement>(null)
   const [slotW, setSlotW] = useState(0)
@@ -80,7 +94,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
     </button>
   )
 
-  return (
+  const body = (
     <div className="mx-auto w-full max-w-[1520px] px-4 sm:px-8 lg:px-12">
       {/* the reference's centred head — ours in the house faces, with a TRUE fact where
           the rating badge sat (we claim no stars we don't have) */}
@@ -125,7 +139,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
         </motion.div>
 
         <div className="lg:col-span-9">
-          <div ref={viewRef} className="relative h-[360px] overflow-hidden py-1 sm:h-[340px]">
+          <div ref={viewRef} className="relative h-[540px] overflow-hidden py-1 sm:h-[500px]">
             {RECENZIJE.map((r, i) => {
               const s = mod(i - mod(idx, N), N)
               const off = s === N - 1 ? -1 : s
@@ -161,6 +175,18 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
             })}
           </div>
         </div>
+      </div>
+    </div>
+  )
+
+  // reduced motion: the flat row, arrows switch instantly
+  if (reduced) return body
+
+  // the LOCK: a runway of one breath per review; the stage centres the whole section
+  return (
+    <div ref={runRef} className="relative h-[300vh] w-full">
+      <div className="sticky top-0 flex h-screen w-full flex-col justify-center">
+        {body}
       </div>
     </div>
   )
@@ -207,8 +233,8 @@ function KontaktBody() {
 
         {/* batch 45 (owner): the four trust cards moved INTO the hero's cloud sea (his
             red circle) — the same shy glass pills, pulled up over the hero's foot */}
-        <div className="pointer-events-auto relative z-30 mx-auto -mt-[13vh] w-full max-w-6xl px-5 sm:px-6">
-          <TrustPills reduced={reduced} />
+        <div className="pointer-events-auto relative z-30 mx-auto -mt-[25vh] w-full max-w-6xl px-5 sm:px-6">
+          <TrustPills reduced={reduced} immediate />
         </div>
 
         {/* batch 45 (owner): ONE content beat — reviews, past work and FAQ live in the
@@ -252,7 +278,7 @@ function KontaktBody() {
           <div aria-hidden style={{ height: 'max(22vh, 260px)' }} />
           <ReviewSekcija reduced={reduced} />
           <div aria-hidden style={{ height: 'max(12vh, 150px)' }} />
-          <Radovi trust={false} />
+          <Radovi trust={false} order={[1, 3, 0, 2, 4]} />
           <div aria-hidden style={{ height: 'max(9vh, 110px)' }} />
           <FaqSekcija />
           <div aria-hidden style={{ height: 'max(30vh, 350px)' }} />

@@ -3,14 +3,17 @@
 // up and to the right, each taller than the last, its caption stepping with it. Layout only;
 // the skin, the type and the motion are ours.
 //
-// REAL CONTENT LAW: every cover is a real screenshot of the real live site, captured at
-// 1000×1150 and self-hosted — no mockups, no invented metrics. Copy describes what each site
-// actually is (verified by loading all three). The fourth card is honestly empty.
+// REAL CONTENT LAW: every cover is a real screenshot / real brand poster of a real project,
+// self-hosted — no mockups, no invented metrics. Copy describes what each site actually is.
 //
-// The cloud is in the cards themselves: each cover DISSOLVES at its top and bottom into the
-// sky (the page's no-straight-lines law), so the work floats rather than sits in a box.
-import { useEffect, useRef } from 'react'
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react'
+// batch 46 (owner): the cascade can PIN — the camera locks and scroll turns the row like a
+// conveyor: every card steps one seat to the RIGHT, the big right card exits and dissolves,
+// the next project enters from the left. Seats now belong to the ROW (not the project), so
+// any project can sit anywhere; Bennett & Co joins as the fifth rider. The per-card drift
+// rides SPRINGS now — any range re-measure lands as a soft glide, never a jump (his
+// "glitching cards" note, home + kontakt).
+import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react'
 
 import { useWorld, useWorldRange } from '../World'
 
@@ -20,21 +23,26 @@ type Project = {
   blurb: string
   href: string
   cover?: string
-  /**
-   * Cascade seat in TWO coordinate systems (batch 10 — Nick's PC and MacBook rendered the
-   * fixed-pixel row completely differently). Desktop sizes are pure vw, so the composition
-   * is IDENTICAL at 1280, 1440 and 1920: widths 18.5/23.5/29.5/40vw (the reference's own
-   * proportions), row = 105.5vw after overlaps, justified right with 2vw kept off the right
-   * edge — which makes the left overflow exactly 7.5vw ≈ 40% of the first card, cut by the
-   * screen edge with no magic margin. Mobile keeps the px h-scroll.
-   */
-  vw: { w: string; t: string; d: string }
-  px: { w: string; t: string; d: string }
 }
 
-// batch 21 (owner): his order, right to left — Court Hub, MindxBridge & Academy,
-// Pizzdarija, Metal Kolor. Bennett & Co steps out of the cascade; MindxBridge joins
-// with a GENERATED brand poster like the rest (his instruction, Higgsfield).
+/**
+ * Cascade seats in TWO coordinate systems (batch 10 — Nick's PC and MacBook rendered the
+ * fixed-pixel row completely differently). Desktop sizes are pure vw, so the composition
+ * is IDENTICAL at 1280, 1440 and 1920: widths 18.5/23.5/29.5/40vw (the reference's own
+ * proportions), row = 105.5vw after overlaps, justified right with 2vw kept off the right
+ * edge. Mobile keeps the px h-scroll. batch 46: seats belong to the ROW, projects rotate
+ * through them.
+ */
+const SEATS = [
+  { vw: { w: '18.5vw', t: '25.2vw', d: '9vw' }, px: { w: '230px', t: '340px', d: '90px' } },
+  { vw: { w: '23.5vw', t: '28.7vw', d: '6vw' }, px: { w: '270px', t: '380px', d: '60px' } },
+  { vw: { w: '29.5vw', t: '33vw', d: '2.8vw' }, px: { w: '310px', t: '420px', d: '28px' } },
+  { vw: { w: '40vw', t: '40vw', d: '0vw' }, px: { w: '340px', t: '470px', d: '0px' } },
+]
+
+// batch 21 (owner): his order, left to right — Metal Kolor, Pizzdarija, MindxBridge,
+// Court Hub. batch 46: Bennett & Co rides too (real project, real poster) — the pinned
+// carousel cycles all five through the four seats.
 const PROJECTS: Project[] = [
   {
     name: 'Metal Kolor',
@@ -42,7 +50,6 @@ const PROJECTS: Project[] = [
     blurb: 'Farbara koja snabdeva majstore — katalog, galerija i kontakt.',
     href: 'https://metal-kolor.rs/',
     cover: '/media/radovi/posters/metalkolor-poster.png',
-    vw: { w: '18.5vw', t: '25.2vw', d: '9vw' }, px: { w: '230px', t: '340px', d: '90px' },
   },
   {
     name: 'Pizzdarija',
@@ -50,7 +57,6 @@ const PROJECTS: Project[] = [
     blurb: 'Picerija sa picom na drva — meni i porudžbina na dva klika.',
     href: 'https://www.pizzdarija.rs/',
     cover: '/media/radovi/posters/pizzdarija-poster.png',
-    vw: { w: '23.5vw', t: '28.7vw', d: '6vw' }, px: { w: '270px', t: '380px', d: '60px' },
   },
   {
     // batch 21 (owner): his own project (D67) — platforma + akademija, two live sites
@@ -59,17 +65,22 @@ const PROJECTS: Project[] = [
     blurb: 'Istraživački inkubator za medicinu — od ideje do objavljenog rada.',
     href: 'https://mindxbridge.com/',
     cover: '/media/radovi/posters/mindxbridge-poster.png',
-    vw: { w: '29.5vw', t: '33vw', d: '2.8vw' }, px: { w: '310px', t: '420px', d: '28px' },
   },
   {
-    // batch 15 (owner): Court Hub takes the biggest seat — his own past project, credited
-    // per his written statement (D64); the open-slot invitation moved into the blurb's job
+    // batch 15 (owner): Court Hub — his own past project, credited per his written
+    // statement (D64)
     name: 'Court Hub',
     meta: 'E-commerce + brend · UAE',
     blurb: 'Padel brend iz Dubaija — prodavnica, tereni i turniri na jednom mestu.',
     href: 'https://courthub.ae/',
     cover: '/media/radovi/posters/courthub-poster.png',
-    vw: { w: '40vw', t: '40vw', d: '0vw' }, px: { w: '340px', t: '470px', d: '0px' },
+  },
+  {
+    name: 'Bennett & Co',
+    meta: 'Brend + korporativni sajt',
+    blurb: 'Kompletan identitet — od logotipa i vizuala do sajta na sopstvenom domenu.',
+    href: 'https://www.bennettndco.com',
+    cover: '/media/radovi/posters/bennett-poster.png',
   },
 ]
 
@@ -87,8 +98,12 @@ const fadeUp = (i: number) => ({
   transition: { duration: 0.6, delay: 0.1 * i },
 })
 
-/** a trust pill that floats idle and shies away from the cursor (batch 8) */
-function TrustPill({ b, i, reduced }: { b: (typeof TRUST)[number]; i: number; reduced: boolean }) {
+/** a trust pill that floats idle and shies away from the cursor (batch 8).
+    batch 46: `immediate` animates on MOUNT — in the kontakt hero the whileInView gate
+    left the fourth pill invisible on landing. */
+function TrustPill({ b, i, reduced, immediate = false }: {
+  b: (typeof TRUST)[number]; i: number; reduced: boolean; immediate?: boolean
+}) {
   const ref = useRef<HTMLDivElement>(null)
   const rx = useMotionValue(0)
   const ry = useMotionValue(0)
@@ -117,9 +132,17 @@ function TrustPill({ b, i, reduced }: { b: (typeof TRUST)[number]; i: number; re
     return () => window.removeEventListener('mousemove', onMove)
   }, [reduced, rx, ry])
 
+  const entrance = immediate
+    ? {
+        initial: { opacity: 0, y: 30 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.6, delay: 0.5 + 0.12 * i },
+      }
+    : fadeUp(3 + i)
+
   return (
     <motion.div
-      {...fadeUp(3 + i)}
+      {...entrance}
       // four distinct seats — a shared bottom edge across four glass pills reads as a
       // full-width line to the junction rig (measured 34 in batch 5)
       className={['', 'mt-6', 'mt-11', 'mt-3'][i]}
@@ -139,9 +162,19 @@ function TrustPill({ b, i, reduced }: { b: (typeof TRUST)[number]; i: number; re
   )
 }
 
-/** one card of the cascade — it drifts on the world's scroll at its own rate */
-function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
+/** one card of the cascade — content from the project, size from the SEAT it occupies */
+function Card({ p, seat, i, drift, still = false }: {
+  p: Project; seat: (typeof SEATS)[number]; i: number; drift: unknown; still?: boolean
+}) {
   const external = p.href.startsWith('http') && !p.href.includes('wa.me')
+  const entrance = still
+    ? {}
+    : {
+        initial: { opacity: 0, y: 46 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: '-90px' },
+        transition: { duration: 0.75, delay: 0.09 * i, ease: [0.22, 1, 0.36, 1] as const },
+      }
   return (
     <motion.a
       href={p.href}
@@ -154,14 +187,11 @@ function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
       className={`group relative block shrink-0 w-[min(48vw,var(--wm))] md:w-[var(--w)] mt-[var(--dm)] md:mt-[var(--d)]
                   ${i % 2 ? 'rotate-[-1.15deg]' : 'rotate-[1.15deg]'} md:rotate-0`}
       style={{
-        '--w': p.vw.w, '--t': p.vw.t, '--d': p.vw.d,
-        '--wm': p.px.w, '--tm': p.px.t, '--dm': p.px.d,
+        '--w': seat.vw.w, '--t': seat.vw.t, '--d': seat.vw.d,
+        '--wm': seat.px.w, '--tm': seat.px.t, '--dm': seat.px.d,
         y: drift as never,
       } as React.CSSProperties}
-      initial={{ opacity: 0, y: 46 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-90px' }}
-      transition={{ duration: 0.75, delay: 0.09 * i, ease: [0.22, 1, 0.36, 1] }}
+      {...entrance}
     >
       <div
         className="relative overflow-hidden rounded-[0.9rem] border border-ink/10 transition-transform duration-500 ease-out group-hover:-translate-y-2 h-[var(--tm)] md:h-[var(--t)]"
@@ -215,30 +245,57 @@ function Card({ p, i, drift }: { p: Project; i: number; drift: unknown }) {
   )
 }
 
-export function TrustPills({ reduced }: { reduced: boolean }) {
+export function TrustPills({ reduced, immediate = false }: { reduced: boolean; immediate?: boolean }) {
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 items-start">
       {TRUST.map((b, i) => (
-        <TrustPill key={b.t} b={b} i={i} reduced={reduced} />
+        <TrustPill key={b.t} b={b} i={i} reduced={reduced} immediate={immediate} />
       ))}
     </div>
   )
 }
 
-/* batch 45 (owner): trust may be switched off — /kontakt moved the pills into its hero */
-export default function Radovi({ trust = true }: { trust?: boolean } = {}) {
+/* batch 45 (owner): trust may be switched off — /kontakt moved the pills into its hero.
+   batch 46 (owner): `order` rotates which projects sit where (/kontakt differs from home),
+   `pinned` locks the camera and turns the cascade into the conveyor. */
+export default function Radovi({ trust = true, order, pinned = false }: {
+  trust?: boolean
+  order?: number[]
+  pinned?: boolean
+} = {}) {
   const ref = useRef<HTMLDivElement>(null)
+  const runRef = useRef<HTMLDivElement>(null)
   const { p: world, reduced } = useWorld()
   const [enter, exit] = useWorldRange(ref, 1.05, 0.15)
-  // the cascade breathes with the descent — back cards drift further than front ones
+  // the cascade breathes with the descent — back cards drift further than front ones.
+  // batch 46: SPRINGS between the world and the cards — a re-measured range lands as a
+  // soft glide instead of a jump (his "glitching cards", home + kontakt)
   const d0 = useTransform(world, [enter, exit], [26, -26])
   const d1 = useTransform(world, [enter, exit], [18, -18])
   const d2 = useTransform(world, [enter, exit], [10, -10])
   const d3 = useTransform(world, [enter, exit], [4, -4])
-  const drifts = reduced ? [0, 0, 0, 0] : [d0, d1, d2, d3]
+  const s0 = useSpring(d0, { stiffness: 70, damping: 22, mass: 0.5 })
+  const s1 = useSpring(d1, { stiffness: 70, damping: 22, mass: 0.5 })
+  const s2 = useSpring(d2, { stiffness: 70, damping: 22, mass: 0.5 })
+  const s3 = useSpring(d3, { stiffness: 70, damping: 22, mass: 0.5 })
+  const drifts = reduced ? [0, 0, 0, 0] : [s0, s1, s2, s3]
 
-  return (
-    <div ref={ref} className="relative mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-28">
+  const list = order ? order.map((i) => PROJECTS[i]) : PROJECTS
+  const N = list.length
+
+  // the conveyor's position: r advances one step per scroll breath (quantized dwells)
+  const [r, setR] = useState(0)
+  const { scrollYProgress } = useScroll({ target: runRef, offset: ['start start', 'end end'] })
+  useEffect(() => {
+    if (!pinned) return
+    return scrollYProgress.on('change', (p) => {
+      const steps = N // one full cycle: every project takes the big seat once
+      setR(Math.min(steps - 1, Math.max(0, Math.floor(p * steps))))
+    })
+  }, [scrollYProgress, pinned, N])
+
+  const header = (
+    <>
       {/* REF 1 MEASURED: THREE stacked headline lines top-left ending in a period, with the
           tiny note top-RIGHT sitting level with the third line. */}
       <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-end">
@@ -266,30 +323,80 @@ export default function Radovi({ trust = true }: { trust?: boolean } = {}) {
       >
         <span>Projekti</span>
       </motion.div>
+    </>
+  )
 
-      {/* THE CASCADE (batch 10, fluid) — smallest → biggest, left to right, overlapping
-          rightward. On md+ everything is vw: the row totals 105.5vw, is justified right
-          with 2vw kept from the right edge, and its 7.5vw of left overflow IS the 40% cut
-          of the first card — identical composition on every desktop width. Phones keep the
-          px h-scroll with the first card cut by margin. */}
-      <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 overflow-x-auto md:overflow-visible pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex items-start pr-4 md:justify-end md:pr-[2vw]">
-          {PROJECTS.map((p, i) => (
-            <div
-              key={p.name}
-              className={`relative ${i === 0 ? '-ml-[74px] md:ml-0' : '-ml-8 md:-ml-[2vw]'}`}
-              style={{ zIndex: 10 + i * 10 }}
-            >
-              <Card p={p} i={i} drift={drifts[i]} />
-            </div>
-          ))}
-        </div>
+  /* THE CASCADE (batch 10, fluid) — smallest → biggest, left to right, overlapping
+     rightward. On md+ everything is vw; phones keep the px h-scroll. */
+  const staticRow = (
+    <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 overflow-x-auto md:overflow-visible pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex items-start pr-4 md:justify-end md:pr-[2vw]">
+        {list.slice(0, 4).map((p, i) => (
+          <div
+            key={p.name}
+            className={`relative ${i === 0 ? '-ml-[74px] md:ml-0' : '-ml-8 md:-ml-[2vw]'}`}
+            style={{ zIndex: 10 + i * 10 }}
+          >
+            <Card p={p} seat={SEATS[i]} i={i} drift={drifts[i]} />
+          </div>
+        ))}
       </div>
+    </div>
+  )
 
-      {/* the trust facts — glass, cloud-soft, all of them true. Batch 8: they FLOAT in
-          place, and they shy away from the cursor — approach one and it drifts off, capped
-          so it never leaves its seat. Springs do the settling; reduced motion gets them
-          still and seated. */}
+  /* batch 46 (owner): THE CONVEYOR — the camera locks; each scroll breath sends every
+     card one seat to the RIGHT: the big right card exits and dissolves, the next project
+     enters small from the left. FLIP layout animations carry seat-to-seat travel. */
+  const seatProject = (s: number) => list[(((s - r) % N) + N) % N]
+  const pinnedRow = (
+    <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 pb-2">
+      <div className="flex items-start pr-4 md:justify-end md:pr-[2vw]">
+        <AnimatePresence mode="popLayout" initial={false}>
+          {[0, 1, 2, 3].map((s) => {
+            const p = seatProject(s)
+            return (
+              <motion.div
+                key={p.name}
+                layout
+                initial={{ opacity: 0, x: -160, scale: 0.92 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 200, scale: 0.96 }}
+                transition={{ duration: 0.65, ease: [0.3, 0, 0.2, 1] }}
+                className={`relative ${s === 0 ? '-ml-[74px] md:ml-0' : '-ml-8 md:-ml-[2vw]'}`}
+                style={{ zIndex: 10 + s * 10 }}
+              >
+                <Card p={p} seat={SEATS[s]} i={s} drift={drifts[s]} still />
+              </motion.div>
+            )
+          })}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+
+  if (pinned && !reduced) {
+    return (
+      <div ref={ref} className="relative mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-28">
+        {header}
+        {/* the runway: one dwell per project — every rider takes the big seat once */}
+        <div ref={runRef} className="relative w-full" style={{ height: `${N * 62 + 100}vh` }}>
+          <div className="sticky top-0 flex h-screen w-full flex-col justify-center">
+            {pinnedRow}
+          </div>
+        </div>
+        {trust && (
+          <div className="mt-2 md:mt-6">
+            <TrustPills reduced={reduced} />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div ref={ref} className="relative mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-28">
+      {header}
+      {staticRow}
       {trust && (
         <div className="mt-14 md:mt-20">
           <TrustPills reduced={reduced} />

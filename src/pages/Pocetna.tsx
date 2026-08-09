@@ -77,7 +77,7 @@ export default function Pocetna() {
                 y={['0%', '-10%']} base={0.85} mask={MASK.sky}
               />
             }>
-              <Radovi />
+              <Radovi pinned />
             </Beat>
 
             {/* what we sell — the quill flourish rides the right margin, a whisper;

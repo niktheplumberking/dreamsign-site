@@ -1,6 +1,6 @@
 // GALAXY HOME STRUCTURAL REPLICA — Section 1: Navbar (fixed, centered, floating pill).
 // Exact classes; swaps: clover SVG → cloud-D, palette, Serbian links, WhatsApp CTA.
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { WA_LINK } from '../lib/hooks'
@@ -31,6 +31,13 @@ export function GlossyPill({ href, className = '', children }: { href: string; c
 export default function Nav() {
   const [open, setOpen] = useState(false)
   const [marked, setMarked] = useState(false) // the DS mark opens into the full name
+  // batch 46 (owner): the LATCH — at the hitbox boundary (and on scroll under a resting
+  // cursor) enter/leave can oscillate and the mark flickered mid-open. Entering cancels
+  // any pending collapse; leaving collapses only after a 260ms grace, so boundary jitter
+  // never reverses the gesture mid-flight.
+  const leaveT = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const markEnter = () => { if (leaveT.current) clearTimeout(leaveT.current); setMarked(true) }
+  const markLeave = () => { if (leaveT.current) clearTimeout(leaveT.current); leaveT.current = setTimeout(() => setMarked(false), 260) }
   const { pathname } = useLocation()
   return (
     <>
@@ -45,10 +52,10 @@ export default function Nav() {
             to="/" aria-label="DreamSign — početna"
             className="flex items-baseline leading-none text-[19px] md:text-[24px] rounded-sm
                        outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
-            onMouseEnter={() => setMarked(true)}
-            onMouseLeave={() => setMarked(false)}
-            onFocus={() => setMarked(true)}
-            onBlur={() => setMarked(false)}
+            onMouseEnter={markEnter}
+            onMouseLeave={markLeave}
+            onFocus={markEnter}
+            onBlur={markLeave}
           >
             <Lockup expanded={marked} />
           </Link>
