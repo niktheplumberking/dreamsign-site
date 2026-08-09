@@ -147,28 +147,89 @@ export function EditablePrice({ k, children }: { k: string; children: any }) {
 }
 
 /* --------------------------------------------------------------- editable image */
+// UPLOAD SAFETY LIVES IN THREE PLACES, and only two of them are controls.
+//
+// The bytes go straight from this browser to Supabase Storage — there is no server of ours in the
+// middle. So the REAL enforcement is the bucket (allowed_mime_types, file_size_limit) and the
+// storage policy (folder fence + extension gate), in owners-key-upload-hardening.sql. Everything
+// in this file is the third place: it exists so a client who picks a 30 MB TIFF gets told why in
+// their own language instead of a red 400 from an API they have never heard of.
+//
+// This code is NOT the control. Anyone can bypass it with a terminal. It is written as if the
+// server did not exist, and the server is written as if this did not exist.
+const MAX_BYTES = 5 * 1024 * 1024                                  // matches the bucket exactly
+const ALLOWED = ['image/png', 'image/jpeg', 'image/webp', 'image/avif', 'image/gif'] as const
+const ALLOWED_EXT = ['png', 'jpg', 'jpeg', 'webp', 'avif', 'gif']
+
+// The first bytes of a file say what it really is; the name and the declared type are just claims.
+// A .png that starts with "<svg" or "<!DOCTYPE html" is caught here rather than at the bucket.
+async function sniff(file: File): Promise<string | null> {
+  const b = new Uint8Array(await file.slice(0, 16).arrayBuffer())
+  const hex = [...b].map((x) => x.toString(16).padStart(2, '0')).join('')
+  const ascii = String.fromCharCode(...b).toLowerCase()
+  if (hex.startsWith('89504e47')) return 'image/png'
+  if (hex.startsWith('ffd8ff')) return 'image/jpeg'
+  if (hex.startsWith('47494638')) return 'image/gif'
+  if (ascii.slice(0, 4) === 'riff' && ascii.slice(8, 12) === 'webp') return 'image/webp'
+  if (ascii.includes('ftypavif')) return 'image/avif'
+  if (ascii.trimStart().startsWith('<svg') || ascii.includes('<?xml')) return 'image/svg+xml'
+  if (ascii.trimStart().startsWith('<!doctype') || ascii.trimStart().startsWith('<html')) return 'text/html'
+  return null
+}
+
+/** Returns an error message for the client, or null when the file is acceptable. */
+async function checkImage(file: File): Promise<string | null> {
+  const ext = (file.name.split('.').pop() || '').toLowerCase()
+  if (file.size === 0) return 'That file is empty.'
+  if (file.size > MAX_BYTES) return `That image is ${(file.size / 1048576).toFixed(1)} MB. The limit is 5 MB — please resize it and try again.`
+  if (!ALLOWED_EXT.includes(ext)) return `We accept ${ALLOWED_EXT.join(', ')} images. That file is a .${ext || 'file with no extension'}.`
+  if (!ALLOWED.includes(file.type as any)) return `We accept ${ALLOWED_EXT.join(', ')} images. That file says it is ${file.type || 'an unknown type'}.`
+  const real = await sniff(file)
+  // SVG is refused outright: it is an XML document that can carry scripts, and it would execute on
+  // the storage origin. Refusing it is one line; sanitising it properly is a parser.
+  if (real === 'image/svg+xml') return 'SVG images are not supported here, because they can carry code. Please export a PNG or WebP instead.'
+  if (real && real !== file.type) return `That file is named .${ext} but its contents are ${real}. Please re-export it.`
+  if (!real) return 'We could not recognise that as an image. Please export it as PNG, JPG or WebP.'
+  return null
+}
+
 export function EditableImage({ k, src, alt = '', className = '' }: { k: string; src: string; alt?: string; className?: string }) {
   const ctx = useOwnersKey()
   const value = useValue(k, src)
   const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState('')
   if (!ctx?.editing || !ctx.siteId || !ctx.sb) return <img src={value} alt={alt} className={className} />
   const pick = async (file: File) => {
+    setErr('')
+    const problem = await checkImage(file)
+    if (problem) { setErr(problem); return }
     setBusy(true)
-    // foldered by slug — the storage policy compares this folder to the caller's own site
-    const path = `${ctx.slug}/${k.replace(/[^\w.-]/g, '_')}-${Date.now()}.${file.name.split('.').pop()}`
-    const { error } = await ctx.sb!.storage.from('site-media').upload(path, file, { upsert: true })
-    if (!error) {
-      const { data } = ctx.sb!.storage.from('site-media').getPublicUrl(path)
-      await ctx.save(k, { v: data.publicUrl })
+    // The extension is rebuilt from the allow-list rather than carried over from the uploaded
+    // name, so a filename like "photo.png.svg" cannot decide what lands in a public bucket.
+    const ext = (file.name.split('.').pop() || 'png').toLowerCase()
+    const path = `${ctx.slug}/${k.replace(/[^\w.-]/g, '_')}-${Date.now()}.${ALLOWED_EXT.includes(ext) ? ext : 'png'}`
+    const { error } = await ctx.sb!.storage.from('site-media')
+      .upload(path, file, { upsert: true, contentType: file.type, cacheControl: '31536000' })
+    if (error) {
+      // This used to be `if (!error)` with no else: a rejected upload simply stopped the spinner
+      // and left the old image in place, so the client had no idea anything had failed.
+      setErr(/mime|content type/i.test(error.message) ? 'That file type is not allowed.'
+        : /size|large|payload/i.test(error.message) ? 'That image is too large. The limit is 5 MB.'
+          : `Upload failed: ${error.message}`)
+      setBusy(false)
+      return
     }
+    const { data } = ctx.sb!.storage.from('site-media').getPublicUrl(path)
+    await ctx.save(k, { v: data.publicUrl })
     setBusy(false)
   }
   return (
     <label className={`ok-editable ok-image ${className}`} title={`Editable image · ${k}`}>
       <img src={value} alt={alt} className={className} />
-      <input type="file" accept="image/*" hidden
-        onChange={(e) => e.target.files?.[0] && pick(e.target.files[0])} />
+      <input type="file" accept={ALLOWED.join(',')} hidden
+        onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) pick(f) }} />
       <span className="ok-badge">{busy ? 'uploading…' : 'change image'}</span>
+      {err && <em className="ok-err">{err}</em>}
     </label>
   )
 }

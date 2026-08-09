@@ -1,0 +1,13 @@
+# RFC 9116 — how to tell us about a security problem with this site.
+# Audit item 49. Without this file a researcher who finds a hole has to guess an address,
+# and most of them will simply move on rather than guess.
+
+Contact: mailto:podrska@dreamsign.rs
+Contact: https://wa.me/381637736963
+Expires: 2027-08-09T00:00:00.000Z
+Preferred-Languages: sr, en
+Canonical: https://dreamsign-preview.vercel.app/.well-known/security.txt
+
+# LAUNCH SWAP (Stage 8): Canonical becomes https://dreamsign.rs/.well-known/security.txt
+# when the domain is live. Expires must be pushed forward before the date above — an expired
+# security.txt is treated as unmaintained, which is worse than not publishing one.
