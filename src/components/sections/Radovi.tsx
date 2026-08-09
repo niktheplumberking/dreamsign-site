@@ -34,10 +34,10 @@ type Project = {
  * through them.
  */
 const SEATS = [
-  { vw: { w: '18.5vw', t: '25.2vw', d: '9vw' }, px: { w: '230px', t: '340px', d: '90px' } },
-  { vw: { w: '23.5vw', t: '28.7vw', d: '6vw' }, px: { w: '270px', t: '380px', d: '60px' } },
-  { vw: { w: '29.5vw', t: '33vw', d: '2.8vw' }, px: { w: '310px', t: '420px', d: '28px' } },
-  { vw: { w: '40vw', t: '40vw', d: '0vw' }, px: { w: '340px', t: '470px', d: '0px' } },
+  { vw: { w: '15.7vw', t: '21.4vw', d: '7.6vw' }, px: { w: '200px', t: '290px', d: '76px' } },
+  { vw: { w: '20vw', t: '24.4vw', d: '5.1vw' }, px: { w: '230px', t: '325px', d: '51px' } },
+  { vw: { w: '25.1vw', t: '28vw', d: '2.4vw' }, px: { w: '265px', t: '360px', d: '24px' } },
+  { vw: { w: '34vw', t: '34vw', d: '0vw' }, px: { w: '290px', t: '400px', d: '0px' } },
 ]
 
 // batch 21 (owner): his order, left to right — Metal Kolor, Pizzdarija, MindxBridge,

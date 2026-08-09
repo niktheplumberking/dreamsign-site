@@ -27,19 +27,27 @@ import { PAGE_SCHEMA } from '../lib/schema'
 const RECENZIJE = [
   {
     thumb: '/media/radovi/bennett.webp', name: 'Bennett & Co', meta: 'bennettndco.com', href: 'https://www.bennettndco.com',
+    title: 'Identitet koji uliva poverenje',
     line: 'Kompletan identitet i korporativni sajt — od logotipa i vizuala do lansiranja na sopstvenom domenu. Miran, precizan nastup za firmu kojoj se veruje na reč: sve na jednom mestu, sve potpisano.',
+    tags: ['Brend', 'Korporativni sajt'],
   },
   {
     thumb: '/media/radovi/metalkolor.webp', name: 'Metal Kolor', meta: 'metal-kolor.rs', href: 'https://metal-kolor.rs/',
+    title: 'Izlog za zanat koji traje',
     line: 'Katalog, galerija i kontakt za majstore Srema. Zanat je dobio izlog kakav zaslužuje — jasan, brz i bez komplikacija, da mušterija za tri klika stigne do telefona.',
+    tags: ['Web sajt', 'Katalog'],
   },
   {
     thumb: '/media/radovi/pizzdarija.webp', name: 'Pizzdarija', meta: 'pizzdarija.rs', href: 'https://www.pizzdarija.rs/',
+    title: 'Porudžbina na dva klika',
     line: 'Meni, priča i porudžbina na dva klika — u duhu lokala koji miriše na vatru. Toplo i direktno, po meri gostiju koji tačno znaju šta hoće: picu na drva, bez zaobilaženja.',
+    tags: ['Web sajt', 'Meni'],
   },
   {
     thumb: '/media/brand/cloud-d.webp', name: 'Vaš projekat', meta: 'Započnite razgovor', href: WA_LINK,
+    title: 'Vaše mesto u ovom nizu',
     line: 'Sledeći rad kojim se hvalimo može biti vaš. Dva klika i razgovaramo — bez formulara, bez čekanja, direktno sa ljudima koji će vaš sajt zaista graditi. Razgovor ništa ne košta.',
+    tags: ['WhatsApp', 'Bez obaveza'],
   },
 ]
 
@@ -67,6 +75,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
   const next = useCallback(() => jump(idx + 1), [jump, idx])
   const prev = useCallback(() => jump(idx - 1), [jump, idx])
 
+  const prevOffs = useRef<Record<string, number>>({})
   const viewRef = useRef<HTMLDivElement>(null)
   const [slotW, setSlotW] = useState(0)
   const [slots, setSlots] = useState(3)
@@ -100,7 +109,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
           the rating badge sat (we claim no stars we don't have) */}
       {/* batch 45 (owner): the head MUCH bigger, on the house duet rule — row 1 primary,
           row 2 in the quill; the fact subtitle deleted (his order) */}
-      <div className="text-center">
+      <div className="pt-[9vh] text-center">
         <motion.h2
           initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -119,7 +128,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
       </div>
 
       {/* the reference's body: quote block left, the cards right */}
-      <div className="mt-14 grid grid-cols-1 items-start gap-10 sm:mt-16 lg:grid-cols-12 lg:gap-14">
+      <div className="mt-10 grid grid-cols-1 items-start gap-10 sm:mt-12 lg:grid-cols-12 lg:gap-14">
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
@@ -143,31 +152,57 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
             {RECENZIJE.map((r, i) => {
               const s = mod(i - mod(idx, N), N)
               const off = s === N - 1 ? -1 : s
+              // batch 47 (owner): the LEFT card slides left and DISSOLVES — and the card
+              // wrapping around to the right pops into its seat instead of sliding across
+              // the whole row over its neighbours (his note)
+              const prev = prevOffs.current[r.name] ?? off
+              const wrapped = Math.abs(off - prev) > 1.5
+              prevOffs.current[r.name] = off
               return (
                 <motion.div
                   key={r.name}
                   className="absolute left-0 top-1 h-[calc(100%-8px)]"
                   style={{ width: slots === 1 ? '100%' : `calc((100% - ${(slots - 1) * 16}px) / ${slots})` }}
                   initial={false}
-                  animate={{ x: off * slotW }}
-                  transition={{ duration: reduced || !slotW ? 0 : 0.7, ease: [0.3, 0, 0.2, 1] }}
+                  animate={{ x: off * slotW, opacity: off === -1 ? 0 : 1 }}
+                  transition={
+                    reduced || !slotW
+                      ? { duration: 0 }
+                      : wrapped
+                        ? { x: { duration: 0 }, opacity: { duration: 0.45, ease: 'easeOut' } }
+                        : { duration: 0.7, ease: [0.3, 0, 0.2, 1] }
+                  }
                 >
+                  {/* batch 47 (owner): real card anatomy — head, rule, title, body, tags */}
                   <a
                     href={r.href} target="_blank" rel="noopener"
-                    className="flex h-full w-full flex-col rounded-2xl border border-white/80 bg-white p-6 text-left shadow-[0_10px_30px_rgba(22,50,79,0.08)] transition-transform hover:scale-[1.02] sm:p-8"
+                    className="flex h-full w-full flex-col rounded-2xl border border-white/80 bg-white p-6 text-left shadow-[0_10px_30px_rgba(22,50,79,0.08)] transition-transform hover:scale-[1.02] sm:p-7"
                   >
-                    <p className="text-[15px] font-medium leading-relaxed text-ink/80 sm:text-[17px] sm:leading-relaxed">{r.line}</p>
-                    <div className="mt-auto flex items-center gap-3 border-t border-ink/10 pt-4">
+                    <div className="flex items-center gap-3">
                       <img
                         src={r.thumb} alt={r.name}
                         className="h-12 w-12 shrink-0 rounded-full border border-ink/15 bg-white object-cover object-top"
                       />
                       <span className="flex min-w-0 flex-col">
                         <span className="truncate text-[15.5px] font-semibold text-ink">{r.name}</span>
-                        <span className="truncate text-[12px] font-semibold uppercase tracking-[0.12em] text-accent">
+                        <span className="truncate text-[11.5px] font-semibold uppercase tracking-[0.12em] text-accent">
                           {r.meta} ↗
                         </span>
                       </span>
+                    </div>
+                    <div aria-hidden className="mt-4 h-px w-full bg-ink/10" />
+                    <h3 className="mt-4 text-lg font-semibold leading-snug tracking-tight text-ink sm:text-xl">
+                      {r.title}
+                    </h3>
+                    <p className="mt-2.5 text-[14.5px] font-medium leading-relaxed text-ink/70 sm:text-[15.5px]">
+                      {r.line}
+                    </p>
+                    <div className="mt-auto flex flex-wrap gap-2 pt-4">
+                      {r.tags.map((t) => (
+                        <span key={t} className="rounded-full border border-ink/15 bg-tint/50 px-3 py-1 text-[11.5px] font-semibold text-ink/70">
+                          {t}
+                        </span>
+                      ))}
                     </div>
                   </a>
                 </motion.div>
@@ -220,12 +255,15 @@ function KontaktBody() {
           (fonts and sizes swapped from the old classic hero); the side texts deleted */}
       {/* no trust text row here — the four GLASS cards carry those exact facts in the
           hero's sea now (batch 45); doubling them read as noise */}
+      {/* batch 47 (owner): the cloud button between the title and the pills — glides
+          down to the booking card in the FAQ */}
       <PageHero
         flip
         script="Dobar dan."
         title="Dva klika i razgovaramo."
         titleK="kontakt-naslov"
         scriptSize="text-[clamp(2rem,7.4vw,6rem)]"
+        more={{ label: 'Zakažite termin', targetId: 'booking-embed-slot' }}
       />
 
       <div className="pointer-events-none relative z-20 -mt-[18vh]">
