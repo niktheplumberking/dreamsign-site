@@ -99,8 +99,11 @@ function Row({ s, i, reduced }: { s: Service; i: number; reduced: boolean }) {
       onMouseLeave={() => mx.set(0)}
       className="relative py-8 md:py-10"
     >
-      {/* the sweep: the row's own padding walks the numeral across the page */}
-      <div className={`flex items-center gap-5 md:gap-8 ${['', 'pl-[10%] md:pl-[20%]', 'pl-[21%] md:pl-[42%]', 'pl-[32%] md:pl-[64%]'][i]}`}>
+      {/* the sweep: the row's own padding walks the numeral across the page.
+          batch 50 (owner, mobile audit): the sweep is a DESKTOP gesture — on a phone it
+          squeezed rows 03/04 into a 150px gutter and drove their captions into the right
+          edge. Below md every row starts flush left and keeps its right margin. */}
+      <div className={`flex items-center gap-5 pr-1 md:gap-8 ${['', 'md:pl-[20%]', 'md:pl-[42%]', 'md:pl-[64%]'][i]}`}>
         <motion.span
           aria-hidden
           style={{ x: numX }}
@@ -110,7 +113,7 @@ function Row({ s, i, reduced }: { s: Service; i: number; reduced: boolean }) {
           {s.n}
         </motion.span>
         <motion.div style={{ x: txtX }} className="min-w-0">
-          <h3 className="font-semibold uppercase tracking-[0.1em] text-ink text-[13px] md:text-[14.5px]">
+          <h3 className="font-semibold uppercase tracking-[0.1em] text-ink text-[13.5px] md:text-[14.5px]">
             {s.title}
           </h3>
           <p className="mt-1 text-[12.5px] md:text-[13px] uppercase tracking-[0.06em] leading-relaxed text-ink/55 max-w-[30ch]">
@@ -151,7 +154,11 @@ export default function NaseUsluge() {
           TOUCHES/OVERLAPS both words, exactly like the zebra A. The D is absolutely centred
           and z-raised; the words tuck slightly UNDER its edges (negative margins on the D's
           box do the touching). It still turns on the world's scroll, square-on at rest. */}
-      <h2 className="relative flex items-baseline justify-between leading-none">
+      {/* batch 50 (owner, mobile audit): on a phone the two words sit close enough that the
+          centred D lay ON them — „Naše" and „Usluge" were both half-covered. Below md the
+          line becomes a COLUMN (word · D · word), so the letter gets its own stage; md+ is
+          the untouched reference composition. */}
+      <h2 className="relative flex flex-col items-center gap-1 leading-none md:flex-row md:items-baseline md:justify-between md:gap-0">
         <motion.span
           initial={{ opacity: 0, x: -28 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -175,11 +182,12 @@ export default function NaseUsluge() {
           Usluge
         </motion.span>
 
-        {/* the D, above the words, centred — its box is wider than the gap so it touches */}
+        {/* the D: on md+ it stands ABOVE the words, centred, its box wider than the gap so
+            it touches them; on a phone it is a row of its own between them (order-2) */}
         <span
           aria-hidden
-          className="absolute left-1/2 top-1/2 z-10 block -translate-x-1/2 -translate-y-1/2"
-          style={{ perspective: 1100, width: 'clamp(10rem,27vw,21.5rem)' }}
+          className="relative z-10 order-2 block w-[42vw] md:absolute md:left-1/2 md:top-1/2 md:w-[clamp(10rem,27vw,21.5rem)] md:-translate-x-1/2 md:-translate-y-1/2"
+          style={{ perspective: 1100 }}
         >
           {/* NO filter on the turning letter (jank law) — the render carries its own light */}
           <motion.div style={{ scale: reduced ? 1 : lift }}>
@@ -222,7 +230,7 @@ export default function NaseUsluge() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6, delay: 0.12 }}
-          className="group inline-flex items-center gap-2 border-b border-accent/60 pb-1.5
+          className="group inline-flex items-center gap-2 border-b border-accent/60 pb-2 pt-2
                      text-[13px] font-semibold uppercase tracking-[0.16em] text-accent
                      transition-colors duration-300 hover:border-accent hover:text-ink"
         >

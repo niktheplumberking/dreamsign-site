@@ -50,7 +50,7 @@ export default function Nav() {
           {/* the DS mark; hover or keyboard focus opens it into the full name */}
           <Link
             to="/" aria-label="DreamSign — početna"
-            className="flex items-baseline leading-none text-[19px] md:text-[24px] rounded-sm
+            className="flex items-baseline leading-none text-[19px] md:text-[24px] rounded-sm py-2 -my-2
                        outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
             onMouseEnter={markEnter}
             onMouseLeave={markLeave}
@@ -61,9 +61,12 @@ export default function Nav() {
           </Link>
           <div className="hidden md:flex items-center gap-6 text-sm">
             {LINKS.map((l) => (
+              // batch 50 (mobile audit): py/-my grows the TOUCH box to 36px without moving
+              // a pixel of layout — the pill's height and every measurement taken against
+              // it stay exactly as composed
               <Link key={l.href} to={l.href}
                  aria-current={pathname === l.href ? 'page' : undefined}
-                 className={pathname === l.href ? 'text-ink' : 'text-ink/55 hover:text-ink transition-colors'}>
+                 className={`py-2 -my-2 ${pathname === l.href ? 'text-ink' : 'text-ink/55 hover:text-ink transition-colors'}`}>
                 {l.label}
               </Link>
             ))}

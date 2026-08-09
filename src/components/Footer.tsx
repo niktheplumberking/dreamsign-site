@@ -70,7 +70,7 @@ export default function Footer() {
               <svg viewBox={SIGNATURE_VIEWBOX} className="mt-1 w-[200px] overflow-visible" aria-hidden>
                 <path d={SIGNATURE_STROKE} fill="#2458A6" />
               </svg>
-              <p className="mt-2 text-[11.5px] uppercase tracking-[0.16em] text-ink/55">
+              <p className="mt-2 text-[12px] uppercase tracking-[0.16em] text-ink/55">
                 Vlasnik · DreamSign
               </p>
             </div>
@@ -78,7 +78,7 @@ export default function Footer() {
 
           <nav className="flex flex-col gap-2.5 text-[15px]" aria-label="Stranice" style={GLOW}>
             {PAGES.map(p => (
-              <Link key={p.href} to={p.href} className="text-ink/75 hover:text-ink transition-colors w-fit">
+              <Link key={p.href} to={p.href} className="text-ink/75 hover:text-ink transition-colors w-fit py-2 -my-2">
                 {p.label}
               </Link>
             ))}
@@ -91,26 +91,26 @@ export default function Footer() {
             <p>
               <a
                 href={'tel:' + bk('kontakt-telefon', LEGAL.phone).replace(/[^+\d]/g, '')}
-                className="text-ink/75 hover:text-ink transition-colors"
+                className="text-ink/75 hover:text-ink transition-colors inline-block py-2 -my-2"
               >
                 <EditableText k="kontakt-telefon">{bk('kontakt-telefon', LEGAL.phone)}</EditableText>
               </a>
             </p>
             <p>
-              <a href={`mailto:${LEGAL.email}`} className="text-ink/75 hover:text-ink transition-colors break-all">
+              <a href={`mailto:${LEGAL.email}`} className="text-ink/75 hover:text-ink transition-colors break-all inline-block py-2 -my-2">
                 {LEGAL.email}
               </a>
             </p>
             <p>
               {/* a deeper blue than the brand accent: over the plain, #2458A6 sits at 4.3:1 */}
-              <a href={WA_LINK} target="_blank" rel="noopener" className="text-[#1C4585] hover:text-ink transition-colors font-semibold">
+              <a href={WA_LINK} target="_blank" rel="noopener" className="text-[#1C4585] hover:text-ink transition-colors font-semibold inline-block py-2 -my-2">
                 WhatsApp — započnite razgovor
               </a>
             </p>
             {/* the legal pair, side by side beneath the WhatsApp line (batch 4) */}
             <p className="flex flex-wrap gap-x-6 gap-y-1 pt-1 text-[13px]">
               {LEGAL_PAGES.map(p => (
-                <a key={p.href} href={p.href} className="text-ink/60 hover:text-ink transition-colors">
+                <a key={p.href} href={p.href} className="text-ink/60 hover:text-ink transition-colors inline-block py-2.5 -my-2">
                   {p.label}
                 </a>
               ))}
@@ -120,7 +120,7 @@ export default function Footer() {
 
         {/* ---- band 2: the three things on one line ---- */}
         <div
-          className="pb-7 grid gap-2 text-[11.5px] text-ink/60 text-center
+          className="pb-7 grid gap-2 text-[12px] text-ink/60 text-center
                      sm:grid-cols-3 sm:items-baseline sm:text-left"
           style={GLOW}
         >

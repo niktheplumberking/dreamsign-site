@@ -14,7 +14,7 @@ const Y1 = +(process.env.Y1 || H)
 
 const browser = await launch()
 const page = await openPage(browser, W, H, W < 500)
-await page.goto(`${BASE}/?jump=${JUMP}`, { waitUntil: 'networkidle0' })
+await page.goto(`${BASE}${process.env.ROUTE || "/"}?jump=${JUMP}`, { waitUntil: 'networkidle0' })
 await ready(page)
 
 const count = await page.evaluate(() => {

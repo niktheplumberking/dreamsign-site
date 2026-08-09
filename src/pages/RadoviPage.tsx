@@ -142,7 +142,7 @@ function ReferenceRotator() {
             >
               {r.t}
             </blockquote>
-            <figcaption className="liquid-glass rounded-full px-4 py-1.5 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-accent">
+            <figcaption className="liquid-glass rounded-full px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-accent sm:text-[10.5px]">
               {r.s}
             </figcaption>
           </motion.figure>
@@ -312,13 +312,13 @@ function ProjectCopy({ text, meta, href, label, href2, label2, align = 'center',
         className={`mt-5 text-[12.5px] font-semibold uppercase tracking-[0.16em] text-ink/55 ${alignCls}`}
       >
         {meta} ·{' '}
-        <a href={href} target="_blank" rel="noopener" className="text-accent transition-colors hover:text-ink">
+        <a href={href} target="_blank" rel="noopener" className="text-accent transition-colors hover:text-ink inline-block py-2.5 -my-2">
           {label} ↗
         </a>
         {href2 && label2 && (
           <>
             {' '}·{' '}
-            <a href={href2} target="_blank" rel="noopener" className="text-accent transition-colors hover:text-ink">
+            <a href={href2} target="_blank" rel="noopener" className="text-accent transition-colors hover:text-ink inline-block py-2.5 -my-2">
               {label2} ↗
             </a>
           </>
@@ -350,15 +350,15 @@ function ProjectCopy({ text, meta, href, label, href2, label2, align = 'center',
               >
                 <dl className={`max-w-lg space-y-3 pt-5 text-[14px] leading-relaxed text-ink/75 ${align === 'left' ? 'text-left' : 'text-left'}`}>
                   <div>
-                    <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/50">Problem</dt>
+                    <dt className="text-[12px] font-semibold uppercase tracking-[0.16em] text-ink/50">Problem</dt>
                     <dd className="mt-0.5">{more.problem}</dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink/50">Rešenje</dt>
+                    <dt className="text-[12px] font-semibold uppercase tracking-[0.16em] text-ink/50">Rešenje</dt>
                     <dd className="mt-0.5">{more.fix}</dd>
                   </div>
                   <div>
-                    <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent/80">Efekat</dt>
+                    <dt className="text-[12px] font-semibold uppercase tracking-[0.16em] text-accent/80">Efekat</dt>
                     <dd className="mt-0.5">{more.effect}</dd>
                   </div>
                 </dl>
@@ -414,7 +414,7 @@ function ProjekatPrvi() {
               <span className="text-2xl font-bold uppercase tracking-[0.18em] text-white/95 transition-transform duration-300 group-hover:scale-105 sm:text-3xl">
                 Court&nbsp;Hub
               </span>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/60">
+              <span className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white/60">
                 Dubai · UAE
               </span>
             </motion.a>

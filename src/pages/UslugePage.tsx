@@ -32,15 +32,28 @@ const SkyGap = () => <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
    idly, FLEE the approaching cursor, may overlap in any order, and never cross the
    border. Physics on one rAF loop writing motion values — zero React re-renders; the
    loop sleeps while the fence is off-screen; reduced motion gets calm static seats. */
+/* batch 50 (owner, mobile audit): the fence was 300×144 on a phone, so three 96px clouds
+   bunched in the middle and their labels stacked on top of each other — unreadable. On a
+   phone the fence now spans the width and stands taller, and the clouds grow with it
+   (wSm), so each label has its own sky. The physics reads element sizes live, so nothing
+   else in the loop changes. */
 const PLAY_CLOUDS = [
-  { label: '1. Web dizajn', wPct: 32, seat: [0.06, 0.02] },
-  { label: '2. SEO', wPct: 31, seat: [0.55, 0.12] },
-  { label: '3. Marketing', wPct: 33, seat: [0.6, 0.54] },
+  { label: '1. Web dizajn', wPct: 32, wSm: 37, seat: [0.06, 0.02], seatSm: [0.0, 0.0] },
+  { label: '2. SEO', wPct: 31, wSm: 34, seat: [0.55, 0.12], seatSm: [0.63, 0.16] },
+  { label: '3. Marketing', wPct: 33, wSm: 39, seat: [0.6, 0.54], seatSm: [0.26, 0.62] },
 ]
 
 function CloudMap() {
   const { reduced } = useWorld()
   const boxRef = useRef<HTMLDivElement>(null)
+  const [narrow, setNarrow] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)')
+    const read = () => setNarrow(mq.matches)
+    read()
+    mq.addEventListener('change', read)
+    return () => mq.removeEventListener('change', read)
+  }, [])
   const cloudRefs = useRef<(HTMLDivElement | null)[]>([])
   const x0 = useMotionValue(0), y0 = useMotionValue(0)
   const x1 = useMotionValue(0), y1 = useMotionValue(0)
@@ -48,7 +61,12 @@ function CloudMap() {
   const xs = [x0, x1, x2], ys = [y0, y1, y2]
 
   useEffect(() => {
-    if (reduced) return
+    // batch 50 (owner, mobile audit): NO PHYSICS ON A PHONE. The fence is small enough
+    // there that the edge-steer band covers nearly all of it, so all three clouds were
+    // being nudged to the same middle and their labels stacked into one unreadable knot —
+    // and a phone has no cursor for them to flee from anyway. Below 640 they take three
+    // fixed, well-separated seats and just breathe (see the render branch).
+    if (reduced || narrow) return
     const box = boxRef.current
     if (!box) return
     const mouse = { x: -1e4, y: -1e4 }
@@ -69,8 +87,9 @@ function CloudMap() {
         const w = el.offsetWidth, h = el.offsetHeight
         const maxX = Math.max(0, r.width - w), maxY = Math.max(0, r.height - h)
         if (!seeded) {
-          s.x = Math.min(PLAY_CLOUDS[i].seat[0] * r.width, maxX)
-          s.y = Math.min(PLAY_CLOUDS[i].seat[1] * r.height, maxY)
+          const seat = r.width < 640 ? PLAY_CLOUDS[i].seatSm : PLAY_CLOUDS[i].seat
+          s.x = Math.min(seat[0] * r.width, maxX)
+          s.y = Math.min(seat[1] * r.height, maxY)
         }
         // batch 44 (owner): PERPETUAL — no destinations, no arrivals, no parking. Each
         // cloud cruises on a slowly wandering heading at one constant, very slow speed;
@@ -134,18 +153,30 @@ function CloudMap() {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="pointer-events-none absolute right-0 z-10 aspect-[500/240] w-[300px] sm:w-[440px] md:w-[560px] lg:w-[46vw] lg:max-w-[900px]
-                 top-[13vh] sm:top-[9vh] lg:top-[10vh]"
+      className="pointer-events-none absolute right-0 z-10 aspect-[360/230] w-[94vw] sm:aspect-[500/240] sm:w-[440px] md:w-[560px] lg:w-[46vw] lg:max-w-[900px]
+                 top-[11vh] sm:top-[9vh] lg:top-[10vh]"
       aria-hidden
     >
-      {PLAY_CLOUDS.map((c, i) => (
+      {PLAY_CLOUDS.map((c, i) => {
+        const still = reduced || narrow
+        return (
         <motion.div
           key={c.label}
           ref={(el) => { cloudRefs.current[i] = el }}
           className="absolute left-0 top-0"
+          // phones and reduced motion: a fixed seat with a slow breath; desktop: the
+          // playground's own physics writing x/y
+          animate={narrow && !reduced ? { y: [0, -7, 0] } : undefined}
+          transition={narrow && !reduced
+            ? { duration: 6.5 + i * 1.3, repeat: Infinity, ease: 'easeInOut', delay: i * 0.7 }
+            : undefined}
           style={
-            reduced
-              ? { left: `${c.seat[0] * 100}%`, top: `${c.seat[1] * 100}%`, width: `${c.wPct}%` }
+            still
+              ? {
+                  left: `${(narrow ? c.seatSm[0] : c.seat[0]) * 100}%`,
+                  top: `${(narrow ? c.seatSm[1] : c.seat[1]) * 100}%`,
+                  width: `${narrow ? c.wSm : c.wPct}%`,
+                }
               : { x: xs[i], y: ys[i], width: `${c.wPct}%` }
           }
         >
@@ -154,12 +185,13 @@ function CloudMap() {
             className="w-full select-none drop-shadow-[0_8px_20px_rgba(22,50,79,0.20)]"
           />
           <span className="absolute inset-0 flex items-center justify-center pt-[4%]">
-            <span className="max-w-[62%] text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-ink/85 sm:text-[13px] lg:text-[14px]">
+            <span className="max-w-[70%] text-center text-[12px] font-semibold uppercase leading-tight tracking-[0.08em] text-ink/85 sm:max-w-[62%] sm:text-[13px] lg:text-[14px]">
               {c.label}
             </span>
           </span>
         </motion.div>
-      ))}
+        )
+      })}
     </motion.div>
   )
 }
@@ -184,7 +216,7 @@ function ReferenceCard({ r }: { r: (typeof REFERENCE)[number] }) {
       <span className="flex min-h-[2.5rem] flex-col">
         <span className="text-[13px] font-semibold text-ink sm:text-sm">{r.name}</span>
         <span className="mt-0.5 text-xs font-medium leading-relaxed text-ink/70 sm:text-[13px]">{r.line}</span>
-        <span className="mt-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">{r.label} ↗</span>
+        <span className="mt-1.5 text-[12px] font-semibold uppercase tracking-[0.12em] text-accent">{r.label} ↗</span>
       </span>
     </a>
   )
@@ -360,14 +392,22 @@ function UslugeHero() {
             fade over blue read as a pale stripe (his red circle); now the sheet becomes
             sky, not haze. His 70%-cloud technique rides on top: three real clouds cover
             the band, their soft ink ending inside the section (the clip law). */}
-        <div aria-hidden className="relative" style={{ height: 'max(12vh, 140px)' }}>
+        {/* batch 50 (owner, mobile audit): the melt exists to CONTINUE the 04 sheet past
+            the stage floor — but on a phone the deck is an accordion now, so there is no
+            sheet above it and the melt's solid top painted a hard band across open sky
+            (junction step 64). Phones get plain sky of the guard depth instead; md+ keeps
+            the melt exactly as composed. */}
+        <div aria-hidden className="relative h-[330px] md:h-[max(12vh,140px)]">
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 hidden md:block"
             style={{
               background: `linear-gradient(to bottom, ${CARD_BG} 0%, rgba(216,230,243,0.9) 40%, rgba(176,201,228,0.45) 75%, rgba(176,201,228,0) 100%)`,
             }}
           />
-          <div className="pointer-events-none absolute inset-x-0 bottom-[8px] z-20 select-none">
+          {/* batch 50: these three cover the melt's band — with the melt gone on phones
+              they stand on open sky, and three clouds sharing one bottom line across the
+              full width ARE a step (the batch-30 lesson). Desktop only. */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-[8px] z-20 hidden select-none md:block">
             {[
               { cls: 'left-[-4%] w-[34%]', op: 'opacity-70' },
               { cls: 'left-[30%] w-[38%] scale-x-[-1]', op: 'opacity-70' },
@@ -568,7 +608,7 @@ function StackCard({ i, active, onOpen }: { i: number; active: boolean; onOpen: 
           </span>
         </div>
         <div className="col-span-8 flex flex-col pt-1 sm:pt-3 lg:col-span-9">
-          <button onClick={onOpen} className="group/title flex w-full cursor-pointer items-center justify-between text-left" aria-expanded={active}>
+          <button onClick={onOpen} className="group/title flex w-full cursor-pointer items-center justify-between py-1.5 -my-1.5 text-left" aria-expanded={active}>
             {/* batch 19: brand ramp (colour law) — the hover dim moved to opacity, since
                 a colour change would repaint solid ink over the clipped gradient */}
             <h2 className="ink-gradient text-xl font-semibold uppercase tracking-tight transition-opacity group-hover/title:opacity-75 sm:text-3xl lg:text-[clamp(28px,4.6vh,44px)]">
@@ -595,7 +635,7 @@ function StackCard({ i, active, onOpen }: { i: number; active: boolean; onOpen: 
                   ))}
                   <div className="flex flex-wrap gap-2 pt-2">
                     {s.caps.map((c) => (
-                      <span key={c} className="rounded-full border border-ink/15 bg-white/60 px-3 py-1 text-[11px] font-medium text-ink sm:text-xs">
+                      <span key={c} className="rounded-full border border-ink/15 bg-white/60 px-3 py-1.5 text-[12px] font-medium text-ink">
                         {c}
                       </span>
                     ))}
@@ -625,6 +665,16 @@ function ServicesStack() {
   const ref = useRef<HTMLDivElement>(null)
   const { reduced } = useWorld()
   const [active, setActive] = useState(0)
+  // batch 50: below 900px the deck hands over to a plain accordion (see the `phone` return)
+  const [phone, setPhone] = useState(false)
+  const [openCard, setOpenCard] = useState(0)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 899px)')
+    const read = () => setPhone(mq.matches)
+    read()
+    mq.addEventListener('change', read)
+    return () => mq.removeEventListener('change', read)
+  }, [])
   // reading the scroll, never driving it — the TextFill precedent
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
 
@@ -668,6 +718,24 @@ function ServicesStack() {
     return (
       <div className="flex flex-col gap-10 py-10">
         {SERVICES.map((_, i) => <StackCard key={i} i={i} active onOpen={() => {}} />)}
+      </div>
+    )
+  }
+
+  // batch 50 (owner, mobile audit): THE DECK IS A DESKTOP INSTRUMENT. Parked rows only
+  // show P px of each card, and P has to be small for four of them to fit a phone — so
+  // every two-line title („SEO I POZICIONIRANJE", „OGLAŠAVANJE I KAMPANJE") was sliced
+  // through the middle by the row beneath it. On a phone the four services become a plain
+  // accordion: one open, the rest closed, nothing overlapping and nothing cut. The pin
+  // (and its 420vh of runway) belongs to screens that can hold it.
+  if (phone) {
+    return (
+      <div className="flex flex-col gap-4 px-1 py-8">
+        {SERVICES.map((_, i) => (
+          <div key={i} className="rounded-[1.6rem] bg-white/55 backdrop-blur-[6px]">
+            <StackCard i={i} active={openCard === i} onOpen={() => setOpenCard(openCard === i ? -1 : i)} />
+          </div>
+        ))}
       </div>
     )
   }
@@ -756,6 +824,71 @@ const PROCESS = [
     ] },
 ]
 
+/* batch 50 (owner, mobile audit): THE PROCESS ON A PHONE.
+   The revolver is a wide-screen instrument — it needs a giant arc off the left edge and a
+   column of sky to its right. At 390px the numbers landed on top of the step's own text
+   and the title was squeezed to nothing. A phone gets the six steps as an honest vertical
+   list instead: number, icon, title, line, and the same two paragraphs behind „Saznajte
+   više". No pin, no scroll-jacking, and the page loses 340vh of runway. */
+function ProcessList() {
+  const [open, setOpen] = useState<number | null>(null)
+  return (
+    // the trailing sky is the junction guard: the last card must not sit near the beat's
+    // edge or its panel reads as a full-width step (batch 50, measured 20)
+    <div className="mx-auto w-full max-w-2xl px-5 pt-[310px] pb-[330px]">
+      <h2 className="ink-gradient mb-10 text-center text-[clamp(2.4rem,11vw,3.6rem)] font-semibold leading-[0.95] tracking-tight">
+        Naš proces
+      </h2>
+      <ol className="flex flex-col gap-3">
+        {PROCESS.map((s, i) => {
+          const isOpen = open === i
+          return (
+            <li key={s.n} className="rounded-[1.4rem] border border-white/70 bg-white/70 p-5 backdrop-blur-[6px]">
+              <div className="flex items-start gap-4">
+                <span aria-hidden className="mt-0.5 text-[26px] font-bold leading-none tracking-tight text-accent/70">
+                  {s.n}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2.5">
+                    <svg viewBox="0 0 24 24" aria-hidden className="h-5 w-5 shrink-0 stroke-accent" fill="none" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <path d={s.g} />
+                    </svg>
+                    <h3 className="text-[17px] font-semibold leading-tight text-ink">{s.t}</h3>
+                  </div>
+                  <p className="mt-1.5 text-[14px] leading-relaxed text-ink/70">{s.d}</p>
+                  <button
+                    onClick={() => setOpen(isOpen ? null : i)}
+                    aria-expanded={isOpen}
+                    className="mt-3 inline-flex min-h-[40px] items-center gap-2 rounded-full border border-accent/40 px-4 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-accent"
+                  >
+                    {isOpen ? 'Zatvorite' : 'Saznajte više'}
+                    <span aria-hidden className={isOpen ? 'rotate-45 transition-transform' : 'transition-transform'}>+</span>
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
+                      >
+                        {s.more.map((m, j) => (
+                          <p key={j} className="mt-3 text-[13.5px] leading-relaxed text-ink/70">{m}</p>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+    </div>
+  )
+}
+
 /** one number riding the wheel: seat at 3 o'clock (θ=0), passed steps rotate up along
     the arc and leave through the screen edge — his revolver. The step angle comes from
     the RADIUS (batch 37): a giant circle needs a small angle for the same spacing. */
@@ -802,6 +935,16 @@ function ProcessWheel() {
   const ref = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const { reduced } = useWorld()
+  // batch 50: below 900px the wheel hands over to the list (see ProcessList). Measured on
+  // the client so the desktop prerender still ships the wheel's own markup.
+  const [phone, setPhone] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 899px)')
+    const read = () => setPhone(mq.matches)
+    read()
+    mq.addEventListener('change', read)
+    return () => mq.removeEventListener('change', read)
+  }, [])
   const [k, setK] = useState(0)
   const [expanded, setExpanded] = useState(false)
   const [dim, setDim] = useState({ R: 2000, cx: -1200, fontPx: 120, numOff: 120, step: 10, xTop: -999, textLeft: 1100, titleW: 560 })
@@ -875,22 +1018,7 @@ function ProcessWheel() {
     return () => window.removeEventListener('resize', m)
   }, [])
 
-  if (reduced) {
-    return (
-      <div className="mx-auto flex max-w-3xl flex-col gap-10 px-6 py-24">
-        <p className="text-center text-xs font-semibold uppercase tracking-[0.3em] text-ink/60">Naš proces</p>
-        {PROCESS.map(s => (
-          <div key={s.n} className="flex items-baseline gap-6">
-            <span className="text-4xl font-bold text-ink/30">{s.n}</span>
-            <div>
-              <h3 className="text-xl font-semibold text-ink">{s.t}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-ink/70">{s.d}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
+  if (reduced || phone) return <ProcessList />
 
   const { R, cx, fontPx, numOff, step, textLeft, titleW } = dim
   const narrow = typeof window !== 'undefined' && window.innerWidth < 640
@@ -996,7 +1124,7 @@ function ProcessWheel() {
                   </p>
                   <button
                     onClick={() => setExpanded(true)}
-                    className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-full border border-ink/30 bg-white/60
+                    className="mt-4 inline-flex min-h-[40px] cursor-pointer items-center gap-2 rounded-full border border-ink/30 bg-white/60
                                px-5 py-2 text-xs font-semibold uppercase tracking-wider text-ink shadow-sm backdrop-blur-sm
                                transition-all hover:scale-[1.03] hover:bg-white sm:mt-5"
                   >

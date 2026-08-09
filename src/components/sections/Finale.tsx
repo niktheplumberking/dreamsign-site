@@ -53,7 +53,7 @@ export default function Finale() {
           </a>
         </motion.div>
         <motion.p {...fadeUp(3)} className="mt-5 text-[13.5px] font-medium text-ink/50">
-          ili pozovite <a href="tel:+381637736963" className="text-accent/80 hover:text-accent">+381 63 773 6963</a>
+          ili pozovite <a href="tel:+381637736963" className="text-accent/80 hover:text-accent inline-block py-2 -my-1">+381 63 773 6963</a>
         </motion.p>
       </div>
     </section>

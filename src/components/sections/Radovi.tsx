@@ -37,10 +37,7 @@ const LADDER = [0.72, 0.85, 0.94, 1.0]
 // 29vw × the ladder, less the three 2vw overlaps, spans 95.8vw — so the row is centred with
 // ~2vw of sky on BOTH sides, the same margin the rail keeps. (The old row was justified
 // right and left a 380px hole on the left of /kontakt — his note, twice.)
-const SEATS = LADDER.map((k) => ({
-  vw: `${+(29 * k).toFixed(2)}vw`,
-  px: `${Math.round(250 * k)}px`,
-}))
+const SEATS = LADDER.map((k) => ({ vw: `${+(29 * k).toFixed(2)}vw` }))
 
 // batch 21 (owner): his order, left to right — Metal Kolor, Pizzdarija, MindxBridge,
 // Court Hub. batch 46: Bennett & Co rides too (real project, real poster) — the pinned
@@ -204,7 +201,9 @@ function Caption({ p }: { p: Project }) {
   const external = p.href.startsWith('http') && !p.href.includes('wa.me')
   return (
     <div className="min-h-[96px] pt-4">
-      <p className="text-[11.5px] uppercase tracking-[0.14em] text-ink/45">{p.meta}</p>
+      {/* batch 50: 12px is the floor for real text on a phone (the audit's readability
+          rule) — these label lines used to sit at 11.5 */}
+      <p className="text-[12px] uppercase tracking-[0.14em] text-ink/45">{p.meta}</p>
       <p className="mt-1.5 font-semibold text-ink text-[16px] tracking-tight">
         {p.name}
         {external && (
@@ -230,14 +229,13 @@ function Card({ p, seat, i, drift }: {
       href={p.href}
       target="_blank"
       rel="noopener"
-      // the seat vars feed breakpointed arbitrary classes: px on phones, pure vw on md+.
-      // batch 16: phones tilt the cards ±1.15° (the /radovi plate vocabulary) — the dark
-      // posters' internal bands aligned across overlapped cards into a full-width step
-      // (kill-tested: in-flow content, not a layer)
-      className={`group relative block shrink-0 w-[var(--wm)] md:w-[var(--w)]
-                  ${i % 2 ? 'rotate-[-1.15deg]' : 'rotate-[1.15deg]'} md:rotate-0`}
+      // batch 50 (owner, mobile audit): on a phone the row is a SNAP CARRIAGE — one card
+      // per swipe, 78vw wide, no overlap and no tilt. The overlapped px cascade put every
+      // caption underneath its neighbour's card (his „things that don't make sense on
+      // mobile"); md+ keeps the vw cascade untouched.
+      className="group relative block shrink-0 w-[78vw] snap-center md:w-[var(--w)] md:snap-align-none"
       style={{
-        '--w': seat.vw, '--wm': seat.px,
+        '--w': seat.vw,
         y: drift as never,
       } as React.CSSProperties}
       initial={{ opacity: 0, y: 46 }}
@@ -441,7 +439,7 @@ export default function Radovi({ trust = true, order, pinned = false }: {
 
       <motion.div
         {...fadeUp(2)}
-        className="mt-12 flex items-baseline justify-between text-[11.5px] uppercase tracking-[0.16em] text-ink/45"
+        className="mt-12 flex items-baseline justify-between text-[12px] uppercase tracking-[0.16em] text-ink/45"
       >
         <span>Projekti</span>
       </motion.div>
@@ -452,12 +450,16 @@ export default function Radovi({ trust = true, order, pinned = false }: {
      rightward. On md+ everything is vw; phones keep the px h-scroll.
      batch 49: items-END, so the covers sit on one floor and the captions on one line. */
   const staticRow = (
-    <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 overflow-x-auto md:overflow-visible pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className="flex items-end pr-4 md:justify-center md:pr-0">
+    // batch 50: the phone carriage carries ONE 78vw poster instead of four small tilted
+    // ones, so its top edge is now a full-width step — and it landed inside the
+    // hero→radovi scan band (measured 157). The extra sky drops the first cover clear of
+    // the boundary at every phone height (the offset above it is constant).
+    <div className="relative left-1/2 mt-[104px] w-screen -translate-x-1/2 overflow-x-auto md:mt-5 md:overflow-visible pb-2 snap-x snap-mandatory md:snap-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex items-end gap-4 px-[11vw] md:gap-0 md:justify-center md:px-0">
         {list.slice(0, 4).map((p, i) => (
           <div
             key={p.name}
-            className={`relative ${i === 0 ? '-ml-[74px] md:ml-0' : '-ml-8 md:-ml-[2vw]'}`}
+            className={`relative ${i === 0 ? 'md:ml-0' : 'md:-ml-[2vw]'}`}
             style={{ zIndex: 10 + i * 10 }}
           >
             <Card p={p} seat={SEATS[i]} i={i} drift={drifts[i]} />

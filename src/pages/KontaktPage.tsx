@@ -109,7 +109,11 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
           the rating badge sat (we claim no stars we don't have) */}
       {/* batch 45 (owner): the head MUCH bigger, on the house duet rule — row 1 primary,
           row 2 in the quill; the fact subtitle deleted (his order) */}
-      <div className="pt-[9vh] text-center">
+      {/* batch 50 (owner, mobile audit): 9vh of a phone screen is 76px — less than the
+          floating nav pill needs, so the head's first row sat UNDER it. Phones get a fixed
+          124px of sky (nav bottom 91 + air); the desktop's measured 9vh seat is untouched
+          from sm up. */}
+      <div className="pt-[124px] text-center sm:pt-[9vh]">
         <motion.h2
           initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -148,7 +152,9 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
         </motion.div>
 
         <div className="lg:col-span-9">
-          <div ref={viewRef} className="relative h-[540px] overflow-hidden py-1 sm:h-[500px]">
+          {/* batch 50: on a phone the 540px window left a third of the card empty under
+              the text — the cards' own copy needs ~420px there */}
+          <div ref={viewRef} className="relative h-[430px] overflow-hidden py-1 sm:h-[500px]">
             {RECENZIJE.map((r, i) => {
               const s = mod(i - mod(idx, N), N)
               const off = s === N - 1 ? -1 : s
@@ -185,7 +191,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
                       />
                       <span className="flex min-w-0 flex-col">
                         <span className="truncate text-[15.5px] font-semibold text-ink">{r.name}</span>
-                        <span className="truncate text-[11.5px] font-semibold uppercase tracking-[0.12em] text-accent">
+                        <span className="truncate text-[12px] font-semibold uppercase tracking-[0.12em] text-accent">
                           {r.meta} ↗
                         </span>
                       </span>
@@ -199,7 +205,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
                     </p>
                     <div className="mt-auto flex flex-wrap gap-2 pt-4">
                       {r.tags.map((t) => (
-                        <span key={t} className="rounded-full border border-ink/15 bg-tint/50 px-3 py-1 text-[11.5px] font-semibold text-ink/70">
+                        <span key={t} className="rounded-full border border-ink/15 bg-tint/50 px-3 py-1.5 text-[12px] font-semibold text-ink/70">
                           {t}
                         </span>
                       ))}

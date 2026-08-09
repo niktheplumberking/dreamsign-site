@@ -31,7 +31,7 @@ export default function CloudButton({
       {/* batch 16: the label sits dead-centre of the cloud's visible mass (the image has
           a touch more transparent air above than below — pt-[4%] optically centres it) */}
       <span className="pointer-events-none absolute inset-0 flex items-center justify-center pt-[4%]">
-        <span className="max-w-[60%] text-center text-[11px] font-semibold uppercase leading-tight tracking-[0.1em] text-ink/85 sm:text-[12.5px]">
+        <span className="max-w-[60%] text-center text-[12px] font-semibold uppercase leading-tight tracking-[0.1em] text-ink/85 sm:text-[12.5px]">
           {label}
         </span>
       </span>

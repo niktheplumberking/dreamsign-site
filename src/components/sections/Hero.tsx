@@ -94,7 +94,7 @@ export default function Hero() {
           <ul className="mt-1 flex max-w-[20rem] flex-wrap items-center justify-center gap-x-3 gap-y-1 px-2 sm:hidden" style={GLOW}>
             {TRUST_ROW.map((t, i) => (
               <li key={t} className="flex items-center gap-x-3">
-                <span className="whitespace-nowrap text-[10.5px] font-semibold uppercase tracking-[0.1em] text-ink">{t}</span>
+                <span className="whitespace-nowrap text-[12px] font-semibold uppercase tracking-[0.1em] text-ink sm:text-[10.5px]">{t}</span>
                 {i < TRUST_ROW.length - 1 && <span aria-hidden className="h-1 w-1 shrink-0 rounded-full bg-ink/40" />}
               </li>
             ))}
@@ -117,7 +117,7 @@ export default function Hero() {
         {TRUST_ROW.map((t, i) => (
           <li key={t} className="flex items-center gap-x-4 sm:gap-x-5">
             <span
-              className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.12em] text-ink sm:text-[12.5px]"
+              className="whitespace-nowrap text-[12px] font-semibold uppercase tracking-[0.12em] text-ink sm:text-[12.5px]"
               style={{ textShadow: '0 1px 14px rgba(255,255,255,0.98), 0 0 5px rgba(255,255,255,0.9)' }}
             >
               {t}

@@ -97,7 +97,7 @@ export default function FaqSekcija() {
             </div>
             <p className="mt-4 text-[12px] leading-relaxed text-ink/55">
               Onlajn zakazivanje stiže uskoro — do tada,{' '}
-              <a href={WA_LINK} target="_blank" rel="noopener" className="font-semibold text-accent hover:text-ink">
+              <a href={WA_LINK} target="_blank" rel="noopener" className="font-semibold text-accent hover:text-ink inline-block py-2.5">
                 dva klika i razgovaramo ↗
               </a>
             </p>
