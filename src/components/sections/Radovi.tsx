@@ -40,6 +40,20 @@ const SEATS = [
   { vw: { w: '34vw', t: '34vw', d: '0vw' }, px: { w: '290px', t: '400px', d: '0px' } },
 ]
 
+/* batch 48 (owner): the LOCKED screen wears its own seats. The cascade seats left 177px of
+   dead sky on the left, pushed the big card under the nav pill (top 81 vs nav 91) and made
+   Court Hub read twice the weight of its neighbours. Here widths sum to 102vw (minus the
+   three 2vw overlaps = a 96vw row, 2vw margin each side — the screen is FULL), and heights
+   are vh so the scene fits any locked viewport: the tallest image is 56vh, which with its
+   caption centres to ~146px below the top — clear of the nav on every desktop we own.
+   The d offsets bottom-align the images, so the tops step upward left to right. */
+const CONVEYOR_SEATS = [
+  { vw: { w: '21vw', t: '44vh', d: '12vh' }, px: { w: '200px', t: '290px', d: '76px' } },
+  { vw: { w: '24.5vw', t: '48vh', d: '8vh' }, px: { w: '230px', t: '325px', d: '51px' } },
+  { vw: { w: '27.5vw', t: '52vh', d: '4vh' }, px: { w: '265px', t: '360px', d: '24px' } },
+  { vw: { w: '29vw', t: '56vh', d: '0vh' }, px: { w: '290px', t: '400px', d: '0px' } },
+]
+
 // batch 21 (owner): his order, left to right — Metal Kolor, Pizzdarija, MindxBridge,
 // Court Hub. batch 46: Bennett & Co rides too (real project, real poster) — the pinned
 // carousel cycles all five through the four seats.
@@ -283,16 +297,23 @@ export default function Radovi({ trust = true, order, pinned = false }: {
   const list = order ? order.map((i) => PROJECTS[i]) : PROJECTS
   const N = list.length
 
-  // the conveyor's position: r advances one step per scroll breath (quantized dwells)
-  const [r, setR] = useState(0)
+  // the conveyor's position: r advances one step per scroll breath (quantized dwells).
+  // batch 48 (owner): the step remembers its DIRECTION — scrolling back up used to play
+  // the forward choreography (enter from the left, exit right), so the returning card
+  // slid across the whole row over its neighbours. Now the reverse step mirrors: the
+  // returning rider comes back from the RIGHT where it dissolved, the small card leaves
+  // LEFT where it entered.
+  const [step, setStep] = useState({ r: 0, dir: 1 })
   const { scrollYProgress } = useScroll({ target: runRef, offset: ['start start', 'end end'] })
   useEffect(() => {
     if (!pinned) return
     return scrollYProgress.on('change', (p) => {
       const steps = N // one full cycle: every project takes the big seat once
-      setR(Math.min(steps - 1, Math.max(0, Math.floor(p * steps))))
+      const next = Math.min(steps - 1, Math.max(0, Math.floor(p * steps)))
+      setStep(s => (next === s.r ? s : { r: next, dir: next > s.r ? 1 : -1 }))
     })
   }, [scrollYProgress, pinned, N])
+  const r = step.r
 
   const header = (
     <>
@@ -348,24 +369,30 @@ export default function Radovi({ trust = true, order, pinned = false }: {
      card one seat to the RIGHT: the big right card exits and dissolves, the next project
      enters small from the left. FLIP layout animations carry seat-to-seat travel. */
   const seatProject = (s: number) => list[(((s - r) % N) + N) % N]
+  // batch 48: enter/exit read the step's direction; the leaving card sinks UNDER the row
+  // (zIndex 5) so the rider taking its seat is never seen through a dissolving ghost.
+  const rideIn = (dir: number) => ({ opacity: 0, x: dir > 0 ? -160 : 240, scale: 0.92 })
+  const rideOut = (dir: number) => ({ opacity: 0, x: dir > 0 ? 200 : -200, scale: 0.96, zIndex: 5 })
   const pinnedRow = (
     <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 pb-2">
       <div className="flex items-start pr-4 md:justify-end md:pr-[2vw]">
-        <AnimatePresence mode="popLayout" initial={false}>
+        <AnimatePresence mode="popLayout" initial={false} custom={step.dir}>
           {[0, 1, 2, 3].map((s) => {
             const p = seatProject(s)
             return (
               <motion.div
                 key={p.name}
                 layout
-                initial={{ opacity: 0, x: -160, scale: 0.92 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 200, scale: 0.96 }}
-                transition={{ duration: 0.65, ease: [0.3, 0, 0.2, 1] }}
+                custom={step.dir}
+                variants={{ in: rideIn, seat: { opacity: 1, x: 0, scale: 1 }, out: rideOut }}
+                initial="in"
+                animate="seat"
+                exit="out"
+                transition={{ duration: 0.6, ease: [0.3, 0, 0.2, 1], layout: { type: 'spring', stiffness: 130, damping: 26 } }}
                 className={`relative ${s === 0 ? '-ml-[74px] md:ml-0' : '-ml-8 md:-ml-[2vw]'}`}
                 style={{ zIndex: 10 + s * 10 }}
               >
-                <Card p={p} seat={SEATS[s]} i={s} drift={drifts[s]} still />
+                <Card p={p} seat={CONVEYOR_SEATS[s]} i={s} drift={drifts[s]} still />
               </motion.div>
             )
           })}

@@ -49,7 +49,11 @@ export default function CloudD3D({
           renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
           renderer.outputColorSpace = THREE.SRGBColorSpace
           renderer.toneMapping = THREE.ACESFilmicToneMapping
-          renderer.toneMappingExposure = 1.45 // batch 10: the raw texture reads grey - lift to logo white
+          // batch 10 lifted the grey texture to 1.45; batch 48 (owner): it still read grey
+          // against the pure-white clouds around it — the whole rig steps up (exposure,
+          // hemisphere, albedo below) until the lit faces sit at cloud white. ACES rolls
+          // the highlights off, so the shading that makes it 3D survives.
+          renderer.toneMappingExposure = 1.75
           host.appendChild(renderer.domElement)
           renderer.domElement.style.width = '100%'
           renderer.domElement.style.height = '100%'
@@ -60,11 +64,11 @@ export default function CloudD3D({
           camera.position.set(0, 0, 4.6)
 
           // daylight to match the sky: warm key from the upper left, cool fill, soft ambient
-          scene.add(new THREE.HemisphereLight(0xffffff, 0xcfe0f2, 1.6))
-          const key = new THREE.DirectionalLight(0xfff8ec, 1.7)
+          scene.add(new THREE.HemisphereLight(0xffffff, 0xdcebf8, 1.95))
+          const key = new THREE.DirectionalLight(0xfff8ec, 1.85)
           key.position.set(-2.2, 2.6, 3.2)
           scene.add(key)
-          const rim = new THREE.DirectionalLight(0xdcebf8, 0.65)
+          const rim = new THREE.DirectionalLight(0xdcebf8, 0.8)
           rim.position.set(2.4, -1.2, -2.4)
           scene.add(rim)
 
@@ -98,7 +102,7 @@ export default function CloudD3D({
               // A >1 color multiplier lifts the albedo without flattening the shading.
               obj.traverse(node => {
                 const mesh = node as { material?: { color?: { setRGB: (r: number, g: number, b: number) => void } } }
-                mesh.material?.color?.setRGB(1.35, 1.38, 1.42)
+                mesh.material?.color?.setRGB(1.58, 1.6, 1.63)
               })
               group.add(obj)
               group.rotation.y = rot.get()
@@ -144,6 +148,10 @@ export default function CloudD3D({
         alt=""
         aria-hidden
         className={`block h-auto w-full select-none ${className}`}
+        // batch 48: the baked still carries the old grey grade — lift it to match the
+        // brightened live render (static image, painted once; the turning letter itself
+        // still wears no filter, per the jank law)
+        style={{ filter: 'brightness(1.14)' }}
       />
     )
   }
