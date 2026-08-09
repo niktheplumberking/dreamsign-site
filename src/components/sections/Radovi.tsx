@@ -6,14 +6,12 @@
 // REAL CONTENT LAW: every cover is a real screenshot / real brand poster of a real project,
 // self-hosted — no mockups, no invented metrics. Copy describes what each site actually is.
 //
-// batch 46 (owner): the cascade can PIN — the camera locks and scroll turns the row like a
-// conveyor: every card steps one seat to the RIGHT, the big right card exits and dissolves,
-// the next project enters from the left. Seats now belong to the ROW (not the project), so
-// any project can sit anywhere; Bennett & Co joins as the fifth rider. The per-card drift
-// rides SPRINGS now — any range re-measure lands as a soft glide, never a jump (his
-// "glitching cards" note, home + kontakt).
+// batch 49 (owner): the pinned conveyor is rebuilt as a RAIL — see THE RAIL below. The old
+// AnimatePresence + FLIP state machine is gone: it reacted to scroll with its own timeline,
+// so a fast scroll stacked several flights on top of each other and cards crossed the row.
 import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react'
+import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react'
+import type { MotionValue } from 'motion/react'
 
 import { useWorld, useWorldRange } from '../World'
 
@@ -27,50 +25,43 @@ type Project = {
 
 /**
  * Cascade seats in TWO coordinate systems (batch 10 — Nick's PC and MacBook rendered the
- * fixed-pixel row completely differently). Desktop sizes are pure vw, so the composition
- * is IDENTICAL at 1280, 1440 and 1920: widths 18.5/23.5/29.5/40vw (the reference's own
- * proportions), row = 105.5vw after overlaps, justified right with 2vw kept off the right
- * edge. Mobile keeps the px h-scroll. batch 46: seats belong to the ROW, projects rotate
- * through them.
+ * fixed-pixel row completely differently). Desktop sizes are pure vw, so the composition is
+ * IDENTICAL at 1280, 1440 and 1920; phones keep the px h-scroll.
+ * batch 49 (owner): one ASPECT for every seat (11:10) and one shared caption line — the
+ * cards used to carry four different crops and four ragged caption heights, which is what
+ * made the row read like a pile instead of a designed cascade. Sizes are now the rail's own
+ * ladder (0.72 · 0.85 · 0.94 · 1.0 of the biggest), so home and kontakt speak one language.
  */
-const SEATS = [
-  { vw: { w: '15.7vw', t: '21.4vw', d: '7.6vw' }, px: { w: '200px', t: '290px', d: '76px' } },
-  { vw: { w: '20vw', t: '24.4vw', d: '5.1vw' }, px: { w: '230px', t: '325px', d: '51px' } },
-  { vw: { w: '25.1vw', t: '28vw', d: '2.4vw' }, px: { w: '265px', t: '360px', d: '24px' } },
-  { vw: { w: '34vw', t: '34vw', d: '0vw' }, px: { w: '290px', t: '400px', d: '0px' } },
-]
-
-/* batch 48 (owner): the LOCKED screen wears its own seats. The cascade seats left 177px of
-   dead sky on the left, pushed the big card under the nav pill (top 81 vs nav 91) and made
-   Court Hub read twice the weight of its neighbours. Here widths sum to 102vw (minus the
-   three 2vw overlaps = a 96vw row, 2vw margin each side — the screen is FULL), and heights
-   are vh so the scene fits any locked viewport: the tallest image is 56vh, which with its
-   caption centres to ~146px below the top — clear of the nav on every desktop we own.
-   The d offsets bottom-align the images, so the tops step upward left to right. */
-const CONVEYOR_SEATS = [
-  { vw: { w: '21vw', t: '44vh', d: '12vh' }, px: { w: '200px', t: '290px', d: '76px' } },
-  { vw: { w: '24.5vw', t: '48vh', d: '8vh' }, px: { w: '230px', t: '325px', d: '51px' } },
-  { vw: { w: '27.5vw', t: '52vh', d: '4vh' }, px: { w: '265px', t: '360px', d: '24px' } },
-  { vw: { w: '29vw', t: '56vh', d: '0vh' }, px: { w: '290px', t: '400px', d: '0px' } },
-]
+const CARD_A = 1.1 // every cover is width × 1.1 — one crop, one rhythm
+const LADDER = [0.72, 0.85, 0.94, 1.0]
+// 29vw × the ladder, less the three 2vw overlaps, spans 95.8vw — so the row is centred with
+// ~2vw of sky on BOTH sides, the same margin the rail keeps. (The old row was justified
+// right and left a 380px hole on the left of /kontakt — his note, twice.)
+const SEATS = LADDER.map((k) => ({
+  vw: `${+(29 * k).toFixed(2)}vw`,
+  px: `${Math.round(250 * k)}px`,
+}))
 
 // batch 21 (owner): his order, left to right — Metal Kolor, Pizzdarija, MindxBridge,
 // Court Hub. batch 46: Bennett & Co rides too (real project, real poster) — the pinned
 // carousel cycles all five through the four seats.
+// batch 49: covers are WebP now (the five PNGs weighed 6.5MB; the same art weighs 0.5MB),
+// and Metal Kolor wears a new poster — the flat primary-colour vector fought every other
+// card in the row and the whole sky world around it.
 const PROJECTS: Project[] = [
   {
     name: 'Metal Kolor',
     meta: 'Web sajt · Srem',
     blurb: 'Farbara koja snabdeva majstore — katalog, galerija i kontakt.',
     href: 'https://metal-kolor.rs/',
-    cover: '/media/radovi/posters/metalkolor-poster.png',
+    cover: '/media/radovi/posters/metalkolor-poster.webp',
   },
   {
     name: 'Pizzdarija',
     meta: 'Web sajt · Novi Sad',
     blurb: 'Picerija sa picom na drva — meni i porudžbina na dva klika.',
     href: 'https://www.pizzdarija.rs/',
-    cover: '/media/radovi/posters/pizzdarija-poster.png',
+    cover: '/media/radovi/posters/pizzdarija-poster.webp',
   },
   {
     // batch 21 (owner): his own project (D67) — platforma + akademija, two live sites
@@ -78,7 +69,7 @@ const PROJECTS: Project[] = [
     meta: 'Platforma + akademija',
     blurb: 'Istraživački inkubator za medicinu — od ideje do objavljenog rada.',
     href: 'https://mindxbridge.com/',
-    cover: '/media/radovi/posters/mindxbridge-poster.png',
+    cover: '/media/radovi/posters/mindxbridge-poster.webp',
   },
   {
     // batch 15 (owner): Court Hub — his own past project, credited per his written
@@ -87,14 +78,14 @@ const PROJECTS: Project[] = [
     meta: 'E-commerce + brend · UAE',
     blurb: 'Padel brend iz Dubaija — prodavnica, tereni i turniri na jednom mestu.',
     href: 'https://courthub.ae/',
-    cover: '/media/radovi/posters/courthub-poster.png',
+    cover: '/media/radovi/posters/courthub-poster.webp',
   },
   {
     name: 'Bennett & Co',
     meta: 'Brend + korporativni sajt',
     blurb: 'Kompletan identitet — od logotipa i vizuala do sajta na sopstvenom domenu.',
     href: 'https://www.bennettndco.com',
-    cover: '/media/radovi/posters/bennett-poster.png',
+    cover: '/media/radovi/posters/bennett-poster.webp',
   },
 ]
 
@@ -176,19 +167,64 @@ function TrustPill({ b, i, reduced, immediate = false }: {
   )
 }
 
-/** one card of the cascade — content from the project, size from the SEAT it occupies */
-function Card({ p, seat, i, drift, still = false }: {
-  p: Project; seat: (typeof SEATS)[number]; i: number; drift: unknown; still?: boolean
-}) {
+/** the cover art — shared by the cascade and the rail so both crop identically */
+function Cover({ p }: { p: Project }) {
+  return p.cover ? (
+    <img
+      src={p.cover}
+      alt={`${p.name} — sajt koji smo izradili`}
+      loading="lazy"
+      // without this the decode lands on the main thread exactly as the card scrolls
+      // into view — the worst frame went 11ms → 46ms when these three covers arrived
+      decoding="async"
+      className="h-full w-full object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]"
+    />
+  ) : (
+    // the reference's fourth card is its STRONGEST — a pale ghost vanishes against the
+    // sky, so the open slot stands on the deep end of the brand blues with the big D
+    <div
+      className="flex h-full w-full flex-col items-center justify-center gap-6"
+      style={{ background: 'linear-gradient(180deg, #7FB0DF 0%, #A8CEF0 55%, #DCEBF8 100%)' }}
+    >
+      <img
+        src="/media/brand/cloud-d.webp"
+        alt=""
+        aria-hidden
+        className="h-28 w-auto drop-shadow-[0_8px_18px_rgba(22,50,79,0.25)] transition-transform duration-[900ms] ease-out group-hover:scale-[1.08] md:h-36"
+      />
+      <span className="rounded-full border border-white/70 bg-white/25 px-5 py-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-ink/80 backdrop-blur-[4px]">
+        Slobodno mesto
+      </span>
+    </div>
+  )
+}
+
+/** the caption block — fixed height so every card in a row shares one caption line */
+function Caption({ p }: { p: Project }) {
   const external = p.href.startsWith('http') && !p.href.includes('wa.me')
-  const entrance = still
-    ? {}
-    : {
-        initial: { opacity: 0, y: 46 },
-        whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true, margin: '-90px' },
-        transition: { duration: 0.75, delay: 0.09 * i, ease: [0.22, 1, 0.36, 1] as const },
-      }
+  return (
+    <div className="min-h-[96px] pt-4">
+      <p className="text-[11.5px] uppercase tracking-[0.14em] text-ink/45">{p.meta}</p>
+      <p className="mt-1.5 font-semibold text-ink text-[16px] tracking-tight">
+        {p.name}
+        {external && (
+          <span
+            aria-hidden
+            className="ml-1.5 inline-block text-accent transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5"
+          >
+            ↗
+          </span>
+        )}
+      </p>
+      <p className="mt-1 text-[13px] leading-relaxed text-ink/60 max-w-[26ch]">{p.blurb}</p>
+    </div>
+  )
+}
+
+/** one card of the in-flow cascade — content from the project, size from the SEAT */
+function Card({ p, seat, i, drift }: {
+  p: Project; seat: (typeof SEATS)[number]; i: number; drift: unknown
+}) {
   return (
     <motion.a
       href={p.href}
@@ -198,62 +234,121 @@ function Card({ p, seat, i, drift, still = false }: {
       // batch 16: phones tilt the cards ±1.15° (the /radovi plate vocabulary) — the dark
       // posters' internal bands aligned across overlapped cards into a full-width step
       // (kill-tested: in-flow content, not a layer)
-      className={`group relative block shrink-0 w-[min(48vw,var(--wm))] md:w-[var(--w)] mt-[var(--dm)] md:mt-[var(--d)]
+      className={`group relative block shrink-0 w-[var(--wm)] md:w-[var(--w)]
                   ${i % 2 ? 'rotate-[-1.15deg]' : 'rotate-[1.15deg]'} md:rotate-0`}
       style={{
-        '--w': seat.vw.w, '--t': seat.vw.t, '--d': seat.vw.d,
-        '--wm': seat.px.w, '--tm': seat.px.t, '--dm': seat.px.d,
+        '--w': seat.vw, '--wm': seat.px,
         y: drift as never,
       } as React.CSSProperties}
-      {...entrance}
+      initial={{ opacity: 0, y: 46 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-90px' }}
+      transition={{ duration: 0.75, delay: 0.09 * i, ease: [0.22, 1, 0.36, 1] }}
     >
       <div
-        className="relative overflow-hidden rounded-[0.9rem] border border-ink/10 transition-transform duration-500 ease-out group-hover:-translate-y-2 h-[var(--tm)] md:h-[var(--t)]"
+        className="relative overflow-hidden rounded-[0.9rem] border border-ink/10 transition-transform duration-500 ease-out group-hover:-translate-y-2"
+        style={{ aspectRatio: `1 / ${CARD_A}` }}
       >
-        {p.cover ? (
-          <img
-            src={p.cover}
-            alt={`${p.name} — sajt koji smo izradili`}
-            loading="lazy"
-            // without this the decode lands on the main thread exactly as the card scrolls
-            // into view — the worst frame went 11ms → 46ms when these three covers arrived
-            decoding="async"
-            className="h-full w-full object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
-          />
-        ) : (
-          // the reference's fourth card is its STRONGEST — a pale ghost vanishes against the
-          // sky, so the open slot stands on the deep end of the brand blues with the big D
-          <div
-            className="flex h-full w-full flex-col items-center justify-center gap-6"
-            style={{ background: 'linear-gradient(180deg, #7FB0DF 0%, #A8CEF0 55%, #DCEBF8 100%)' }}
-          >
-            <img
-              src="/media/brand/cloud-d.webp"
-              alt=""
-              aria-hidden
-              className="h-28 w-auto drop-shadow-[0_8px_18px_rgba(22,50,79,0.25)] transition-transform duration-[900ms] ease-out group-hover:scale-[1.08] md:h-36"
-            />
-            <span className="rounded-full border border-white/70 bg-white/25 px-5 py-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-ink/80 backdrop-blur-[4px]">
-              Slobodno mesto
-            </span>
-          </div>
-        )}
+        <Cover p={p} />
       </div>
+      <Caption p={p} />
+    </motion.a>
+  )
+}
 
-      <div className="pt-4">
-        <p className="text-[11.5px] uppercase tracking-[0.14em] text-ink/45">{p.meta}</p>
-        <p className="mt-1.5 font-semibold text-ink text-[16px] tracking-tight">
-          {p.name}
-          {external && (
-            <span
-              aria-hidden
-              className="ml-1.5 inline-block text-accent transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5"
-            >
-              ↗
-            </span>
-          )}
-        </p>
-        <p className="mt-1 text-[13px] leading-relaxed text-ink/60 max-w-[26ch]">{p.blurb}</p>
+/* ── THE RAIL ────────────────────────────────────────────────────────────────
+   batch 49 (owner): "use a completely new approach for the motion".
+
+   The conveyor is now a pure FUNCTION OF SCROLL. Every rider's seat is
+   seat(j) = wrap(j + track(scroll)) and its x / scale / opacity / z are read
+   straight off that number — there is no animation timeline, no enter/exit
+   state, nothing in flight. A fast scroll is simply a bigger argument, so
+   flights can never stack, no dissolving ghost can cross the row, and because
+   z-order is monotonic in the seat a card can never pass in front of the one
+   to its right. `track` holds each rider still for the first half of every
+   scroll breath and glides it one seat over the second half (smoothstep), so
+   the row still reads as deliberate steps rather than a constant slide.
+   Cost per frame: one translate + one scale + one opacity per card. No layout.
+─────────────────────────────────────────────────────────────────────────────*/
+const DWELL = 0.46            // share of each breath the row stands still
+const NAV_SKY = 148           // sky kept clear under the floating nav pill
+const CAP_H = 128             // the caption line below the cards
+/** scales at seats -1 … 4 (index = seat + 1); -1 and 4 are the wings */
+const RAIL_K = [0.58, ...LADDER, 1.02]
+
+type Rail = { W: number; imgH: number; top: number; height: number; x: number[] }
+
+function measureRail(vw: number, vh: number): Rail {
+  const avail = Math.max(220, vh - NAV_SKY - CAP_H - 44)
+  const W = Math.min(vw * 0.29, avail / CARD_A)     // the biggest card's width
+  const w = RAIL_K.map((k) => W * k)
+  const M = Math.max(28, vw * 0.02)                 // margin off each viewport edge
+  const span = vw - 2 * M
+  const sum = w[1] + w[2] + w[3] + w[4]             // the four visible seats
+  const d = Math.min(0.05 * W, Math.max(-0.11 * W, (span - sum) / 3)) // gap (−) = overlap
+  const total = sum + 3 * d
+  const x = [0, (vw - total) / 2, 0, 0, 0, 0]       // the row is always centred
+  for (let i = 1; i < 4; i++) x[i + 1] = x[i] + w[i] + d
+  x[0] = x[1] - w[0] - d - 0.14 * W                 // the wings, off both edges
+  x[5] = x[4] + w[4] + d + 0.14 * W
+  const imgH = W * CARD_A
+  const top = Math.max(NAV_SKY, (vh - imgH - CAP_H) / 2)
+  return { W, imgH, top, height: top + imgH + CAP_H, x }
+}
+
+const smoothstep = (t: number) => { const c = Math.min(1, Math.max(0, t)); return c * c * (3 - 2 * c) }
+
+/** where the row stands at scroll p: integer = parked, fraction = gliding */
+function track(p: number, N: number) {
+  const u = Math.min(N, Math.max(0, p)) * N
+  const i = Math.floor(u)
+  const f = u - i
+  return i + (f <= DWELL ? 0 : smoothstep((f - DWELL) / (1 - DWELL)))
+}
+
+/** one rider: reads its own seat off the scroll and paints itself there */
+function RailCard({ p, j, N, prog, railV, rail }: {
+  p: Project; j: number; N: number
+  prog: MotionValue<number>; railV: MotionValue<number>; rail: Rail
+}) {
+  // seat, wrapped into [-1, N-1): one card waits in the left wing, one dissolves right
+  const seat = useTransform<number, number>([prog, railV], ([v]) => {
+    const s = j + track(v, N)
+    return ((s + 1) % N + N) % N - 1
+  })
+  const at = (s: number, pick: (i: number) => number) => {
+    const u = Math.min(4, Math.max(-1, s)) + 1
+    const i = Math.min(4, Math.floor(u))
+    const f = u - i
+    return pick(i) + (pick(i + 1) - pick(i)) * f
+  }
+  const x = useTransform(seat, (s) => at(s, (i) => rail.x[i]))
+  const scale = useTransform(seat, (s) => at(s, (i) => RAIL_K[i]))
+  const opacity = useTransform(seat, (s) => smoothstep((s + 1) / 0.7) * (1 - smoothstep((s - 3.25) / 0.75)))
+  const z = useTransform(seat, (s) => Math.round((s + 1) * 10) + 2)
+
+  return (
+    <motion.a
+      href={p.href}
+      target="_blank"
+      rel="noopener"
+      // pointer-events off on the BOX (it is the biggest card's box even when this rider is
+      // scaled small, and would otherwise swallow clicks meant for its neighbour); the art
+      // and the caption take the clicks themselves
+      className="group pointer-events-none absolute left-0 top-0 block will-change-transform"
+      style={{ x, opacity, zIndex: z as unknown as number, width: rail.W, height: rail.height }}
+    >
+      <motion.div
+        className="pointer-events-auto absolute left-0 overflow-hidden rounded-[0.9rem] border border-ink/10 will-change-transform"
+        style={{ scale, transformOrigin: 'left bottom', width: rail.W, height: rail.imgH, top: rail.top }}
+      >
+        <Cover p={p} />
+      </motion.div>
+      <div
+        className="pointer-events-auto absolute left-0"
+        style={{ top: rail.top + rail.imgH, width: Math.min(rail.W * 0.8, 330) }}
+      >
+        <Caption p={p} />
       </div>
     </motion.a>
   )
@@ -297,23 +392,29 @@ export default function Radovi({ trust = true, order, pinned = false }: {
   const list = order ? order.map((i) => PROJECTS[i]) : PROJECTS
   const N = list.length
 
-  // the conveyor's position: r advances one step per scroll breath (quantized dwells).
-  // batch 48 (owner): the step remembers its DIRECTION — scrolling back up used to play
-  // the forward choreography (enter from the left, exit right), so the returning card
-  // slid across the whole row over its neighbours. Now the reverse step mirrors: the
-  // returning rider comes back from the RIGHT where it dissolved, the small card leaves
-  // LEFT where it entered.
-  const [step, setStep] = useState({ r: 0, dir: 1 })
+  // the rail's geometry is measured, not guessed — and re-measured on resize. `railV`
+  // ticks so every rider recomputes its transform against the new numbers at once.
+  const railV = useMotionValue(0)
+  const [rail, setRail] = useState<Rail | null>(null)
+  // the pin is a DESKTOP instrument: a 29vw card on a phone is a stamp, so narrow screens
+  // keep the honest in-flow cascade (and a page 300vh shorter)
+  const [wide, setWide] = useState(true)
   const { scrollYProgress } = useScroll({ target: runRef, offset: ['start start', 'end end'] })
+
   useEffect(() => {
-    if (!pinned) return
-    return scrollYProgress.on('change', (p) => {
-      const steps = N // one full cycle: every project takes the big seat once
-      const next = Math.min(steps - 1, Math.max(0, Math.floor(p * steps)))
-      setStep(s => (next === s.r ? s : { r: next, dir: next > s.r ? 1 : -1 }))
-    })
-  }, [scrollYProgress, pinned, N])
-  const r = step.r
+    if (!pinned || reduced) return
+    let raf = 0
+    const read = () => {
+      const w = window.innerWidth
+      setWide(w >= 900)
+      setRail(measureRail(w, window.innerHeight))
+      railV.set(railV.get() + 1)
+    }
+    const onResize = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(read) }
+    read()
+    window.addEventListener('resize', onResize)
+    return () => { window.removeEventListener('resize', onResize); cancelAnimationFrame(raf) }
+  }, [pinned, reduced, railV])
 
   const header = (
     <>
@@ -348,10 +449,11 @@ export default function Radovi({ trust = true, order, pinned = false }: {
   )
 
   /* THE CASCADE (batch 10, fluid) — smallest → biggest, left to right, overlapping
-     rightward. On md+ everything is vw; phones keep the px h-scroll. */
+     rightward. On md+ everything is vw; phones keep the px h-scroll.
+     batch 49: items-END, so the covers sit on one floor and the captions on one line. */
   const staticRow = (
     <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 overflow-x-auto md:overflow-visible pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className="flex items-start pr-4 md:justify-end md:pr-[2vw]">
+      <div className="flex items-end pr-4 md:justify-center md:pr-0">
         {list.slice(0, 4).map((p, i) => (
           <div
             key={p.name}
@@ -365,50 +467,20 @@ export default function Radovi({ trust = true, order, pinned = false }: {
     </div>
   )
 
-  /* batch 46 (owner): THE CONVEYOR — the camera locks; each scroll breath sends every
-     card one seat to the RIGHT: the big right card exits and dissolves, the next project
-     enters small from the left. FLIP layout animations carry seat-to-seat travel. */
-  const seatProject = (s: number) => list[(((s - r) % N) + N) % N]
-  // batch 48: enter/exit read the step's direction; the leaving card sinks UNDER the row
-  // (zIndex 5) so the rider taking its seat is never seen through a dissolving ghost.
-  const rideIn = (dir: number) => ({ opacity: 0, x: dir > 0 ? -160 : 240, scale: 0.92 })
-  const rideOut = (dir: number) => ({ opacity: 0, x: dir > 0 ? 200 : -200, scale: 0.96, zIndex: 5 })
-  const pinnedRow = (
-    <div className="relative left-1/2 mt-5 w-screen -translate-x-1/2 pb-2">
-      <div className="flex items-start pr-4 md:justify-end md:pr-[2vw]">
-        <AnimatePresence mode="popLayout" initial={false} custom={step.dir}>
-          {[0, 1, 2, 3].map((s) => {
-            const p = seatProject(s)
-            return (
-              <motion.div
-                key={p.name}
-                layout
-                custom={step.dir}
-                variants={{ in: rideIn, seat: { opacity: 1, x: 0, scale: 1 }, out: rideOut }}
-                initial="in"
-                animate="seat"
-                exit="out"
-                transition={{ duration: 0.6, ease: [0.3, 0, 0.2, 1], layout: { type: 'spring', stiffness: 130, damping: 26 } }}
-                className={`relative ${s === 0 ? '-ml-[74px] md:ml-0' : '-ml-8 md:-ml-[2vw]'}`}
-                style={{ zIndex: 10 + s * 10 }}
-              >
-                <Card p={p} seat={CONVEYOR_SEATS[s]} i={s} drift={drifts[s]} still />
-              </motion.div>
-            )
-          })}
-        </AnimatePresence>
-      </div>
-    </div>
-  )
-
-  if (pinned && !reduced) {
+  if (pinned && !reduced && wide) {
     return (
       <div ref={ref} className="relative mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-28">
         {header}
         {/* the runway: one dwell per project — every rider takes the big seat once */}
         <div ref={runRef} className="relative w-full" style={{ height: `${N * 62 + 100}vh` }}>
-          <div className="sticky top-0 flex h-screen w-full flex-col justify-center">
-            {pinnedRow}
+          <div className="sticky top-0 h-screen w-full">
+            {/* the rail spans the VIEWPORT, not the content column */}
+            <div className="relative left-1/2 h-full w-screen -translate-x-1/2">
+              {rail &&
+                list.map((p, j) => (
+                  <RailCard key={p.name} p={p} j={j} N={N} prog={scrollYProgress} railV={railV} rail={rail} />
+                ))}
+            </div>
           </div>
         </div>
         {trust && (
