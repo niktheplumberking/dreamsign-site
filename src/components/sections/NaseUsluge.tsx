@@ -154,18 +154,20 @@ export default function NaseUsluge() {
           TOUCHES/OVERLAPS both words, exactly like the zebra A. The D is absolutely centred
           and z-raised; the words tuck slightly UNDER its edges (negative margins on the D's
           box do the touching). It still turns on the world's scroll, square-on at rest. */}
-      {/* batch 50 (owner, mobile audit): on a phone the two words sit close enough that the
-          centred D lay ON them — „Naše" and „Usluge" were both half-covered. Below md the
-          line becomes a COLUMN (word · D · word), so the letter gets its own stage; md+ is
-          the untouched reference composition. */}
-      <h2 className="relative flex flex-col items-center gap-1 leading-none md:flex-row md:items-baseline md:justify-between md:gap-0">
+      {/* batch 51 (owner): the phone wears the DESKTOP composition — „Naše" left, the D
+          standing between them, „Usluge" right. Batch 50 had stacked them into a column
+          because at full size the D covered both words; the fix is not a different layout
+          but different NUMBERS: below md the two words step down (11.5vw / 14.5vw) and the
+          D to 34vw/132px, so the letter overlaps their inner edges exactly the way it does
+          on a wide screen. Every md: value below is the desktop original, untouched. */}
+      <h2 className="relative flex items-baseline justify-between leading-none">
         <motion.span
           initial={{ opacity: 0, x: -28 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           // batch 19: the brand ramp, never flat ink (colour law)
-          className="ink-gradient font-semibold tracking-tight text-[clamp(3.2rem,13.5vw,11rem)]"
+          className="ink-gradient font-semibold tracking-tight text-[11.5vw] md:text-[clamp(3.2rem,13.5vw,11rem)]"
         >
           Naše
         </motion.span>
@@ -177,7 +179,7 @@ export default function NaseUsluge() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           // batch 17: pulled PAST the container's right edge to Nick's blue line — in a
           // justify-between row a left margin never moved it; a negative right margin does
-          className="md:-mr-[46px] font-script font-normal text-accent text-[clamp(3.9rem,16.5vw,13.4rem)]"
+          className="md:-mr-[46px] font-script font-normal text-accent text-[14.5vw] md:text-[clamp(3.9rem,16.5vw,13.4rem)]"
         >
           Usluge
         </motion.span>
@@ -186,7 +188,8 @@ export default function NaseUsluge() {
             it touches them; on a phone it is a row of its own between them (order-2) */}
         <span
           aria-hidden
-          className="relative z-10 order-2 block w-[42vw] md:absolute md:left-1/2 md:top-1/2 md:w-[clamp(10rem,27vw,21.5rem)] md:-translate-x-1/2 md:-translate-y-1/2"
+          className="absolute left-1/2 top-1/2 z-10 block w-[34vw] max-w-[132px] -translate-x-1/2 -translate-y-1/2
+                     md:w-[clamp(10rem,27vw,21.5rem)] md:max-w-none"
           style={{ perspective: 1100 }}
         >
           {/* NO filter on the turning letter (jank law) — the render carries its own light */}

@@ -66,6 +66,27 @@ body {
   text-shadow: 0 0 rgba(0, 0, 0, 0);
 }
 
+/* ---------- batch 51 (owner): „PROJEKAT" was INVISIBLE on his iPhone.
+   The giant word used Tailwind's `bg-clip-text text-transparent` utility pair, and this
+   build emits `background-clip:text` with NO `-webkit-` prefix (grep the bundle: the only
+   prefixed one is .ink-gradient's own) — so iOS Safari clipped the text to a background it
+   never painted and the word vanished, while every .ink-gradient heading on the same page
+   rendered fine. This class carries the prefix AND, below md, does not rely on clipping at
+   all: phones get the ramp's top colour as solid ink, which cannot fail. Desktop keeps the
+   gradient exactly as before. Geometry (padding/margins) stays inline on the element. ---- */
+.giant-ramp {
+  color: #16324F;
+}
+@media (min-width: 768px) {
+  .giant-ramp {
+    background-image: linear-gradient(to bottom, #16324F 30%, #2E5F9E 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
 /* ---------- The page veil's gust (batch 23): PURE CSS keyframes — compositor-driven,
    so the route swap's render stall can never freeze the wind mid-flight ---------- */
 @keyframes veil-sweep-r {

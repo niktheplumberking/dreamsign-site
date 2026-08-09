@@ -240,13 +240,15 @@ function GiantH2({ children, tilt, align = 'center' }: {
       // whitespace-nowrap + a wider-than-container box: bg-clip-text paints NOTHING outside
       // the element, so a word wider than its box loses letters (the first cut showed
       // "PROJEK" — Inter Tight is wider than the reference's condensed face)
-      className={`w-[115%] max-w-none whitespace-nowrap pt-6 font-semibold uppercase tracking-tight leading-[0.85]
-                  text-[clamp(3rem,7.6vw,7.4rem)] bg-clip-text text-transparent
+      className={`giant-ramp w-[115%] max-w-none whitespace-nowrap pt-6 font-semibold uppercase tracking-tight leading-[0.85]
+                  text-[clamp(3rem,7.6vw,7.4rem)]
                   ${align === 'left' ? 'text-center lg:text-left' : 'text-center'}`}
       // NO filter here, ever: Safari refuses to paint background-clip:text when the same
-      // element carries a filter — „PROJEKAT" was INVISIBLE on Nick's MacBook (batch 25)
+      // element carries a filter — „PROJEKAT" was INVISIBLE on Nick's MacBook (batch 25).
+      // batch 51: the gradient itself moved to .giant-ramp — it carries the -webkit- prefix
+      // iOS needs, and below md it paints solid ink instead of clipping (his iPhone showed
+      // „Prvi" but no „PROJEKAT" at all).
       style={{
-        backgroundImage: 'linear-gradient(to bottom, #16324F 30%, #2E5F9E 100%)',
         padding: '0.18em 0.05em',
         margin: '-0.12em calc(-7.5% - 0.05em)',
       }}
@@ -554,7 +556,14 @@ function TreciSadrzaj() {
 function ProjekatTreci() {
   return (
     <div className="grid w-full grid-cols-1 items-stretch lg:grid-cols-12">
-      <EdgeColumn side="left" shots={TRECI_SHOTS.left} />
+      {/* batch 51 (owner): on lg the two columns flank the text — left, words, right. When
+          the grid folds to one column the LEFT column lands ABOVE the words, so the phone
+          showed Pizzdarija's plates twice: once before the text and once after. Below lg
+          the left column is dropped — the reader meets the third project's words first and
+          its plates once, underneath (his exact instruction). Desktop is untouched. */}
+      <div className="hidden lg:contents">
+        <EdgeColumn side="left" shots={TRECI_SHOTS.left} />
+      </div>
 
       <div className="relative z-10 my-auto flex flex-col items-center justify-center px-6 py-12 text-center sm:px-10 lg:col-span-6 lg:px-14">
         <TreciSadrzaj />
@@ -817,7 +826,9 @@ export default function RadoviPage() {
                 Naš portfolio
               </h2>
             </Drift>
-            <div aria-hidden style={{ height: 'max(16vh, 190px)' }} />
+            {/* batch 51 (owner): „NAŠ PORTFOLIO" sat a whole screen above the first
+                project on a phone — the breath is halved there; md+ keeps 16vh/190px */}
+            <div aria-hidden className="h-[70px] md:h-[max(16vh,190px)]" />
 
             <div id="prvi-projekat">
               <ProjekatPrvi />
@@ -829,7 +840,9 @@ export default function RadoviPage() {
                 (flow preserved on phones/reduced); the beat boundary keeps its ≥300px
                 of sky below it */}
             <TreciBlok />
-            <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
+            {/* batch 51 (owner): the breath before SVE O NAMA was a whole screen on a
+                phone — halved there, kept at 26vh/310px from md up */}
+            <div aria-hidden className="h-[200px] md:h-[max(26vh,310px)]" />
           </Beat>
 
           <Beat name="o-nama" layers={
@@ -859,7 +872,9 @@ export default function RadoviPage() {
               y={['0%', '-11%']} base={0.8} float={{ px: 8, sec: 12, delay: 0.8 }}
             />
           }>
-            <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
+            {/* batch 51 (owner): same on the other side of SVE O NAMA — the phone walked a
+                full empty screen between „NAMA" and „Česta pitanja" */}
+            <div aria-hidden className="h-[200px] md:h-[max(26vh,310px)]" />
             <FaqSekcija />
             <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
           </Beat>

@@ -91,11 +91,14 @@ export default function Hero() {
           <CloudButton label="Započnite razgovor" href={WA_LINK} reduced={reduced} />
           {/* phones: the facts stay in flow under the cloud — at the hero's base they
               collided with the next beat's overlapping headline */}
-          <ul className="mt-1 flex max-w-[20rem] flex-wrap items-center justify-center gap-x-3 gap-y-1 px-2 sm:hidden" style={GLOW}>
-            {TRUST_ROW.map((t, i) => (
-              <li key={t} className="flex items-center gap-x-3">
-                <span className="whitespace-nowrap text-[12px] font-semibold uppercase tracking-[0.1em] text-ink sm:text-[10.5px]">{t}</span>
-                {i < TRUST_ROW.length - 1 && <span aria-hidden className="h-1 w-1 shrink-0 rounded-full bg-ink/40" />}
+          {/* batch 51 (owner, mobile): the four facts as a 2×2 block — two on the left,
+              two on the right, two rows — seated lower under the cloud and quieter, so
+              they read as a footnote to the CTA instead of a wall of caps. Phones only;
+              the desktop base line below is untouched. */}
+          <ul className="mt-7 grid max-w-[21rem] grid-cols-2 gap-x-5 gap-y-2 px-2 sm:hidden" style={GLOW}>
+            {TRUST_ROW.map((t) => (
+              <li key={t} className="flex items-center">
+                <span className="text-[12px] font-semibold uppercase leading-tight tracking-[0.08em] text-ink/65">{t}</span>
               </li>
             ))}
           </ul>

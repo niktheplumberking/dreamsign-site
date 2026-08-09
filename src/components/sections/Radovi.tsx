@@ -220,10 +220,22 @@ function Caption({ p }: { p: Project }) {
   )
 }
 
-/** one card of the in-flow cascade — content from the project, size from the SEAT */
-function Card({ p, seat, i, drift }: {
-  p: Project; seat: (typeof SEATS)[number]; i: number; drift: unknown
+/** one card of the in-flow cascade — content from the project, size from the SEAT.
+    batch 51 (owner): `still` kills the entrance. In the phone carriage the cards to the
+    right sit OUTSIDE the viewport horizontally, so their whileInView gate never fired —
+    they were invisible until a swipe dragged them in, and then they popped. A horizontal
+    carriage has no "in view" to wait for: its cards are simply there. */
+function Card({ p, seat, i, drift, still = false }: {
+  p: Project; seat: (typeof SEATS)[number]; i: number; drift: unknown; still?: boolean
 }) {
+  const entrance = still
+    ? {}
+    : {
+        initial: { opacity: 0, y: 46 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: '-90px' },
+        transition: { duration: 0.75, delay: 0.09 * i, ease: [0.22, 1, 0.36, 1] as const },
+      }
   return (
     <motion.a
       href={p.href}
@@ -238,10 +250,7 @@ function Card({ p, seat, i, drift }: {
         '--w': seat.vw,
         y: drift as never,
       } as React.CSSProperties}
-      initial={{ opacity: 0, y: 46 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-90px' }}
-      transition={{ duration: 0.75, delay: 0.09 * i, ease: [0.22, 1, 0.36, 1] }}
+      {...entrance}
     >
       <div
         className="relative overflow-hidden rounded-[0.9rem] border border-ink/10 transition-transform duration-500 ease-out group-hover:-translate-y-2"
@@ -390,6 +399,22 @@ export default function Radovi({ trust = true, order, pinned = false }: {
   const list = order ? order.map((i) => PROJECTS[i]) : PROJECTS
   const N = list.length
 
+  // batch 51 (owner): phones get their own carriage rules — cards render without an
+  // entrance gate (see Card's `still`), and where the page did not choose an order the
+  // carriage leads with Pizzdarija instead of Metal Kolor ("let's not expose Metal Kolor
+  // as the first showcase project"). /kontakt keeps its own order; desktop is untouched.
+  const [narrow, setNarrow] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    const read = () => setNarrow(mq.matches)
+    read()
+    mq.addEventListener('change', read)
+    return () => mq.removeEventListener('change', read)
+  }, [])
+  const rowList = narrow && !order
+    ? [...list].sort((a, b) => (a.name === 'Pizzdarija' ? -1 : b.name === 'Pizzdarija' ? 1 : 0))
+    : list
+
   // the rail's geometry is measured, not guessed — and re-measured on resize. `railV`
   // ticks so every rider recomputes its transform against the new numbers at once.
   const railV = useMotionValue(0)
@@ -450,19 +475,19 @@ export default function Radovi({ trust = true, order, pinned = false }: {
      rightward. On md+ everything is vw; phones keep the px h-scroll.
      batch 49: items-END, so the covers sit on one floor and the captions on one line. */
   const staticRow = (
-    // batch 50: the phone carriage carries ONE 78vw poster instead of four small tilted
-    // ones, so its top edge is now a full-width step — and it landed inside the
-    // hero→radovi scan band (measured 157). The extra sky drops the first cover clear of
-    // the boundary at every phone height (the offset above it is constant).
-    <div className="relative left-1/2 mt-[104px] w-screen -translate-x-1/2 overflow-x-auto md:mt-5 md:overflow-visible pb-2 snap-x snap-mandatory md:snap-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    // batch 51 (owner): the phone gap between the header and the first poster shrinks from
+    // 104px to 24px — the clearance the junction band needs did not disappear, it MOVED to
+    // the section's own top padding (see the wrapper below), so the row still starts well
+    // clear of the boundary while the title now sits right above its poster.
+    <div className="relative left-1/2 mt-6 w-screen -translate-x-1/2 overflow-x-auto md:mt-5 md:overflow-visible pb-2 snap-x snap-mandatory md:snap-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <div className="flex items-end gap-4 px-[11vw] md:gap-0 md:justify-center md:px-0">
-        {list.slice(0, 4).map((p, i) => (
+        {rowList.slice(0, 4).map((p, i) => (
           <div
             key={p.name}
             className={`relative ${i === 0 ? 'md:ml-0' : 'md:-ml-[2vw]'}`}
             style={{ zIndex: 10 + i * 10 }}
           >
-            <Card p={p} seat={SEATS[i]} i={i} drift={drifts[i]} />
+            <Card p={p} seat={SEATS[i]} i={i} drift={drifts[i]} still={narrow} />
           </div>
         ))}
       </div>
@@ -495,7 +520,10 @@ export default function Radovi({ trust = true, order, pinned = false }: {
   }
 
   return (
-    <div ref={ref} className="relative mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-28">
+    // batch 51: the junction clearance the carriage gave up now lives here — on a phone the
+    // whole section starts lower, so the poster still clears the hero boundary's scan band
+    // while sitting right under its own title. md+ keeps py-16/py-28 exactly.
+    <div ref={ref} className="relative mx-auto max-w-6xl px-5 pb-16 pt-[150px] sm:px-6 md:pb-28 md:pt-28">
       {header}
       {staticRow}
       {trust && (

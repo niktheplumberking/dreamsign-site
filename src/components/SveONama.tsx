@@ -24,7 +24,57 @@ export default function SveONama({
   circle?: boolean
 }) {
   return (
-    <div className="relative flex h-screen max-h-screen min-h-screen w-full select-none flex-col justify-between px-6 text-ink sm:px-10 lg:px-14">
+    <>
+    {/* ── PHONES (batch 51, owner) ─────────────────────────────────────────────────
+        The composition below is absolute inside a full SCREEN: on a phone that stretched
+        the four pieces to the four corners, so „NAMA" sat a whole viewport under the text
+        with voids between everything. Here the same five elements stand in flow, in the
+        same reading order, tight and aligned to one left edge — the words keep their step
+        (O to the right, NAMA indented) but nothing is pinned to a screen edge. Below sm
+        only; every class in the desktop block is the original, untouched. ------------- */}
+    <div className="relative w-full select-none px-6 text-ink sm:hidden">
+      {circle && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-[120px] top-[38%] z-0 h-[420px] w-[420px] -translate-y-1/2 rounded-full border border-ink/25"
+        />
+      )}
+      <motion.h2
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 font-bold uppercase leading-[0.82] tracking-tight text-ink"
+      >
+        <span className="block text-[4.2rem]">{wordTop}</span>
+        <span className="block pl-[42%] text-[4.2rem]">{wordFloat}</span>
+      </motion.h2>
+
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-20 mt-8 flex flex-col gap-5"
+      >
+        <p className="text-[15px] font-medium leading-relaxed text-ink/95">{para1}</p>
+        <p className="text-[15px] font-medium leading-relaxed text-ink/95">{para2}</p>
+      </motion.div>
+
+      <motion.p
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        aria-hidden
+        className="relative z-10 mt-6 pl-[14%] font-bold uppercase leading-[0.82] tracking-tight text-ink text-[4.2rem]"
+      >
+        {wordBottom}
+      </motion.p>
+    </div>
+
+    {/* ── sm AND UP: the original composition, exactly as approved ───────────────── */}
+    <div className="relative hidden h-screen max-h-screen min-h-screen w-full select-none flex-col justify-between px-6 text-ink sm:flex sm:px-10 lg:px-14">
       {/* the thin decorative circle poking off the left edge */}
       {circle && (
         <div
@@ -101,5 +151,6 @@ export default function SveONama({
         </motion.span>
       </h2>
     </div>
+    </>
   )
 }
