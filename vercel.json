@@ -42,7 +42,6 @@
       ]
     },
     {
-      "//": "The preview must never compete with the real domain in search. Scoped by HOST rather than applied to everything, so it switches itself off the moment the site answers on dreamsign.rs — nobody has to remember to delete it at launch, which is exactly the kind of thing nobody remembers.",
       "source": "/(.*)",
       "has": [
         {
