@@ -37,7 +37,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  VERCEL_ORG_ID: team_59lA2tPPnRDMcCH1jVDDXtEB
+  VERCEL_ORG_ID: team_59lA2tP4DaHNBErHnfnggRdc
   VERCEL_PROJECT_ID: prj_edx4CLA4j57d2cssTjHeE3M5ZS0q
 
 jobs:
