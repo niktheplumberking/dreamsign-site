@@ -1,0 +1,89 @@
+# DEPLOY FROM A COMMIT — never from somebody's working directory.
+#
+# THE PROBLEM THIS SOLVES. This site used to ship with `vercel build` on a laptop plus
+# `vercel deploy --prebuilt`. That meant the bytes serving to the public came from whatever
+# happened to be in a working directory at the time, and what was live had never necessarily
+# existed as a commit. You cannot reproduce it, you cannot roll back to it, and two people working
+# at once will silently overwrite each other's deploys.
+#
+# WHY NOT VERCEL'S OWN GIT INTEGRATION. Tried first; it is the obvious answer and it does not work
+# here. tools/prerender.mjs needs a real browser to walk each route and snapshot the DOM (the
+# view-source law), and Vercel's build container has no Chrome and no way to install one:
+# downloading chrome-headless-shell succeeds and then refuses to launch —
+# `libnspr4.so: cannot open shared object file` — because the shared libraries are absent and there
+# is no root and no apt to add them.
+#
+# GitHub's ubuntu runner ships Google Chrome WITH its libraries. So the build happens here, from a
+# checked-out commit, and only the finished output is handed to Vercel. Same guarantee Vercel's
+# integration would have given, on a runner that can actually do the work.
+#
+# ONE SECRET, added once by hand:
+#   VERCEL_TOKEN — vercel.com → Account Settings → Tokens → Create, scoped to this team.
+# The two IDs below are identifiers, not credentials; they are in .vercel/project.json already.
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Read-only: this job never writes to the repository, it only reads a commit and ships it.
+permissions:
+  contents: read
+
+# One deploy at a time, newest wins. Two pushes a minute apart must not race to become production.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: team_59lA2tPPnRDMcCH1jVDDXtEB
+  VERCEL_PROJECT_ID: prj_edx4CLA4j57d2cssTjHeE3M5ZS0q
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+
+      - name: fail early if the token is missing
+        run: test -n "${{ secrets.VERCEL_TOKEN }}" || { echo "::error::VERCEL_TOKEN is not set — add it in Settings → Secrets → Actions"; exit 1; }
+
+      - run: npm ci
+      - run: npm i -g vercel@latest
+
+      - name: pull the project settings
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: build (vite + prerender, using the runner's Chrome)
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: prove the prerender actually happened
+        # A build that skipped prerendering looks identical to one that did until a crawler arrives.
+        # This is the cheapest possible guard: the homepage must carry its own <h1> in the HTML.
+        run: |
+          test -f .vercel/output/static/index.html || { echo "::error::no index.html in the build output"; exit 1; }
+          grep -q "<h1" .vercel/output/static/index.html || { echo "::error::index.html has no <h1> — prerender did not run"; exit 1; }
+          echo "prerendered HTML present: $(wc -c < .vercel/output/static/index.html) bytes"
+
+      - name: deploy the prebuilt output
+        id: deploy
+        run: |
+          URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "deployed $URL"
+
+      - name: verify the security headers survived the deploy
+        run: |
+          sleep 10
+          H=$(curl -sSI "${{ steps.deploy.outputs.url }}")
+          for want in content-security-policy x-content-type-options x-frame-options referrer-policy permissions-policy; do
+            echo "$H" | grep -qi "^$want:" || { echo "::error::$want missing from the deployed response"; exit 1; }
+          done
+          echo "$H" | grep -i "x-robots-tag" || echo "note: no X-Robots-Tag (expected once the real domain is live)"
+          echo "all five security headers present"

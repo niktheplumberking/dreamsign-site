@@ -13,6 +13,7 @@
 // NO GRACEFUL SKIP. prerender.mjs says it in its own header and it is right: a deploy without
 // prerendered HTML passes every smoke test and silently breaks the view-source law, which is the
 // entire SEO promise. If the browser cannot be installed or cannot launch, this build FAILS.
+import fs from 'node:fs'
 import { execSync } from 'node:child_process'
 import { install, resolveBuildId, detectBrowserPlatform, Browser } from '@puppeteer/browsers'
 import path from 'node:path'
@@ -22,15 +23,24 @@ const run = (cmd, env = {}) => execSync(cmd, { stdio: 'inherit', env: { ...proce
 console.log('→ vite build')
 run('npm run build')
 
-// Vercel's builder gives us a writable /tmp; the cache directory persists within a single build.
-const cacheDir = process.env.PUPPETEER_CACHE_DIR || path.join(process.env.TMPDIR || '/tmp', 'chrome')
-console.log(`→ installing chrome-headless-shell into ${cacheDir}`)
-const platform = detectBrowserPlatform()
-if (!platform) throw new Error('could not detect the browser platform for this builder')
-const buildId = await resolveBuildId(Browser.CHROMEHEADLESSSHELL, platform, 'stable')
-const installed = await install({ browser: Browser.CHROMEHEADLESSSHELL, buildId, cacheDir })
-console.log(`→ chrome-headless-shell ${buildId} at ${installed.executablePath}`)
+// A browser that is already here beats one we download. GitHub's ubuntu runners ship Chrome at
+// /usr/bin/google-chrome WITH its shared libraries, which is the whole reason the build runs there
+// and not on Vercel's container: downloading chrome-headless-shell onto Vercel's builder succeeds
+// and then refuses to launch — `libnspr4.so: cannot open shared object file` — and you cannot
+// apt-get the libraries in, because there is no root and no apt.
+let chrome = process.env.CHROME_PATH
+if (chrome && fs.existsSync(chrome)) {
+  console.log(`→ using the browser already present at ${chrome}`)
+} else {
+  const cacheDir = process.env.PUPPETEER_CACHE_DIR || path.join(process.env.TMPDIR || '/tmp', 'chrome')
+  console.log(`→ no CHROME_PATH; installing chrome-headless-shell into ${cacheDir}`)
+  const platform = detectBrowserPlatform()
+  if (!platform) throw new Error('could not detect the browser platform for this builder')
+  const buildId = await resolveBuildId(Browser.CHROMEHEADLESSSHELL, platform, 'stable')
+  chrome = (await install({ browser: Browser.CHROMEHEADLESSSHELL, buildId, cacheDir })).executablePath
+  console.log(`→ chrome-headless-shell ${buildId} at ${chrome}`)
+}
 
 console.log('→ prerender')
-run('node tools/prerender.mjs', { CHROME_PATH: installed.executablePath })
+run('node tools/prerender.mjs', { CHROME_PATH: chrome })
 console.log('→ build complete')
