@@ -1,0 +1,44 @@
+# DeepSource — static analysis on every commit and pull request.
+#
+# ENGINE 1 of the 50-point security audit. It runs on DeepSource's infrastructure and reports to
+# GitHub as a check on the commit; tools/security-audit.mjs reads that verdict for the exact commit
+# under audit. A red DeepSource check fails audit items 5 (SQL injection), 7 (XSS), 9 (SSRF) and
+# 11 (path traversal) and blocks the Stage 7 gate.
+#
+# ONE-TIME CONNECTION (once per client repository):
+#   1. deepsource.io → Add repository → niktheplumberking/dreamsign-site
+#   2. Activate the JavaScript analyzer
+#   3. Settings → enable Secrets detection (a dashboard toggle, not a line in this file)
+#
+# THIS FILE IS PART OF THE RIG. Every client site repo gets one — see rig/README.md. A site without
+# it fails four audit items with "no .deepsource.toml in this repository", which is the correct
+# answer: nothing analysed it.
+
+version = 1
+
+exclude_patterns = [
+  "node_modules/**",
+  "dist/**",                # built output; analysed as source instead
+  ".vercel/**",             # the Vercel CLI's local build cache — a second copy of dist plus vendor bundles
+  "public/**",              # static assets, not code
+  "**/*.min.js",
+  "**/*.d.ts",
+]
+
+test_patterns = [
+  "**/*.test.ts",
+  "**/*.test.tsx",
+  "**/*.spec.ts",
+  "tools/checks.mjs",       # the standing behaviour checks — assertions, not application code
+]
+
+[[analyzers]]
+name = "javascript"
+enabled = true
+
+  [analyzers.meta]
+  # A React + TypeScript browser app, with a handful of Node build scripts under tools/.
+  environment = ["browser", "nodejs"]
+  plugins = ["react"]
+  dialect = "typescript"
+  module_system = "es-modules"
