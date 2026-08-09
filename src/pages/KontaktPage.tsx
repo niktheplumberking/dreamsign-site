@@ -113,7 +113,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
           floating nav pill needs, so the head's first row sat UNDER it. Phones get a fixed
           124px of sky (nav bottom 91 + air); the desktop's measured 9vh seat is untouched
           from sm up. */}
-      <div className="pt-[124px] text-center sm:pt-[9vh]">
+      <div className="pt-[100px] text-center sm:pt-[9vh]">
         <motion.h2
           initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -132,15 +132,15 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
       </div>
 
       {/* the reference's body: quote block left, the cards right */}
-      <div className="mt-10 grid grid-cols-1 items-start gap-10 sm:mt-12 lg:grid-cols-12 lg:gap-14">
+      <div className="mt-5 grid grid-cols-1 items-start gap-4 sm:mt-12 sm:gap-10 lg:grid-cols-12 lg:gap-14">
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
           className="flex flex-row items-center justify-between gap-6 lg:col-span-3 lg:flex-col lg:items-start lg:justify-start"
         >
           <div>
-            <span aria-hidden className="block font-serif text-8xl leading-none text-ink/20 sm:text-[7rem]">„</span>
-            <p className="mt-3 max-w-[14ch] text-2xl font-semibold leading-snug text-ink sm:text-3xl">
+            <span aria-hidden className="block font-serif text-5xl leading-none text-ink/20 sm:text-8xl sm:text-[7rem]">„</span>
+            <p className="mt-1.5 max-w-[14ch] text-lg font-semibold leading-snug text-ink sm:mt-3 sm:text-3xl">
               Šta stoji iza naših projekata
             </p>
           </div>
@@ -154,7 +154,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
         <div className="lg:col-span-9">
           {/* batch 50: on a phone the 540px window left a third of the card empty under
               the text — the cards' own copy needs ~420px there */}
-          <div ref={viewRef} className="relative h-[430px] overflow-hidden py-1 sm:h-[500px]">
+          <div ref={viewRef} className="relative h-[418px] overflow-hidden py-1 sm:h-[500px]">
             {RECENZIJE.map((r, i) => {
               const s = mod(i - mod(idx, N), N)
               const off = s === N - 1 ? -1 : s
@@ -268,7 +268,7 @@ function KontaktBody() {
         script="Dobar dan."
         title="Dva klika i razgovaramo."
         titleK="kontakt-naslov"
-        scriptSize="text-[clamp(2rem,7.4vw,6rem)]"
+        scriptSize="text-[11.4vw] sm:text-[clamp(2rem,7.4vw,6rem)]"
         more={{ label: 'Zakažite termin', targetId: 'booking-embed-slot' }}
       />
 
@@ -277,7 +277,9 @@ function KontaktBody() {
 
         {/* batch 45 (owner): the four trust cards moved INTO the hero's cloud sea (his
             red circle) — the same shy glass pills, pulled up over the hero's foot */}
-        <div className="pointer-events-auto relative z-30 mx-auto -mt-[25vh] w-full max-w-6xl px-5 sm:px-6">
+        {/* batch 52 (owner): pulled higher on a phone so BOTH rows of the 2×2 land on the
+            first screen — "it's not possible to see all four". sm+ keeps his -25vh seat. */}
+        <div className="pointer-events-auto relative z-30 mx-auto -mt-[34vh] w-full max-w-6xl px-5 sm:-mt-[25vh] sm:px-6">
           <TrustPills reduced={reduced} immediate />
         </div>
 
@@ -319,7 +321,10 @@ function KontaktBody() {
             />
           </>
         }>
-          <div aria-hidden style={{ height: 'max(22vh, 260px)' }} />
+          {/* batch 52 (owner): on a phone this breath was dead space under the trust
+              cards — the review head carries its own 124px of sky already. Halved below
+              sm; the desktop's 22vh/260px is untouched. */}
+          <div aria-hidden className="h-[70px] sm:h-[max(22vh,260px)]" />
           <ReviewSekcija reduced={reduced} />
           <div aria-hidden style={{ height: 'max(12vh, 150px)' }} />
           <Radovi trust={false} order={[1, 3, 0, 2, 4]} />

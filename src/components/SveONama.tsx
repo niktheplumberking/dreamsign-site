@@ -39,15 +39,19 @@ export default function SveONama({
           className="pointer-events-none absolute -left-[120px] top-[38%] z-0 h-[420px] w-[420px] -translate-y-1/2 rounded-full border border-ink/25"
         />
       )}
+      {/* batch 52 (owner): the third word joins the other two — the phone reads the whole
+          name as ONE title block (his arrow: „MI"/„NAMA" moves up), and the paragraphs
+          follow underneath. The staircase stays: each word steps further right. */}
       <motion.h2
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 font-bold uppercase leading-[0.82] tracking-tight text-ink"
+        className="relative z-10 font-bold uppercase leading-[0.86] tracking-tight text-ink"
       >
-        <span className="block text-[4.2rem]">{wordTop}</span>
-        <span className="block pl-[42%] text-[4.2rem]">{wordFloat}</span>
+        <span className="block text-[4rem]">{wordTop}</span>
+        <span className="block pl-[26%] text-[4rem]">{wordFloat}</span>
+        <span className="block pl-[13%] text-[4rem]">{wordBottom}</span>
       </motion.h2>
 
       <motion.div
@@ -55,22 +59,11 @@ export default function SveONama({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-20 mt-8 flex flex-col gap-5"
+        className="relative z-20 mt-9 flex flex-col gap-5"
       >
         <p className="text-[15px] font-medium leading-relaxed text-ink/95">{para1}</p>
         <p className="text-[15px] font-medium leading-relaxed text-ink/95">{para2}</p>
       </motion.div>
-
-      <motion.p
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-        aria-hidden
-        className="relative z-10 mt-6 pl-[14%] font-bold uppercase leading-[0.82] tracking-tight text-ink text-[4.2rem]"
-      >
-        {wordBottom}
-      </motion.p>
     </div>
 
     {/* ── sm AND UP: the original composition, exactly as approved ───────────────── */}

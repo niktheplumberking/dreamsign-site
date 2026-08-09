@@ -118,7 +118,7 @@ export default function PageHero({
           >
             <span
               className={`block whitespace-nowrap font-semibold tracking-tight
-                         ${primarySize ?? 'text-[clamp(2.6rem,9vw,7.5rem)]'} bg-clip-text text-transparent`}
+                         ${primarySize ?? 'text-[12.5vw] sm:text-[clamp(2.6rem,9vw,7.5rem)]'} bg-clip-text text-transparent`}
               style={{
                 backgroundImage: 'linear-gradient(to bottom, #16324F 30%, #2E5F9E 100%)',
                 padding: '0.25em 0.1em',
@@ -129,7 +129,7 @@ export default function PageHero({
             </span>
             <span
               className={`mt-[0.02em] block whitespace-nowrap font-script font-normal leading-[0.95] text-accent
-                         ${scriptSize ?? 'text-[clamp(3.1rem,10.6vw,8.4rem)]'}`}
+                         ${scriptSize ?? 'text-[12.2vw] sm:text-[clamp(3.1rem,10.6vw,8.4rem)]'}`}
               style={GLOW}
             >
               {titleK ? <EditableText k={titleK}>{title}</EditableText> : title}

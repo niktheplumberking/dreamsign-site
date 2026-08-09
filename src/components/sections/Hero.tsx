@@ -47,7 +47,7 @@ export default function Hero() {
               the batch-2 hero scar. Padding grows the painted box; margins hand it back. */}
           <span
             className="block whitespace-nowrap font-semibold tracking-tight
-                       text-[clamp(2.6rem,9vw,7.5rem)] bg-clip-text text-transparent"
+                       text-[12.5vw] sm:text-[clamp(2.6rem,9vw,7.5rem)] bg-clip-text text-transparent"
             style={{
               backgroundImage: 'linear-gradient(to bottom, #16324F 30%, #2E5F9E 100%)',
               padding: '0.25em 0.1em',
@@ -62,7 +62,7 @@ export default function Hero() {
             // batch 23 (owner): „za vas" joins the quill — the longer row wears a slightly
             // smaller clamp + nowrap so it never wraps on phones.
             className="block whitespace-nowrap font-script font-normal text-accent
-                       text-[clamp(2.5rem,9.6vw,7.7rem)] mt-[0.02em] leading-[0.95]"
+                       text-[12.2vw] sm:text-[clamp(2.5rem,9.6vw,7.7rem)] mt-[0.02em] leading-[0.95]"
             style={GLOW}
           >
             <EditableText k="hero-naslov-script">{bk('hero-naslov-script', 'koji prodaju za vas')}</EditableText>

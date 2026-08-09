@@ -748,8 +748,8 @@ export default function RadoviPage() {
           trust
           script="Pogledajte neke od"
           title="naših najboljih radova"
-          primarySize="text-[clamp(1.9rem,6.6vw,5.4rem)]"
-          scriptSize="text-[clamp(2.2rem,8.2vw,6.8rem)]"
+          primarySize="text-[10.5vw] sm:text-[clamp(1.9rem,6.6vw,5.4rem)]"
+          scriptSize="text-[12vw] sm:text-[clamp(2.2rem,8.2vw,6.8rem)]"
           sub="Izabrani projekti koje smo dizajnirali i izgradili — otvorite bilo koji i vidite sami."
           more={{ label: 'Pogledajte više', targetId: 'prvi-projekat' }}
         />

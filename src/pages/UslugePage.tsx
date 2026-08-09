@@ -39,8 +39,8 @@ const SkyGap = () => <div aria-hidden style={{ height: 'max(26vh, 310px)' }} />
    else in the loop changes. */
 const PLAY_CLOUDS = [
   { label: '1. Web dizajn', wPct: 32, wSm: 37, seat: [0.06, 0.02], seatSm: [0.0, 0.0] },
-  { label: '2. SEO', wPct: 31, wSm: 34, seat: [0.55, 0.12], seatSm: [0.63, 0.16] },
-  { label: '3. Marketing', wPct: 33, wSm: 39, seat: [0.6, 0.54], seatSm: [0.26, 0.62] },
+  { label: '2. SEO', wPct: 31, wSm: 34, seat: [0.55, 0.12], seatSm: [0.64, 0.12] },
+  { label: '3. Marketing', wPct: 33, wSm: 39, seat: [0.6, 0.54], seatSm: [0.20, 0.55] },
 ]
 
 function CloudMap() {
@@ -61,12 +61,39 @@ function CloudMap() {
   const xs = [x0, x1, x2], ys = [y0, y1, y2]
 
   useEffect(() => {
-    // batch 50 (owner, mobile audit): NO PHYSICS ON A PHONE. The fence is small enough
-    // there that the edge-steer band covers nearly all of it, so all three clouds were
-    // being nudged to the same middle and their labels stacked into one unreadable knot —
-    // and a phone has no cursor for them to flee from anyway. Below 640 they take three
-    // fixed, well-separated seats and just breathe (see the render branch).
-    if (reduced || narrow) return
+    // batch 50: the free-roaming physics cannot run on a phone — the fence is small enough
+    // there that the edge-steer band covers nearly all of it, so all three clouds converged
+    // into one unreadable knot, and a phone has no cursor to flee from anyway.
+    // batch 52 (owner): "they are static… make them move, same effect as on desktop." So on
+    // a phone each cloud ORBITS ITS OWN SEAT — a slow, irrational-ratio lissajous (never
+    // repeating, so it never looks looped) with its own period and phase. Same living
+    // drift as the desktop cruise, but every cloud is bound to its own patch of sky, so
+    // the labels can never collide. One rAF, motion values only, no React re-renders.
+    if (reduced) return
+    if (narrow) {
+      const box = boxRef.current
+      if (!box) return
+      let raf = 0, run = true
+      const io = new IntersectionObserver(([e]) => { run = e.isIntersecting })
+      io.observe(box)
+      const t0 = performance.now()
+      const orbit = [
+        { ax: 13, ay: 9, px: 15.1, py: 11.3, ph: 0 },
+        { ax: 10, ay: 12, px: 12.7, py: 17.9, ph: 2.1 },
+        { ax: 14, ay: 8, px: 18.3, py: 13.7, ph: 4.2 },
+      ]
+      const step = () => {
+        raf = requestAnimationFrame(step)
+        if (!run) return
+        const t = (performance.now() - t0) / 1000
+        orbit.forEach((o, i) => {
+          xs[i].set(o.ax * Math.sin((2 * Math.PI * t) / o.px + o.ph))
+          ys[i].set(o.ay * Math.sin((2 * Math.PI * t) / o.py + o.ph * 1.7))
+        })
+      }
+      raf = requestAnimationFrame(step)
+      return () => { cancelAnimationFrame(raf); io.disconnect() }
+    }
     const box = boxRef.current
     if (!box) return
     const mouse = { x: -1e4, y: -1e4 }
@@ -144,8 +171,12 @@ function CloudMap() {
     }
     raf = requestAnimationFrame(step)
     return () => { cancelAnimationFrame(raf); window.removeEventListener('mousemove', onMove); io.disconnect() }
+    // batch 52: `narrow` MUST be a dependency. It starts false (the server/first paint
+    // cannot know the width), so without it the desktop physics armed itself on mount and
+    // kept writing absolute positions into x/y for the rest of the session — which is why
+    // the phone clouds sat wherever the simulation had left them and never orbited.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduced])
+  }, [reduced, narrow])
 
   return (
     <motion.div
@@ -153,31 +184,33 @@ function CloudMap() {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className="pointer-events-none absolute right-0 z-10 aspect-[360/230] w-[94vw] sm:aspect-[500/240] sm:w-[440px] md:w-[560px] lg:w-[46vw] lg:max-w-[900px]
-                 top-[11vh] sm:top-[9vh] lg:top-[10vh]"
+      className="pointer-events-none absolute right-0 z-10 aspect-[360/195] w-[94vw] sm:aspect-[500/240] sm:w-[440px] md:w-[560px] lg:w-[46vw] lg:max-w-[900px]
+                 top-[10vh] sm:top-[9vh] lg:top-[10vh]"
       aria-hidden
     >
-      {PLAY_CLOUDS.map((c, i) => {
-        const still = reduced || narrow
-        return (
+      {PLAY_CLOUDS.map((c, i) => (
         <motion.div
           key={c.label}
           ref={(el) => { cloudRefs.current[i] = el }}
-          className="absolute left-0 top-0"
-          // phones and reduced motion: a fixed seat with a slow breath; desktop: the
-          // playground's own physics writing x/y
-          animate={narrow && !reduced ? { y: [0, -7, 0] } : undefined}
-          transition={narrow && !reduced
-            ? { duration: 6.5 + i * 1.3, repeat: Infinity, ease: 'easeInOut', delay: i * 0.7 }
-            : undefined}
+          className="absolute"
+          // reduced motion: a fixed seat, nothing moves.
+          // phone: the seat is a CSS position and x/y are the orbit around it (batch 52).
+          // desktop: x/y are the playground's absolute physics from the box's origin.
           style={
-            still
+            reduced
               ? {
                   left: `${(narrow ? c.seatSm[0] : c.seat[0]) * 100}%`,
                   top: `${(narrow ? c.seatSm[1] : c.seat[1]) * 100}%`,
                   width: `${narrow ? c.wSm : c.wPct}%`,
                 }
-              : { x: xs[i], y: ys[i], width: `${c.wPct}%` }
+              : narrow
+                ? {
+                    left: `${c.seatSm[0] * 100}%`,
+                    top: `${c.seatSm[1] * 100}%`,
+                    width: `${c.wSm}%`,
+                    x: xs[i], y: ys[i],
+                  }
+                : { left: 0, top: 0, x: xs[i], y: ys[i], width: `${c.wPct}%` }
           }
         >
           <img
@@ -190,8 +223,7 @@ function CloudMap() {
             </span>
           </span>
         </motion.div>
-        )
-      })}
+      ))}
     </motion.div>
   )
 }
@@ -337,7 +369,10 @@ function UslugeHero() {
             batch 29 (owner): the DUET — „MI SMO VAŠA" primary over „full-service
             agencija" in the quill, the two rows width-matched (sizes tuned by browser
             measurement, both in vw so the match holds at every viewport). */}
-        <h1 className="flex w-full flex-col items-start text-left">
+        {/* batch 52 (owner): on a PHONE the hero title is centred, like every other page's
+            title — "have the same title as other pages, centre aligned and everything".
+            sm and up keeps the left-aligned reference composition untouched. */}
+        <h1 className="flex w-full flex-col items-center text-center sm:items-start sm:text-left">
           <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                        className={`${row} whitespace-nowrap text-[12.5vw] sm:text-[10vw] md:text-[8.5vw] xl:text-[7.8rem]`}>
@@ -349,13 +384,13 @@ function UslugeHero() {
               comes UP to the row; the pb crutches are gone. */}
           <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                        transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                       className="mt-1 flex w-full flex-col items-start justify-between gap-6 sm:mt-2 lg:flex-row lg:items-baseline lg:gap-12">
+                       className="mt-1 flex w-full flex-col items-center justify-between gap-6 sm:mt-2 sm:items-start lg:flex-row lg:items-baseline lg:gap-12">
             <span className="block whitespace-nowrap font-script font-normal normal-case tracking-normal text-accent
                              leading-[1.02] text-[13.9vw] sm:text-[11.1vw] md:text-[9.5vw] xl:text-[8.63rem]"
                   style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
               full-service agencija
             </span>
-            <span className="block max-w-xs text-left text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-sm lg:text-base xl:max-w-md"
+            <span className="block max-w-xs text-center text-xs font-medium normal-case leading-relaxed tracking-normal text-ink/85 sm:max-w-sm sm:text-left sm:text-sm lg:text-base xl:max-w-md"
                   style={{ textShadow: '0 2px 22px rgba(245,249,253,0.85)' }}>
               <EditableText k="usluge-uvod">
                 {bk('usluge-uvod', 'Dizajn, izrada, brendiranje i briga — jedan tim, jedan potpis.')}
@@ -397,7 +432,7 @@ function UslugeHero() {
             sheet above it and the melt's solid top painted a hard band across open sky
             (junction step 64). Phones get plain sky of the guard depth instead; md+ keeps
             the melt exactly as composed. */}
-        <div aria-hidden className="relative h-[330px] md:h-[max(12vh,140px)]">
+        <div aria-hidden className="relative h-[280px] md:h-[max(12vh,140px)]">
           <div
             className="absolute inset-0 hidden md:block"
             style={{
@@ -935,16 +970,8 @@ function ProcessWheel() {
   const ref = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const { reduced } = useWorld()
-  // batch 50: below 900px the wheel hands over to the list (see ProcessList). Measured on
-  // the client so the desktop prerender still ships the wheel's own markup.
-  const [phone, setPhone] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 899px)')
-    const read = () => setPhone(mq.matches)
-    read()
-    mq.addEventListener('change', read)
-    return () => mq.removeEventListener('change', read)
-  }, [])
+  // batch 52: the wheel now runs at EVERY width — its geometry has a phone branch (see
+  // the measure effect below), so there is no breakpoint hand-off left to track.
   const [k, setK] = useState(0)
   const [expanded, setExpanded] = useState(false)
   const [dim, setDim] = useState({ R: 2000, cx: -1200, fontPx: 120, numOff: 120, step: 10, xTop: -999, textLeft: 1100, titleW: 560 })
@@ -983,11 +1010,23 @@ function ProcessWheel() {
       // derives from the title's real rendered edge, not a guess. The stage is
       // overflow-visible + top layer, so the arc closes off-screen — never a break.
       const vh = window.innerHeight, vw = window.innerWidth
-      if (vw < 640) {
-        const R = Math.max(104, Math.min(vh * 0.467, vw * 0.3))
-        let cx = vw * 0.47 - 1.19 * R
-        if (cx > R - 30) cx = R - 30
-        setDim({ R, cx, fontPx: Math.max(30, R * 0.2), numOff: R * 0.19, step: 26, xTop: -999, textLeft: cx + R * 1.38 + 28, titleW: 320 })
+      if (vw < 900) {
+        // batch 52 (owner): THE WHEEL COMES BACK TO THE PHONE — "we have the spinning
+        // wheel and the lock viewport animation… make it exactly the same as on desktop
+        // but properly applied for mobile". Same instrument, phone numbers:
+        //   · R is bigger than the screen (0.8·vh, floor 600) so the arc is a GIANT circle
+        //     living outside the viewport — it enters the top edge and leaves the bottom,
+        //     never a closed loop, exactly the desktop intent
+        //   · the seated number sits at x=46 and the ring's rightmost point at x≈2, so the
+        //     arc is the sliver at the left edge and the numbers ride just inside it
+        //   · the step's words start at x=104 — clear of the number column at every seat,
+        //     which is what made the old phone wheel collide with its own text
+        const R = Math.max(600, vh * 0.8)
+        const fontPx = 40
+        const numOff = 44
+        const cx = 46 - R - numOff
+        const textLeft = 104
+        setDim({ R, cx, fontPx, numOff, step: 26, xTop: -999, textLeft, titleW: vw - textLeft - 20 })
       } else {
         const R = Math.max(140, Math.min(vh * 0.72, vw * 0.41))
         const fontPx = Math.max(34, R * 0.2)
@@ -1018,10 +1057,11 @@ function ProcessWheel() {
     return () => window.removeEventListener('resize', m)
   }, [])
 
-  if (reduced || phone) return <ProcessList />
+  // batch 52 (owner): only REDUCED MOTION keeps the plain list now — the phone gets the
+  // wheel back (see the geometry above)
+  if (reduced) return <ProcessList />
 
   const { R, cx, fontPx, numOff, step, textLeft, titleW } = dim
-  const narrow = typeof window !== 'undefined' && window.innerWidth < 640
   return (
     <div ref={ref} className="relative h-[340vh] w-full">
       {/* the whole six-step process, for readers and crawlers — the wheel itself is
@@ -1097,8 +1137,11 @@ function ProcessWheel() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0, transition: { delay: 0.38, duration: 0.4, ease: [0.3, 0, 0.2, 1] } }}
               exit={{ opacity: 0, x: -30, transition: { duration: 0.3, ease: [0.3, 0, 0.2, 1] } }}
-              className="absolute max-sm:inset-x-6 max-sm:top-[64%] sm:top-1/2 sm:-translate-y-1/2 sm:pr-4"
-              style={narrow ? undefined : { left: textLeft, maxWidth: `min(32rem, calc(100vw - ${Math.round(textLeft)}px - 1.5rem))` }}
+              // batch 52: one seat at every width — the words sit at the numbers' right,
+              // vertically centred. (The phone used to drop them UNDER the column, which is
+              // where the old mobile wheel's collisions came from.)
+              className="absolute top-1/2 -translate-y-1/2 pr-4"
+              style={{ left: textLeft, maxWidth: `min(32rem, calc(100vw - ${Math.round(textLeft)}px - 1.25rem))` }}
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -1146,10 +1189,10 @@ function ProcessWheel() {
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0, transition: { delay: 0.38, duration: 0.5, ease: [0.3, 0, 0.2, 1] } }}
               exit={{ opacity: 0, x: 40, transition: { duration: 0.3, ease: [0.3, 0, 0.2, 1] } }}
-              className="absolute max-sm:inset-x-6 max-sm:top-[38%] sm:top-1/2 sm:-translate-y-1/2"
+              className="absolute top-1/2 -translate-y-1/2"
               // batch 40 (owner): the story sits INSIDE the title's two edges — same
               // left, same width, centred against the main title by construction
-              style={narrow ? undefined : { left: textLeft, width: titleW }}
+              style={{ left: textLeft, width: titleW }}
             >
               <AnimatePresence mode="wait">
                 <motion.div
@@ -1219,7 +1262,7 @@ export default function UslugePage() {
               INSIDE the sticky stage now. */}
           <Beat name="proces">
             <ProcessWheel />
-            <div aria-hidden style={{ height: '16vh' }} />
+            <div aria-hidden className="h-[6vh] md:h-[16vh]" />
           </Beat>
 
           {/* batch 28 (owner): the about composition joins /usluge — the same layout, sea

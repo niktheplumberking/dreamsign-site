@@ -146,18 +146,22 @@ function TrustPill({ b, i, reduced, immediate = false }: {
     <motion.div
       {...entrance}
       // four distinct seats — a shared bottom edge across four glass pills reads as a
-      // full-width line to the junction rig (measured 34 in batch 5)
-      className={['', 'mt-6', 'mt-11', 'mt-3'][i]}
+      // full-width line to the junction rig (measured 34 in batch 5).
+      // batch 52 (owner): on a PHONE that stagger cost ~60px of height and pushed the
+      // bottom row off the fold — "it's not possible to see all four". Phones seat them
+      // square (the 2×2 grid is small enough that no shared edge runs full width);
+      // sm and up keeps the staggered line exactly as approved.
+      className={['', 'sm:mt-6', 'sm:mt-11', 'mt-4 sm:mt-3'][i]}
     >
       {/* idle float on the outer shell, cursor-repel springs on the inner one */}
       <motion.div
         animate={reduced ? undefined : { y: [0, -7, 0] }}
         transition={{ duration: 5.2 + i * 0.7, repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
       >
-        <motion.div ref={ref} style={reduced ? undefined : { x: sx, y: sy }} className="liquid-glass rounded-[1.5rem] px-5 py-5 text-center">
-          <span className="font-script text-accent text-[26px] leading-none" aria-hidden>{b.k}</span>
-          <p className="mt-2 font-semibold text-ink text-[14px] leading-snug">{b.t}</p>
-          <p className="mt-1 text-[12.5px] text-ink/60">{b.d}</p>
+        <motion.div ref={ref} style={reduced ? undefined : { x: sx, y: sy }} className="liquid-glass rounded-[1.5rem] px-4 py-4 text-center sm:px-5 sm:py-5">
+          <span className="font-script text-accent text-[22px] leading-none sm:text-[26px]" aria-hidden>{b.k}</span>
+          <p className="mt-1.5 font-semibold text-ink text-[13px] leading-snug sm:mt-2 sm:text-[14px]">{b.t}</p>
+          <p className="mt-1 text-[12px] text-ink/60 sm:text-[12.5px]">{b.d}</p>
         </motion.div>
       </motion.div>
     </motion.div>
@@ -228,8 +232,13 @@ function Caption({ p }: { p: Project }) {
 function Card({ p, seat, i, drift, still = false }: {
   p: Project; seat: (typeof SEATS)[number]; i: number; drift: unknown; still?: boolean
 }) {
+  // batch 52: `still` must ASSERT opacity 1, not merely drop the entrance props. `narrow`
+  // is false on the first render (the width is unknown until mount), so the card mounts
+  // with initial opacity 0; when the flag flips, removing initial/animate leaves the
+  // element exactly where the last animation left it — invisible. This is why the whole
+  // kontakt past-work row rendered as empty sky.
   const entrance = still
-    ? {}
+    ? { initial: false as const, animate: { opacity: 1, y: 0 } }
     : {
         initial: { opacity: 0, y: 46 },
         whileInView: { opacity: 1, y: 0 },
@@ -245,7 +254,7 @@ function Card({ p, seat, i, drift, still = false }: {
       // per swipe, 78vw wide, no overlap and no tilt. The overlapped px cascade put every
       // caption underneath its neighbour's card (his „things that don't make sense on
       // mobile"); md+ keeps the vw cascade untouched.
-      className="group relative block shrink-0 w-[78vw] snap-center md:w-[var(--w)] md:snap-align-none"
+      className="group relative block shrink-0 w-[74vw] snap-center md:w-[var(--w)] md:snap-align-none"
       style={{
         '--w': seat.vw,
         y: drift as never,
@@ -363,7 +372,7 @@ function RailCard({ p, j, N, prog, railV, rail }: {
 
 export function TrustPills({ reduced, immediate = false }: { reduced: boolean; immediate?: boolean }) {
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 items-start">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 items-start">
       {TRUST.map((b, i) => (
         <TrustPill key={b.t} b={b} i={i} reduced={reduced} immediate={immediate} />
       ))}
@@ -480,7 +489,7 @@ export default function Radovi({ trust = true, order, pinned = false }: {
     // the section's own top padding (see the wrapper below), so the row still starts well
     // clear of the boundary while the title now sits right above its poster.
     <div className="relative left-1/2 mt-6 w-screen -translate-x-1/2 overflow-x-auto md:mt-5 md:overflow-visible pb-2 snap-x snap-mandatory md:snap-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className="flex items-end gap-4 px-[11vw] md:gap-0 md:justify-center md:px-0">
+      <div className="flex items-end gap-4 px-[8vw] md:gap-0 md:justify-center md:px-0">
         {rowList.slice(0, 4).map((p, i) => (
           <div
             key={p.name}
@@ -523,7 +532,11 @@ export default function Radovi({ trust = true, order, pinned = false }: {
     // batch 51: the junction clearance the carriage gave up now lives here — on a phone the
     // whole section starts lower, so the poster still clears the hero boundary's scan band
     // while sitting right under its own title. md+ keeps py-16/py-28 exactly.
-    <div ref={ref} className="relative mx-auto max-w-6xl px-5 pb-16 pt-[150px] sm:px-6 md:pb-28 md:pt-28">
+    // batch 51/52: the 150px phone guard belongs to the HOME page only, where this section
+    // follows the hero and its first poster must clear the boundary's scan band. On
+    // /kontakt the section sits mid-beat, and that same padding read as dead space under
+    // the title (his note) — so it is tied to `pinned`, which only home passes.
+    <div ref={ref} className={`relative mx-auto max-w-6xl px-5 pb-16 sm:px-6 md:pb-28 md:pt-28 ${pinned ? 'pt-[150px]' : 'pt-10'}`}>
       {header}
       {staticRow}
       {trust && (
