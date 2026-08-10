@@ -22,9 +22,19 @@
 # The two IDs below are identifiers, not credentials; they are in .vercel/project.json already.
 name: deploy
 
+# MANUAL ONLY UNTIL VERCEL_TOKEN EXISTS.
+#
+# This was `on: push` from the start, which meant every commit fired a job whose first step is
+# "fail if the token is missing" — so every commit produced a failure email. That is not a guard,
+# it is a pager that goes off when nothing is wrong, and it buried the two failures that WERE real.
+#
+# Re-enable the push trigger by uncommenting the two lines below, and only once the secret is set:
+#   Settings → Secrets and variables → Actions → New repository secret → VERCEL_TOKEN
+#     (vercel.com → Account Settings → Tokens → Create, scoped to this team)
+# Until then, deploys stay manual: Actions → deploy → Run workflow.
 on:
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
   workflow_dispatch:
 
 # Read-only: this job never writes to the repository, it only reads a commit and ships it.
