@@ -208,12 +208,11 @@ function TiltScript({ word }: { word: string }) {
       aria-hidden
       // batch 24/25: lowered again — the word rides just above the title's cap, close but
       // never touching
-      // batch 53 (owner): the word is anchored to the h2's left edge — and that h2 is
-      // w-[115%] with a negative left margin, so a half-width translate pushed it PAST the
-      // viewport at 1280–1440 (measured left −7 and −8). Nobody had seen it because the
-      // word was painting transparent; now that it paints, the clip shows. An 18% tuck
-      // keeps it above the giant word's first letters and inside the screen at every width.
-      className="pointer-events-none absolute left-0 top-0 z-20 block -translate-x-[6%] -translate-y-[64%]"
+      // batch 53 follow-up (owner): REVERTED to the original seat and it stays there. His
+      // rule, verbatim: the word's centre sits on the LEFT EDGE of „PROJEKAT" — which is
+      // exactly left-0 of the word's own wrapper plus a half-width translate. I had nudged
+      // it right to keep it off the viewport edge; he never asked for that. Do not move it.
+      className="pointer-events-none absolute left-0 top-0 z-20 block -translate-x-1/2 -translate-y-[64%]"
     >
       <motion.span
         initial={{ opacity: 0, scale: 0.85, rotate: -16, y: 15 }}
