@@ -86,6 +86,15 @@ body {
     color: transparent;
   }
 }
+/* batch 53 (owner): „Prvi" / „Drugi" / „Treći" VANISHED on desktop the moment batch 51 added
+   -webkit-text-fill-color above. That property INHERITS, and in WebKit/Blink it beats
+   `color` — so the script word nested inside the heading was painted transparent even though
+   it carries text-accent. (Before batch 51 the ramp only set `color`, which the child's own
+   colour overrode, so the word survived.) Every descendant of the ramp paints its own ink
+   again; the ramp itself is unaffected because the rule targets children only. */
+.giant-ramp * {
+  -webkit-text-fill-color: currentColor;
+}
 
 /* ---------- The page veil's gust (batch 23): PURE CSS keyframes — compositor-driven,
    so the route swap's render stall can never freeze the wind mid-flight ---------- */

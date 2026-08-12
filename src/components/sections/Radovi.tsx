@@ -383,10 +383,13 @@ export function TrustPills({ reduced, immediate = false }: { reduced: boolean; i
 /* batch 45 (owner): trust may be switched off — /kontakt moved the pills into its hero.
    batch 46 (owner): `order` rotates which projects sit where (/kontakt differs from home),
    `pinned` locks the camera and turns the cascade into the conveyor. */
-export default function Radovi({ trust = true, order, pinned = false }: {
+export default function Radovi({ trust = true, order, pinned = false, headerAlign = 'bleed' }: {
   trust?: boolean
   order?: number[]
   pinned?: boolean
+  /** batch 53 (owner): 'bleed' uses the page's empty left margin (home); 'faq' lines the
+      headline up with the FAQ column that follows it on /kontakt */
+  headerAlign?: 'bleed' | 'faq'
 } = {}) {
   const ref = useRef<HTMLDivElement>(null)
   const runRef = useRef<HTMLDivElement>(null)
@@ -451,32 +454,53 @@ export default function Radovi({ trust = true, order, pinned = false }: {
   const header = (
     <>
       {/* REF 1 MEASURED: THREE stacked headline lines top-left ending in a period, with the
-          tiny note top-RIGHT sitting level with the third line. */}
-      <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-end">
+          tiny note top-RIGHT sitting level with the third line.
+          batch 53 (owner): the headline is „Pogledajte neke od naših / prethodnih radova" —
+          row 1 whole in the primary face, row 2 primary except „radova", which alone wears
+          the quill. On the HOME page the block breaks out of the content column and uses
+          the empty left margin ("go off the grid, we are using all the white space"); on
+          /kontakt it lines up with the FAQ column beneath it instead (headerAlign). */}
+      {/* both variants break out of the section's max-w-6xl column; 'faq' then re-enters the
+          FAQ's own container (max-w-[1500px] + its padding) so the two headlines share one
+          left edge, 'bleed' simply keeps 3.5vw of margin and takes the rest */}
+      <div className="relative md:left-1/2 md:w-screen md:-translate-x-1/2">
+      <div className={headerAlign === 'faq'
+        ? 'mx-auto w-full max-w-[1500px] md:px-10 lg:px-14'
+        : 'w-full md:px-[3.5vw]'}>
+      <div className="grid gap-8 md:grid-cols-[1.55fr_1fr] md:items-end">
         <motion.h2
           {...fadeUp(0)}
-          className="font-semibold tracking-tight leading-[1.02] text-[clamp(2.6rem,7.4vw,6rem)]"
+          // the long first row must never break: „Pogledajte neke od naših" measures 13.1×
+          // its font-size, and its column is ~56vw of the bleed — so 4.3vw is the largest
+          // size that keeps it on ONE line from 1280 up (62px at 1440, 83px at 1920). The
+          // nowrap is md+ only; a phone wraps it happily at a smaller size.
+          className={`font-semibold tracking-tight leading-[1.02] md:whitespace-nowrap ${
+            headerAlign === 'faq'
+              ? 'text-[clamp(2rem,3.6vw,4.2rem)]'
+              : 'text-[clamp(2rem,4.3vw,5.2rem)]'
+          }`}
         >
-          {/* batch 15 (owner): „Radovi koji" one row, „govore." underneath grown to the
-              upper row's width. batch 19: the brand ramp, never flat ink (colour law). */}
-          <span className="ink-gradient block whitespace-nowrap">Radovi koji</span>
-          <span className="block font-script font-normal text-accent text-[1.62em] leading-[0.9]">govore.</span>
+          <span className="ink-gradient block">Pogledajte neke od naših</span>
+          <span className="block">
+            <span className="ink-gradient">prethodnih </span>
+            <span className="font-script font-normal text-accent text-[1.5em] leading-[0.9]">radova</span>
+          </span>
         </motion.h2>
         <motion.p
           {...fadeUp(1)}
-          className="max-w-[34ch] text-[13.5px] leading-relaxed text-ink/60 md:justify-self-end md:pb-[1.6rem]"
+          className={`max-w-[34ch] leading-relaxed text-ink/60 md:justify-self-end md:pb-[1.6rem] ${
+            headerAlign === 'faq' ? 'text-[13.5px]' : 'text-[15px] md:text-[17px]'
+          }`}
         >
           Svaki sajt gradimo sa jednim zadatkom — da posetioca pretvori u upit. Otvorite bilo
           koji i vidite sami.
         </motion.p>
       </div>
-
-      <motion.div
-        {...fadeUp(2)}
-        className="mt-12 flex items-baseline justify-between text-[12px] uppercase tracking-[0.16em] text-ink/45"
-      >
-        <span>Projekti</span>
-      </motion.div>
+      </div>
+      </div>
+      {/* batch 53 (owner): the little „PROJEKTI" label is deleted — "it's shit, it doesn't
+          look good". Its 48px of top margin went with it, which is most of the gap he
+          circled between the headline and the cards. */}
     </>
   )
 
@@ -507,8 +531,12 @@ export default function Radovi({ trust = true, order, pinned = false }: {
     return (
       <div ref={ref} className="relative mx-auto max-w-6xl px-5 sm:px-6 py-16 md:py-28">
         {header}
-        {/* the runway: one dwell per project — every rider takes the big seat once */}
-        <div ref={runRef} className="relative w-full" style={{ height: `${N * 62 + 100}vh` }}>
+        {/* the runway: one dwell per project — every rider takes the big seat once.
+            batch 53 (owner): the space he circled between the headline and the cards is the
+            rail's own nav clearance, which is only VISIBLE in the moment before the pin
+            engages. Pulling the runway up closes that pre-pin gap; the locked composition
+            is untouched, because the stage is sticky top-0 h-screen and always recentres. */}
+        <div ref={runRef} className="relative w-full md:-mt-[120px]" style={{ height: `${N * 62 + 100}vh` }}>
           <div className="sticky top-0 h-screen w-full">
             {/* the rail spans the VIEWPORT, not the content column */}
             <div className="relative left-1/2 h-full w-screen -translate-x-1/2">
@@ -536,7 +564,7 @@ export default function Radovi({ trust = true, order, pinned = false }: {
     // follows the hero and its first poster must clear the boundary's scan band. On
     // /kontakt the section sits mid-beat, and that same padding read as dead space under
     // the title (his note) — so it is tied to `pinned`, which only home passes.
-    <div ref={ref} className={`relative mx-auto max-w-6xl px-5 pb-16 sm:px-6 md:pb-28 md:pt-28 ${pinned ? 'pt-[150px]' : 'pt-10'}`}>
+    <div ref={ref} className={`relative mx-auto max-w-6xl px-5 pb-16 sm:px-6 md:pb-28 md:pt-28 ${pinned ? 'pt-[220px]' : 'pt-10'}`}>
       {header}
       {staticRow}
       {trust && (

@@ -279,7 +279,7 @@ function KontaktBody() {
             red circle) — the same shy glass pills, pulled up over the hero's foot */}
         {/* batch 52 (owner): pulled higher on a phone so BOTH rows of the 2×2 land on the
             first screen — "it's not possible to see all four". sm+ keeps his -25vh seat. */}
-        <div className="pointer-events-auto relative z-30 mx-auto -mt-[34vh] w-full max-w-6xl px-5 sm:-mt-[25vh] sm:px-6">
+        <div className="pointer-events-auto relative z-30 mx-auto -mt-[37vh] w-full max-w-6xl px-5 sm:-mt-[25vh] sm:px-6">
           <TrustPills reduced={reduced} immediate />
         </div>
 
@@ -327,7 +327,7 @@ function KontaktBody() {
           <div aria-hidden className="h-[70px] sm:h-[max(22vh,260px)]" />
           <ReviewSekcija reduced={reduced} />
           <div aria-hidden style={{ height: 'max(12vh, 150px)' }} />
-          <Radovi trust={false} order={[1, 3, 0, 2, 4]} />
+          <Radovi trust={false} order={[1, 3, 0, 2, 4]} headerAlign="faq" />
           <div aria-hidden style={{ height: 'max(9vh, 110px)' }} />
           <FaqSekcija />
           <div aria-hidden style={{ height: 'max(30vh, 350px)' }} />
