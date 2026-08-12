@@ -265,7 +265,7 @@ function KontaktBody() {
           down to the booking card in the FAQ */}
       <PageHero
         flip
-        script="Imate projekat na umu"
+        script="Imate projekat na umu?"
         // „Imate projekat na umu" is twice the length of „Dobar dan." and the row never
         // wraps, so the phone size steps down to fit (measured 9.68× the font-size; 8.8vw
         // clears 360, 390 and 430). sm and up keeps the shared page-title clamp.
