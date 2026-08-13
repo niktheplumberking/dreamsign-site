@@ -179,7 +179,10 @@ function MiniCTA() {
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="relative z-10 flex flex-col items-center px-5 text-center"
     >
-      <h2 className="leading-none">
+      {/* batch 57: presentational — the invitation is rendered twice (plain flow + the
+          pinned swap), so the beat's single heading for it lives in TreciBlok. Classes
+          untouched; only the tag changed. */}
+      <div aria-hidden className="leading-none">
         <span className="ink-gradient block whitespace-nowrap font-semibold tracking-tight text-[clamp(2.1rem,4.4vw,4rem)]">
           Postanite i vi
         </span>
@@ -189,7 +192,7 @@ function MiniCTA() {
         >
           deo našeg uspeha!
         </span>
-      </h2>
+      </div>
       <CloudButton label="Započnite razgovor" href={WA_LINK} reduced={reduced} className="mt-3" />
       <ReferenceRotator />
     </motion.div>
@@ -232,11 +235,16 @@ function TiltScript({ word }: { word: string }) {
 /** the giant condensed section headline, ink gradient (the homepage h1's own ramp).
     batch 23: `tilt` renders the script word INSIDE, anchored to the title text's own
     inline box — the only anchor that tracks the glyphs at every width and alignment. */
-function GiantH2({ children, tilt, align = 'center' }: {
+function GiantH2({ children, tilt, align = 'center', as = 'h2' }: {
   children: React.ReactNode; tilt?: string; align?: 'center' | 'left'
+  /** batch 57: „Treći" renders TWICE (the plain flow and the pinned swap are both in the
+      DOM, CSS picks one), so its copies pass `as="div"` and the beat carries one sr-only
+      heading instead. Prvi and Drugi are rendered once and stay real headings. */
+  as?: 'h2' | 'div'
 }) {
+  const Tag = as === 'div' ? motion.div : motion.h2
   return (
-    <motion.h2
+    <Tag
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
@@ -261,7 +269,7 @@ function GiantH2({ children, tilt, align = 'center' }: {
         {children}
         {tilt && <TiltScript word={tilt} />}
       </span>
-    </motion.h2>
+    </Tag>
   )
 }
 
@@ -540,7 +548,7 @@ const TRECI_SHOTS = {
 function TreciSadrzaj() {
   return (
     <Drift amp={18} className="relative flex w-full max-w-lg flex-col items-center justify-center">
-      <GiantH2 tilt="Treći">Projekat</GiantH2>
+      <GiantH2 tilt="Treći" as="div">Projekat</GiantH2>
       <div className="mt-6">
         <ProjectCopy
           text="Picerija sa picom na drva iz Novog Sada — meni, priča i porudžbina na dva klika, u duhu lokala koji miriše na vatru."
@@ -715,9 +723,22 @@ function TreciBlok() {
       <MiniCTA />
     </>
   )
-  if (reduced) return <>{flow}</>
+  // batch 57 (Stage-6 gate finding): under reduced motion only the flow exists, so nothing
+  // is duplicated and no stand-in heading is needed — but the flow's own copies are now
+  // presentational, so the two headings ride along here in every case.
+  const headings = (
+    <>
+      <h2 className="sr-only">Projekat Treći</h2>
+      <h2 className="sr-only">Postanite i vi deo našeg uspeha!</h2>
+    </>
+  )
+  if (reduced) return <>{headings}{flow}</>
   return (
     <>
+      {/* Both trees below are ALWAYS in the DOM — CSS decides which one is seen — so the
+          heading elements had to leave them: a crawler was reading „Projekat Treći" and the
+          invitation twice each. One heading apiece, outside the twins, always present. */}
+      {headings}
       <div className="lg:hidden">{flow}</div>
       <div className="hidden lg:block">
         <TreciScena />

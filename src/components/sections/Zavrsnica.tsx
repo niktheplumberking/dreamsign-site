@@ -30,14 +30,21 @@ export default function Zavrsnica() {
 
   return (
     <div ref={ref} className="relative px-5 sm:px-6 pb-24 pt-4 text-center">
-      <motion.p
+      {/* batch 57 (Stage-6 gate finding): this was a <p aria-hidden> — so the page's own
+          closing call to action existed for the eye and for nobody else. The homepage's
+          heading outline ran h1 → … → „Jasna pravila" and simply stopped before the CTA,
+          and a screen reader was told to skip the line entirely. It is the section's
+          heading: it says so in the story map and it wears the cta-naslov zone. Same
+          classes, same script face, same seat — an <h2> that is no longer hidden.
+          (Tailwind's preflight gives headings `font-size: inherit; font-weight: inherit`,
+          so the element swap paints identical pixels; proven by diff.) */}
+      <motion.h2
         {...fadeUp(0)}
-        aria-hidden
         className="font-script text-accent leading-tight text-[clamp(2.4rem,5.5vw,3.8rem)]"
         style={{ textShadow: '0 1px 0 currentColor' }}
       >
         <EditableText k="cta-naslov">{bk('cta-naslov', 'Imate projekat na umu?')}</EditableText>
-      </motion.p>
+      </motion.h2>
 
       <svg
         viewBox={SIGNATURE_VIEWBOX}

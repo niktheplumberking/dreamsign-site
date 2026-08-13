@@ -25,6 +25,18 @@ export default function SveONama({
 }) {
   return (
     <>
+    {/* batch 57 (Stage-6 gate finding) — ONE heading for one section.
+        This component paints the name twice: once for phones (below) and once for sm+
+        (further down), both always in the DOM with CSS choosing which is seen. That gave
+        every page carrying it TWO <h2>s, and the desktop one was broken on top of that —
+        its floating middle word („O" here, „SMO" on /usluge) lives OUTSIDE the h2 and is
+        aria-hidden, so the heading read „SVE NAMA" / „KO MI". A crawler met the section
+        twice and got the name wrong both ways.
+        The fix keeps every visible pixel exactly where it is: the two compositions become
+        presentational (they are display typography, not structure) and the section's real
+        heading is this one screen-reader line, carrying the whole name, once. */}
+    <h2 className="sr-only">{`${wordTop} ${wordFloat} ${wordBottom}`}</h2>
+
     {/* ── PHONES (batch 51, owner) ─────────────────────────────────────────────────
         The composition below is absolute inside a full SCREEN: on a phone that stretched
         the four pieces to the four corners, so „NAMA" sat a whole viewport under the text
@@ -42,7 +54,8 @@ export default function SveONama({
       {/* batch 52 (owner): the third word joins the other two — the phone reads the whole
           name as ONE title block (his arrow: „MI"/„NAMA" moves up), and the paragraphs
           follow underneath. The staircase stays: each word steps further right. */}
-      <motion.h2
+      <motion.div
+        aria-hidden
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
@@ -52,7 +65,7 @@ export default function SveONama({
         <span className="block text-[4rem]">{wordTop}</span>
         <span className="block pl-[26%] text-[4rem]">{wordFloat}</span>
         <span className="block pl-[13%] text-[4rem]">{wordBottom}</span>
-      </motion.h2>
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 18 }}
@@ -120,8 +133,11 @@ export default function SveONama({
         </p>
       </motion.div>
 
-      {/* top word and bottom word, stepping right — the section's h2 reads whole */}
-      <h2 className="pointer-events-none relative z-10 mx-auto flex h-full w-full max-w-[1700px] flex-col justify-between pt-20 pb-4 sm:pt-24 sm:pb-6 lg:pt-28">
+      {/* top word and bottom word, stepping right. It used to be this section's h2 and it
+          could never read whole — the floating middle word is a sibling, not a child (it
+          has to be, to sit where Nick put it). The heading is the sr-only line at the top
+          of this component now; this block keeps every class it had. */}
+      <div aria-hidden className="pointer-events-none relative z-10 mx-auto flex h-full w-full max-w-[1700px] flex-col justify-between pt-20 pb-4 sm:pt-24 sm:pb-6 lg:pt-28">
         <motion.span
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -142,7 +158,7 @@ export default function SveONama({
         >
           {wordBottom}
         </motion.span>
-      </h2>
+      </div>
     </div>
     </>
   )
