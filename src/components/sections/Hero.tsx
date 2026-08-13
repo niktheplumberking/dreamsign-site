@@ -96,22 +96,28 @@ export default function Hero() {
           hero's own base line — his red box: centred, bottom-aligned, still the 2×2 block
           from batch 51. pointer-events-none for the same reason as the desktop line below:
           the facts are information, never a hitbox over the cloud button. */}
+      {/* batch 56 (owner): CENTRED THE WAY THE H1 IS CENTRED. The block was already centred
+          as a box, but each fact was set flush-left inside its column and the wrapped second
+          lines hung left too — so the whole thing READ left-aligned, which is not what he
+          drew. Two halves of one fixed width + text-center everywhere: every line, wrapped
+          or not, now sits on its column's centre, and the two columns are symmetric about
+          the page's centre exactly like „Izrada sajtova" above them. */}
       <motion.ul
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.75 }}
-        className="pointer-events-none absolute inset-x-0 bottom-[7vh] z-40 mx-auto grid w-max max-w-[21rem]
-                   grid-cols-2 gap-x-5 gap-y-2 px-2 sm:hidden"
+        className="pointer-events-none absolute inset-x-0 bottom-[7vh] z-40 mx-auto grid w-[min(21rem,90vw)]
+                   grid-cols-2 gap-x-3 gap-y-2.5 px-2 text-center sm:hidden"
         style={GLOW}
       >
         {TRUST_ROW.map((t) => (
-          <li key={t} className="flex items-center">
+          <li key={t} className="flex items-center justify-center">
             {/* the base line sits over the BRIGHT cloud bank, not open sky: at the quiet
                 ink/65 they measured 1.31:1 there — unreadable. This is the desktop base
                 line's own treatment (full ink + its white halo), which is the approved
                 style for exactly this seat. */}
             <span
-              className="text-[12px] font-semibold uppercase leading-tight tracking-[0.08em] text-ink"
+              className="text-center text-[12px] font-semibold uppercase leading-tight tracking-[0.08em] text-ink"
               style={{ textShadow: '0 1px 14px rgba(255,255,255,0.98), 0 0 5px rgba(255,255,255,0.9)' }}
             >
               {t}
