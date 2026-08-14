@@ -19,7 +19,10 @@ type Project = {
   name: string
   meta: string
   blurb: string
-  href: string
+  /** batch 60: OPTIONAL. A project stays in the portfolio when its site goes dark — the work
+      was still done — but we do not send a visitor to a 403. Without an href the card renders
+      as a plain block instead of a link. (Bennett & Co, found by the gate's outbound check.) */
+  href?: string
   cover?: string
 }
 
@@ -78,10 +81,12 @@ const PROJECTS: Project[] = [
     cover: '/media/radovi/posters/courthub-poster.webp',
   },
   {
+    // batch 60 (owner: "remove the bennett link"): bennettndco.com answers 403 Forbidden at
+    // its root, so the link is gone and the project stays. The poster and the description
+    // still show the work; the link returns the day the site does.
     name: 'Bennett & Co',
     meta: 'Brend + korporativni sajt',
     blurb: 'Kompletan identitet — od logotipa i vizuala do sajta na sopstvenom domenu.',
-    href: 'https://www.bennettndco.com',
     cover: '/media/radovi/posters/bennett-poster.webp',
   },
 ]
@@ -202,7 +207,8 @@ function Cover({ p }: { p: Project }) {
 
 /** the caption block — fixed height so every card in a row shares one caption line */
 function Caption({ p }: { p: Project }) {
-  const external = p.href.startsWith('http') && !p.href.includes('wa.me')
+  // no href, no arrow: the ↗ promises somewhere to go
+  const external = !!p.href && p.href.startsWith('http') && !p.href.includes('wa.me')
   return (
     <div className="min-h-[96px] pt-4">
       {/* batch 50: 12px is the floor for real text on a phone (the audit's readability
@@ -245,11 +251,13 @@ function Card({ p, seat, i, drift, still = false }: {
         viewport: { once: true, margin: '-90px' },
         transition: { duration: 0.75, delay: 0.09 * i, ease: [0.22, 1, 0.36, 1] as const },
       }
+  // batch 60: a project without a live site renders as a BLOCK, not a dead link. motion.a
+  // and motion.div take the same props here, so the composition is untouched either way.
+  const Tag = p.href ? motion.a : motion.div
+  const link = p.href ? { href: p.href, target: '_blank', rel: 'noopener' } : {}
   return (
-    <motion.a
-      href={p.href}
-      target="_blank"
-      rel="noopener"
+    <Tag
+      {...link}
       // batch 50 (owner, mobile audit): on a phone the row is a SNAP CARRIAGE — one card
       // per swipe, 78vw wide, no overlap and no tilt. The overlapped px cascade put every
       // caption underneath its neighbour's card (his „things that don't make sense on
@@ -268,7 +276,7 @@ function Card({ p, seat, i, drift, still = false }: {
         <Cover p={p} />
       </div>
       <Caption p={p} />
-    </motion.a>
+    </Tag>
   )
 }
 
@@ -343,11 +351,12 @@ function RailCard({ p, j, N, prog, railV, rail }: {
   const opacity = useTransform(seat, (s) => smoothstep((s + 1) / 0.7) * (1 - smoothstep((s - 3.25) / 0.75)))
   const z = useTransform(seat, (s) => Math.round((s + 1) * 10) + 2)
 
+  // batch 60: same rule as the in-flow card — a rider without a live site is not a link
+  const Tag = p.href ? motion.a : motion.div
+  const link = p.href ? { href: p.href, target: '_blank', rel: 'noopener' } : {}
   return (
-    <motion.a
-      href={p.href}
-      target="_blank"
-      rel="noopener"
+    <Tag
+      {...link}
       // pointer-events off on the BOX (it is the biggest card's box even when this rider is
       // scaled small, and would otherwise swallow clicks meant for its neighbour); the art
       // and the caption take the clicks themselves
@@ -366,7 +375,7 @@ function RailCard({ p, j, N, prog, railV, rail }: {
       >
         <Caption p={p} />
       </div>
-    </motion.a>
+    </Tag>
   )
 }
 

@@ -26,7 +26,9 @@ import { PAGE_SCHEMA } from '../lib/schema'
    these seats the day they exist (D62/D70). */
 const RECENZIJE = [
   {
-    thumb: '/media/radovi/bennett.webp', name: 'Bennett & Co', meta: 'bennettndco.com', href: 'https://www.bennettndco.com',
+    // batch 60 (owner: remove the bennett link) — bennettndco.com answers 403; the project
+    // stays, the dead link and its domain label go
+    thumb: '/media/radovi/bennett.webp', name: 'Bennett & Co', meta: 'Brend + korporativni sajt',
     title: 'Identitet koji uliva poverenje',
     line: 'Kompletan identitet i korporativni sajt — od logotipa i vizuala do lansiranja na sopstvenom domenu. Miran, precizan nastup za firmu kojoj se veruje na reč: sve na jednom mestu, sve potpisano.',
     tags: ['Brend', 'Korporativni sajt'],
@@ -179,9 +181,15 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
                         : { duration: 0.7, ease: [0.3, 0, 0.2, 1] }
                   }
                 >
-                  {/* batch 47 (owner): real card anatomy — head, rule, title, body, tags */}
-                  <a
-                    href={r.href} target="_blank" rel="noopener"
+                  {/* batch 47 (owner): real card anatomy — head, rule, title, body, tags.
+                      batch 60: a card whose project has no live site is a DIV — the work is
+                      still shown, the visitor is not sent to a 403. */}
+                  {(() => {
+                    const Tag = r.href ? 'a' : 'div'
+                    const link = r.href ? { href: r.href, target: '_blank', rel: 'noopener' } : {}
+                    return (
+                  <Tag
+                    {...link}
                     className="flex h-full w-full flex-col rounded-2xl border border-white/80 bg-white p-6 text-left shadow-[0_10px_30px_rgba(22,50,79,0.08)] transition-transform hover:scale-[1.02] sm:p-7"
                   >
                     <div className="flex items-center gap-3">
@@ -192,7 +200,7 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
                       <span className="flex min-w-0 flex-col">
                         <span className="truncate text-[15.5px] font-semibold text-ink">{r.name}</span>
                         <span className="truncate text-[12px] font-semibold uppercase tracking-[0.12em] text-accent">
-                          {r.meta} ↗
+                          {r.meta}{r.href ? ' ↗' : ''}
                         </span>
                       </span>
                     </div>
@@ -210,7 +218,9 @@ function ReviewSekcija({ reduced }: { reduced: boolean }) {
                         </span>
                       ))}
                     </div>
-                  </a>
+                  </Tag>
+                    )
+                  })()}
                 </motion.div>
               )
             })}

@@ -12,9 +12,21 @@ const TEXT = bk(
   'Ugovor, garancije i potpuna transparentnost — svaki sajt biramo da donese rezultat, ne samo da postoji. Nijedan klijent ne ostaje nezadovoljan.',
 )
 
-function Char({ p, start, ch }: { p: MotionValue<number>; start: number; ch: string }) {
-  const opacity = useTransform(p, [Math.max(0, start - 0.01), Math.min(1, start + 0.01)], [0.25, 1])
-  return <motion.span style={{ opacity }}>{ch}</motion.span>
+// batch 60 (owner cleared deviation D09): the last word does not just fill, it CHANGES —
+// „nezadovoljan" arrives in the signature blue while the rest of the sentence lands in ink.
+// It was in the spec from the start and never built. The colour rides the SAME window as the
+// opacity, so it is one motion, not a second one racing it.
+const INK = '#16324F'
+const ACCENT = '#2458A6'
+
+function Char({ p, start, ch, accent = false }: {
+  p: MotionValue<number>; start: number; ch: string; accent?: boolean
+}) {
+  const from = Math.max(0, start - 0.01)
+  const to = Math.min(1, start + 0.01)
+  const opacity = useTransform(p, [from, to], [0.25, 1])
+  const color = useTransform(p, [from, to], [INK, ACCENT])
+  return <motion.span style={accent ? { opacity, color } : { opacity }}>{ch}</motion.span>
 }
 
 export default function TextFill() {
@@ -45,7 +57,12 @@ export default function TextFill() {
           <span key={wi}>
             <span className="inline-block whitespace-nowrap">
               {word.split('').map((ch, ci) => (
-                <Char key={ci} p={scrollYProgress} start={(offset + ci) / total} ch={ch} />
+                <Char
+                  key={ci} p={scrollYProgress} start={(offset + ci) / total} ch={ch}
+                  // the word carries a full stop, and the owner's text is editable — match
+                  // the stem, never the exact token
+                  accent={word.toLowerCase().startsWith('nezadovoljan') && ci < 'nezadovoljan'.length}
+                />
               ))}
             </span>
             {wi < words.length - 1 ? ' ' : null}

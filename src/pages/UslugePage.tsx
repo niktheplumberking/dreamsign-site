@@ -232,25 +232,32 @@ function CloudMap() {
     file's invented testimonials cannot ship; real quotes take these seats the day they
     exist). Two visible slots, arrows, gentle auto-advance. */
 const REFERENCE = [
-  { thumb: '/media/radovi/bennett.webp', name: 'Bennett & Co', line: 'Kompletan identitet i korporativni sajt.', href: 'https://www.bennettndco.com', label: 'bennettndco.com' },
+  // batch 60 (owner: remove the bennett link) — the site answers 403; project stays, link goes
+  { thumb: '/media/radovi/bennett.webp', name: 'Bennett & Co', line: 'Kompletan identitet i korporativni sajt.', href: '', label: 'Brend + korporativni sajt' },
   { thumb: '/media/radovi/metalkolor.webp', name: 'Metal Kolor', line: 'Katalog, galerija i kontakt za majstore Srema.', href: 'https://metal-kolor.rs/', label: 'metal-kolor.rs' },
   { thumb: '/media/radovi/pizzdarija.webp', name: 'Pizzdarija', line: 'Meni i porudžbina na dva klika, Novi Sad.', href: 'https://www.pizzdarija.rs/', label: 'pizzdarija.rs' },
   { thumb: '/media/brand/cloud-d.webp', name: 'Vaš projekat', line: 'Sledeći rad kojim se hvalimo može biti vaš.', href: WA_LINK, label: 'Započnite razgovor' },
 ]
 
 function ReferenceCard({ r }: { r: (typeof REFERENCE)[number] }) {
+  // batch 60: an empty href means the project has no live site right now — the card shows
+  // the work without pretending there is somewhere to go
+  const Tag = r.href ? 'a' : 'div'
+  const link = r.href ? { href: r.href, target: '_blank', rel: 'noopener' } : {}
   return (
-    <a
-      href={r.href} target="_blank" rel="noopener"
+    <Tag
+      {...link}
       className="liquid-glass flex w-full items-start gap-4 rounded-2xl p-4 text-left transition-transform hover:scale-[1.01] sm:p-5"
     >
       <img src={r.thumb} alt={r.name} className="h-12 w-12 shrink-0 rounded-full border border-ink/15 object-cover object-top bg-white" />
       <span className="flex min-h-[2.5rem] flex-col">
         <span className="text-[13px] font-semibold text-ink sm:text-sm">{r.name}</span>
         <span className="mt-0.5 text-xs font-medium leading-relaxed text-ink/70 sm:text-[13px]">{r.line}</span>
-        <span className="mt-1.5 text-[12px] font-semibold uppercase tracking-[0.12em] text-accent">{r.label} ↗</span>
+        <span className="mt-1.5 text-[12px] font-semibold uppercase tracking-[0.12em] text-accent">
+          {r.label}{r.href ? ' ↗' : ''}
+        </span>
       </span>
-    </a>
+    </Tag>
   )
 }
 
