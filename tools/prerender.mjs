@@ -21,6 +21,11 @@ const ROUTES = [
   { path: '/radovi', out: 'radovi/index.html' },
   { path: '/usluge', out: 'usluge/index.html' },
   { path: '/kontakt', out: 'kontakt/index.html' },
+  // batch 59: the legal documents are routes now — they must land in the HTML like any
+  // other page, or the two pages a regulator would actually read would be the only ones
+  // that need JavaScript to exist
+  { path: '/politika-privatnosti', out: 'politika-privatnosti/index.html' },
+  { path: '/uslovi-koriscenja', out: 'uslovi-koriscenja/index.html' },
   // any unknown path renders the router's catch-all — snapshot it as the host's 404 page
   { path: '/ova-stranica-ne-postoji', out: '404.html' },
   // the Owner's Key edit twins: static hosting must serve these URLs; noindexed by the
@@ -38,6 +43,8 @@ const PROOF = {
   '/radovi': 'Naša strast je vođenje klijenata',
   '/usluge': 'jedan tim, jedan potpis',
   '/kontakt': 'Dva klika i razgovaramo',
+  '/politika-privatnosti': 'Zakonom o zaštiti podataka o ličnosti',
+  '/uslovi-koriscenja': 'nije u sistemu PDV-a',
   '/ova-stranica-ne-postoji': 'Stranica nije pronađena',
   '/edit': 'Izrada sajtova',
   '/edit/radovi': 'Naša strast je vođenje klijenata',

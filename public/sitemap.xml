@@ -25,4 +25,19 @@
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
+  <!-- batch 59: the legal documents became real pages, so they belong in the map — they are
+       the pages that declare who runs this business, and a regulator or a careful client
+       should be able to find them without hunting the footer. -->
+  <url>
+    <loc>https://dreamsign-preview.vercel.app/politika-privatnosti</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://dreamsign-preview.vercel.app/uslovi-koriscenja</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
 </urlset>

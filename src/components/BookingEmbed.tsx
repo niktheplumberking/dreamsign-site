@@ -101,7 +101,7 @@ export default function BookingEmbed() {
           <p className="mt-3 text-[11.5px] leading-relaxed text-ink/50">
             Kalendar pruža <a href="https://cal.com" target="_blank" rel="noopener" className="font-semibold text-accent hover:text-ink">cal.com</a>.
             Podaci koje unesete obrađuju se kako je opisano u{' '}
-            <a href="/politika-privatnosti.html" className="font-semibold text-accent hover:text-ink">Politici privatnosti</a>.
+            <a href="/politika-privatnosti" className="font-semibold text-accent hover:text-ink">Politici privatnosti</a>.
           </p>
         </>
       ) : (
@@ -125,7 +125,7 @@ export default function BookingEmbed() {
           <p className="mt-3 text-[11.5px] leading-relaxed text-ink/50">
             Kalendar učitava <strong className="font-semibold">cal.com</strong> — tek kada kliknete. Do tada nijedan
             podatak ne napušta ovaj sajt.{' '}
-            <a href="/politika-privatnosti.html" className="font-semibold text-accent hover:text-ink">Politika privatnosti</a>
+            <a href="/politika-privatnosti" className="font-semibold text-accent hover:text-ink">Politika privatnosti</a>
           </p>
           <p className="mt-3 text-[12px] leading-relaxed text-ink/55">
             Više volite poruku?{' '}

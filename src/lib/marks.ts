@@ -27,6 +27,8 @@ export const LEGAL = {
   /** batch 4: "Srbija", not "Republika Srbija" — footer display form. The legal pages keep
       the official register wording; this is the shop window, not the certificate. */
   seat: 'Dušana Jerkovića 42, 22400 Ruma, Srbija',
+  /** the certificate wording — what the two legal pages declare (batch 59) */
+  seatOfficial: 'Dušana Jerkovića 42, 22400 Ruma, Republika Srbija',
   registrationNo: '68643627',
   pib: '115798587',
   activity: '6201 — Računarsko programiranje',

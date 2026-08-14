@@ -13,6 +13,8 @@ import RadoviPage from './pages/RadoviPage'
 import UslugePage from './pages/UslugePage'
 import KontaktPage from './pages/KontaktPage'
 import NotFound from './pages/NotFound'
+import PolitikaPrivatnosti from './pages/PolitikaPrivatnosti'
+import UsloviKoriscenja from './pages/UsloviKoriscenja'
 import { sessionOnce, useReducedMotionSafe } from './lib/hooks'
 import { OK_ENABLED, SITE_SLUG, SUPABASE_URL, SUPABASE_ANON_KEY } from './lib/content'
 import { OwnersKeyProvider, OwnersKeyLogin, OwnersKeyBar } from './ok/OwnersKey'
@@ -79,6 +81,12 @@ export default function App() {
       <Route path="/radovi" element={<RadoviPage />} />
       <Route path="/usluge" element={<UslugePage />} />
       <Route path="/kontakt" element={<KontaktPage />} />
+      {/* batch 59 (owner): the two legal documents are PAGES of this site now, not two loose
+          .html files in public/ with their own stylesheet. Same nav, same footer, same gust
+          on the way in — the old /politika-privatnosti.html and /uslovi-koriscenja.html
+          addresses 301 to these (vercel.json), because both were already published. */}
+      <Route path="/politika-privatnosti" element={<PolitikaPrivatnosti />} />
+      <Route path="/uslovi-koriscenja" element={<UsloviKoriscenja />} />
       {/* the Owner's Key: each page has its edit twin — same components, edit affordances.
           The site IS the panel (owners-key-sop). Never prerendered as indexable: usePageMeta
           stamps noindex on every /edit path, and robots.txt disallows it. */}

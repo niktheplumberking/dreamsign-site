@@ -3,6 +3,18 @@
   "buildCommand": "node tools/vercel-build.mjs",
   "outputDirectory": "dist",
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/politika-privatnosti.html",
+      "destination": "/politika-privatnosti",
+      "permanent": true
+    },
+    {
+      "source": "/uslovi-koriscenja.html",
+      "destination": "/uslovi-koriscenja",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

@@ -31,9 +31,11 @@ const PAGES = [
   { label: 'Kontakt', href: '/kontakt' },
 ]
 
+// batch 59: real routes, so they ride the cloud gust like every other internal link and
+// arrive with the nav and this footer around them
 const LEGAL_PAGES = [
-  { label: 'Politika privatnosti', href: '/politika-privatnosti.html' },
-  { label: 'Uslovi korišćenja', href: '/uslovi-koriscenja.html' },
+  { label: 'Politika privatnosti', href: '/politika-privatnosti' },
+  { label: 'Uslovi korišćenja', href: '/uslovi-koriscenja' },
 ]
 
 export default function Footer() {
@@ -110,9 +112,9 @@ export default function Footer() {
             {/* the legal pair, side by side beneath the WhatsApp line (batch 4) */}
             <p className="flex flex-wrap gap-x-6 gap-y-1 pt-1 text-[13px]">
               {LEGAL_PAGES.map(p => (
-                <a key={p.href} href={p.href} className="text-ink/60 hover:text-ink transition-colors inline-block py-2.5 -my-2">
+                <Link key={p.href} to={p.href} className="text-ink/60 hover:text-ink transition-colors inline-block py-2.5 -my-2">
                   {p.label}
-                </a>
+                </Link>
               ))}
             </p>
           </div>

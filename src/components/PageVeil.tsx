@@ -60,12 +60,12 @@ export default function PageVeil() {
       if (!href.startsWith('/') || href.startsWith('//') || a.target === '_blank' || a.hasAttribute('download')) return
       const to = href.split('#')[0].split('?')[0]
       // batch 58 — A PATH WITH A FILE EXTENSION IS A REAL FILE ON THE HOST, not a route.
-      // The legal pages are static documents (/politika-privatnosti.html,
-      // /uslovi-koriscenja.html); this listener was hijacking their clicks and handing them
-      // to React Router, which has no such route — so the footer's two legal links landed
-      // every visitor on the 404 page. The files themselves always served fine, which is why
-      // nothing ever flagged it: a link check by URL passes, a CLICK does not. Let the
-      // browser navigate.
+      // Found when the footer's two legal links landed every visitor on the 404 page: they
+      // pointed at static .html documents and this listener handed them to React Router,
+      // which had no such route. The files always served fine, which is why nothing flagged
+      // it — a link check by URL passes, a CLICK does not. (Batch 59 turned those two into
+      // real routes, so they no longer need this; the rule stays for everything that IS a
+      // file — /sitemap.xml, /robots.txt, /llms.txt, any PDF a client page ever links.)
       if (/\.[a-z0-9]{2,5}$/i.test(to)) return
       if (busy.current) { e.preventDefault(); return }
       if (to === path.current) return
