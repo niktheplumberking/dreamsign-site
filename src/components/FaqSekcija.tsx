@@ -3,7 +3,7 @@
 // no prices (factory law — „nemamo cenovnik" stays the honest answer).
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { WA_LINK } from '../lib/hooks'
+import BookingEmbed from './BookingEmbed'
 
 const fadeUp = (i: number) => ({
   initial: { opacity: 0, y: 20 },
@@ -65,43 +65,14 @@ export default function FaqSekcija() {
           <img src="/media/brand/cloud-d.webp" alt="" aria-hidden className="mb-5 w-16 sm:w-20 drop-shadow-md" />
           <h3 className="mb-2 text-xl font-bold text-ink sm:text-2xl">Zakažite razgovor</h3>
           <p className="mb-5 text-sm leading-relaxed text-ink/70 sm:text-base">
-            Izaberite termin koji vam odgovara — 15 minuta, bez obaveza.
+            Izaberite termin koji vam odgovara — 30 minuta, bez obaveza.
           </p>
-          {/* BOOKING EMBED SLOT (batch 14): Nick's Calendly / cal.com lands here the moment
-              he sends the link — until then a self-hosted placeholder holds the seat
-              (no third-party script ships before the real account exists). */}
-          <div id="booking-embed-slot" className="rounded-2xl border border-mist/70 bg-bg p-4">
-            <div className="mb-3 flex items-center justify-between text-[12px] font-semibold uppercase tracking-[0.14em] text-ink/60">
-              <span>Avgust 2026</span>
-              <span aria-hidden>‹ ›</span>
-            </div>
-            <div className="grid grid-cols-7 gap-1 text-center text-[12px] font-medium text-ink/70">
-              {['P', 'U', 'S', 'Č', 'P', 'S', 'N'].map((d, i) => (
-                <span key={i} className="py-1 text-[10px] font-semibold uppercase text-ink/40">{d}</span>
-              ))}
-              {Array.from({ length: 14 }, (_, i) => (
-                <span
-                  key={i}
-                  className={`rounded-full py-1 ${i === 9 ? 'bg-accent font-semibold text-white' : 'text-ink/60'}`}
-                >
-                  {i + 3}
-                </span>
-              ))}
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {['10:00', '12:30', '15:00'].map((t) => (
-                <span key={t} className="rounded-full border border-mist/80 bg-white px-3.5 py-1.5 text-[12px] font-semibold text-ink/45">
-                  {t}
-                </span>
-              ))}
-            </div>
-            <p className="mt-4 text-[12px] leading-relaxed text-ink/55">
-              Onlajn zakazivanje stiže uskoro — do tada,{' '}
-              <a href={WA_LINK} target="_blank" rel="noopener" className="font-semibold text-accent hover:text-ink inline-block py-2.5">
-                dva klika i razgovaramo ↗
-              </a>
-            </p>
-          </div>
+          {/* BOOKING EMBED SLOT (batch 14, filled batch 58): the placeholder calendar that
+              held this seat is gone — Nick's real cal.com event lives here now, loaded on
+              the visitor's click (BookingEmbed explains why). The „15 minuta" line above
+              became „30 minuta": the event he actually created is 30 minutes long, and a
+              site that promises one length and books another is lying in the small print. */}
+          <BookingEmbed />
         </motion.div>
       </div>
 

@@ -27,6 +27,16 @@ it, which `connect-src` governs. `blob:` was already allowed for `img-src`, `med
 minted by this document and is same-origin — it cannot reach anything off-site, so the
 directive's purpose (a smuggled script cannot phone home) is untouched.
 
+**cal.com (added in batch 58).** The booking card embeds Nick's cal.com event, which needs
+four holes in the wall and gets exactly four: `script-src https://app.cal.com` (their
+`embed.js`, and only from that host), `frame-src` + `child-src` for the booking iframe, and
+`connect-src` for the handshake the embed makes with its own origin. Nothing else was
+loosened — no `unsafe-inline`, no wildcard, no `img-src` opening: the calendar's own images
+load *inside* their iframe, which is governed by cal.com's CSP, not ours. Worth knowing what
+this buys them: a third party we now execute code from could, in principle, read this page.
+That is the price of any embed; it is contained to two pages, it loads only after the visitor
+clicks, and the site holds no visitor data for it to read.
+
 **Permissions-Policy** — everything this site does not use, switched off, so a compromised
 script cannot even ask.
 
